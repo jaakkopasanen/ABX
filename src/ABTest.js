@@ -44,7 +44,7 @@ class ABTest extends React.Component {
             return;
         }
         this.setState({playing: false});
-        this.props.onSubmit(this.state.selected);
+        this.props.onSubmit(this.options[this.state.selected]);
     }
 
     render() {

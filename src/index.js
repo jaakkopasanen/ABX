@@ -1,159 +1,96 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
-import Slider from '@material-ui/core/Slider';
-import VolumeUpIcon from '@material-ui/icons/VolumeUp';
+import Box from "@material-ui/core/Box";
 import './index.css';
-
-const A = 'A'.charCodeAt(0);
+import ABTest from "./ABTest";
+import ThankYou from "./thankYou";
 
 // https://www.dropboxforum.com/t5/Dropbox-files-folders/public-links-to-raw-files/td-p/110391
 const config = {
-    title: 'AB Test',
-    description: 'Select the most preferred option',
-    options: [
-        'https://dl.dropbox.com/s/wjsrxo46abwzvkx/bells-tibetan-daniel_simon.wav',
-        'https://dl.dropbox.com/s/jo4qol1fkl5j0x7/tolling-bell_daniel-simion.wav',
-        'https://dl.dropbox.com/s/w3r33kl2c0ee3op/cartoon-birds-2_daniel-simion.wav'
-    ]
+    title: 'EQ Reqularization AB Test',
+    description: 'Series of ABC listening tests for equalizer regularization',
+    thankYou: {
+        title: 'Thank you for participating!',
+        description: 'Your results have been submitted.'
+    },
+    tests: [{
+        type: 'AB',
+        title: 'AB Test',
+        description: 'Select the most preferred option',
+        options: [
+            'https://dl.dropbox.com/s/wjsrxo46abwzvkx/bells-tibetan-daniel_simon.wav',
+            'https://dl.dropbox.com/s/jo4qol1fkl5j0x7/tolling-bell_daniel-simion.wav',
+            'https://dl.dropbox.com/s/w3r33kl2c0ee3op/cartoon-birds-2_daniel-simion.wav'
+        ]
+    }, {
+        type: 'AB',
+        title: 'AB Test 2',
+        description: 'Select the most preferred option',
+        options: [
+            'https://dl.dropbox.com/s/wjsrxo46abwzvkx/bells-tibetan-daniel_simon.wav',
+            'https://dl.dropbox.com/s/jo4qol1fkl5j0x7/tolling-bell_daniel-simion.wav',
+            //'https://dl.dropbox.com/s/w3r33kl2c0ee3op/cartoon-birds-2_daniel-simion.wav'
+        ]
+    }]
 };
 
-class AudioButton extends React.Component {
+class TestRunner extends React.Component {
     constructor(props) {
         super(props);
-        this.audio = null
-        this.handleClick = this.handleClick.bind(this);
-    }
 
-    componentDidMount() {
-        this.audio = new Audio(this.props.url);
-        this.audio.muted = true;
-        this.audio.loop = true;
-    }
-
-    getChar() {
-        return String.fromCharCode(A + this.props.ix)
-    }
-
-    handleClick() {
-        this.props.onClick(this.getChar());
-    }
-
-    render() {
-        let color;
-        if (this.audio) {
-            this.audio.volume = this.props.volume;
-            this.audio.muted = this.props.muted;
-            if (this.props.playing && !this.audio.playing) {
-                this.audio.play();
-            }
-            color = this.audio.muted ? 'secondary' : 'primary'
+        if (typeof(props.config) === 'string') {
+            // Download JSON file
+            this.config = null;
         } else {
-            color = 'secondary'
+            this.config = Object.assign({}, props.config)
         }
-        return (
-            <Box>
-                <Button
-                    variant="contained"
-                    color={color}
-                    size="large"
-                    onClick={this.props.onClick}
-                    m={1}
-                >
-                    {this.getChar()}
-                </Button>
-            </Box>
 
-        );
-    }
+        this.results = Array(this.config.tests.length).fill(null);
 
-
-}
-
-class ABTest extends React.Component {
-    constructor(props) {
-        super(props);
-        const volume = localStorage.getItem('volume') || 0.5;
         this.state = {
-            selected: null,
-            volume: volume,
-            muted: Array(this.props.nOptions).fill(true),
-            playing: false,
-        };
-        this.handleClick = this.handleClick.bind(this);
-        this.handleVolumeChange = this.handleVolumeChange.bind(this);
+            step: 0,
+        }
+
+        this.handleSubmit = this.handleSubmit.bind(this);
     }
 
-    handleClick(i) {
-        const muted = Array(this.props.nOptions).fill(true);
-        muted[i] = false;
-        this.setState({
-            selected: i,
-            muted: muted,
-            playing: true,
-        });
-    }
-
-    handleVolumeChange(event, newValue) {
-        localStorage.setItem('volume', newValue);
-        this.setState({volume: newValue});
+    handleSubmit(selectedOption) {
+        this.results[this.state.step] = selectedOption;
+        this.setState({step: this.state.step + 1})
+        console.log(this.results);
     }
 
     render() {
-        const audioButtons = [];
-        for (let i = 0; i < config.options.length; ++i) {
-            audioButtons.push(
-                <Box key={i} mx="8px">
-                    <AudioButton
-                        ix={i}
-                        url={config.options[i]}
-                        volume={this.state.volume}
-                        muted={this.state.muted[i]}
-                        playing={this.state.playing}
-                        onClick={() => this.handleClick(i)}
+        const steps = [];
+        for (let i = 0; i < this.config.tests.length; ++i) {
+            steps.push(
+                <Box key={i} display={this.state.step === i ? 'flex' : 'none'}>
+                    <ABTest
+                        title={this.config.tests[i].title}
+                        description={this.config.tests[i].description}
+                        options={this.config.tests[i].options}
+                        onSubmit={this.handleSubmit}
                     />
                 </Box>
             )
         }
+        steps.push(
+            <Box display={this.state.step === this.config.tests.length ? 'flex' : 'none'}>
+                <ThankYou
+                    title={this.config.thankYou.title}
+                    description={this.config.thankYou.description}
+                />
+            </Box>
+        )
         return (
             <Box display="flex" flexDirection="row" justifyContent="center">
-                <Box display="flex" flexDirection="column" width="400px">
-                    <Box><Typography variant="h1">{config.title}</Typography></Box>
-                    <Box><Typography>{config.description}</Typography></Box>
-                    <Box display="flex" flexDirection="row" mt="24px">
-                        <VolumeUpIcon style={{fontSize: 28}} />
-                        <Slider
-                            color="secondary"
-                            value={this.state.volume}
-                            defaultValue={0.5}
-                            min={0.0} max={1.0} step={0.01}
-                            onChange={this.handleVolumeChange}
-                        />
-                    </Box>
-                    <Box display="flex" flexDirection="row" justifyContent="center" mt="16px">{audioButtons}</Box>
-                    <Box display="flex" flexDirection="row" justifyContent="end" mt="16px">
-                        <Button variant="outlined" color="secondary">Next</Button>
-                    </Box>
-                </Box>
+                {steps}
             </Box>
-
-        );
-    }
-}
-
-class Test extends React.Component {
-    render() {
-        let testInstance;
-        if (this.props.type.toLowerCase() === 'ab') {
-            testInstance = <ABTest nOptions={this.props.nOptions} />;
-        }
-        return testInstance;
+        )
     }
 }
 
 ReactDOM.render(
-    <Test type="ab" nOptions={3} className="test" />,
+    <TestRunner className="test" config={config} />,
     document.getElementById('root')
 );

@@ -36,6 +36,10 @@ class ThankYou extends React.Component {
                 ++totalCount;
             }
             testStats.totalCount = totalCount;
+            for (let j = 0; j < testStats.options.length; ++j) {
+                testStats.options[j].percentage = testStats.options[j].count / totalCount * 100;
+            }
+            testStats.options.sort((a, b) => b.count - a.count);
             allStats.push(testStats);
         }
         return allStats;
@@ -51,7 +55,7 @@ class ThankYou extends React.Component {
                     <TableRow key={j}>
                         <TableCell>{allStats[i].options[j].name}</TableCell>
                         <TableCell>{allStats[i].options[j].count}</TableCell>
-                        <TableCell>{allStats[i].options[j].count / allStats[i].totalCount * 100}</TableCell>
+                        <TableCell>{allStats[i].options[j].percentage.toFixed(1)}</TableCell>
                     </TableRow>
                 )
             }

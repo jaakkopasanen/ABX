@@ -6,6 +6,7 @@ import VolumeUpIcon from "@material-ui/icons/VolumeUp";
 import Slider from "@material-ui/core/Slider";
 import Button from "@material-ui/core/Button";
 import shuffle from "./random";
+import {Paper} from "@material-ui/core";
 
 class ABTest extends React.Component {
     constructor(props) {
@@ -93,41 +94,48 @@ class ABTest extends React.Component {
             )
         }
         return (
-            <Box display="flex" flexDirection="row" justifyContent="center">
-                <Box display="flex" flexDirection="column">
-                    <Box><Typography variant="h2" className="centerText">{this.props.title}</Typography></Box>
-                    <Box><Typography className="centerText">{this.props.description}</Typography></Box>
-                    <Box
-                        display="flex"
-                        flexDirection="row"
-                        justifyContent="center"
-                        className="audioButtonGroup"
-                    >
-                        {audioButtons}
-                    </Box>
-                    <Box display="flex" flexDirection="row">
-                        <VolumeUpIcon style={{fontSize: 42}} />
-                        <Slider
-                            color="secondary"
-                            value={this.props.volume}
-                            defaultValue={0.5}
-                            min={0.0} max={1.0} step={0.01}
-                            onChange={this.props.onVolumeChange}
-                            className="volumeSlider"
-                        />
-                    </Box>
-                    <Box display="flex" flexDirection="row" justifyContent="end" mt="16px">
-                        <Button
-                            variant="outlined"
-                            color="secondary"
-                            onClick={this.handleSubmit}
-                        >
-                            Next
-                        </Button>
-                    </Box>
-                </Box>
-            </Box>
+                <Box display="flex" flexDirection="column" className="width100p">
+                    <Box><Typography variant="h2" className="centerText">{this.props.title || ''}</Typography></Box>
+                    <Box mb="16px"><Typography className="centerText">{this.props.description || ''}</Typography></Box>
+                    <Paper>
+                        <Box p="20px">
+                            <Box
+                                display="flex"
+                                flexDirection="row"
+                                justifyContent="center"
+                                className="audioButtonGroup"
 
+                            >
+                                {audioButtons}
+                            </Box>
+                            <Box display="flex" flexDirection="row" justifyContent="end" mt="16px">
+                                <Button
+                                    variant="outlined"
+                                    color="secondary"
+                                    onClick={this.handleSubmit}
+                                >
+                                    Next
+                                </Button>
+                            </Box>
+                        </Box>
+                    </Paper>
+                    <Box mt="16px">
+                        <Paper className="paperPadding">
+                            <Box display="flex" flexDirection="row" p="10px">
+                                <VolumeUpIcon style={{fontSize: 42}} />
+                                <Slider
+                                    color="secondary"
+                                    value={this.props.volume}
+                                    defaultValue={0.5}
+                                    min={0.0} max={1.0} step={0.01}
+                                    onChange={this.props.onVolumeChange}
+                                    className="volumeSlider"
+                                />
+                            </Box>
+                        </Paper>
+                    </Box>
+
+                </Box>
         );
     }
 }

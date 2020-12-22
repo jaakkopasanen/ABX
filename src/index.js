@@ -23,7 +23,7 @@ const config = {
         title: 'AB Test 1',
         description: 'Select the most preferred option',
         options: ['Tibetan Bells', 'Tolling Bell', 'Cartoon Birds'],
-        repeat: 2
+        repeat: 3
     }, {
         type: 'AB',
         title: 'AB Test 2',

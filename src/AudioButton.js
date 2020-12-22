@@ -2,14 +2,17 @@ import React from "react";
 import Button from "@material-ui/core/Button";
 import {withStyles} from "@material-ui/core";
 
+const size = 64;
+
 const CircleButton = withStyles((theme) => ({
     root: {
         borderRadius: '50%',
-        maxWidth: '48px',
-        minWidth: '48px',
-        height: '48px',
+        maxWidth: size,
+        minWidth: size,
+        height: size,
         transform: 'translate(-50%, -50%)',
         textAlign: 'center',
+        fontSize: 24
     },
 }))(Button);
 
@@ -28,24 +31,20 @@ class AudioButton extends React.Component {
 
     render() {
         let color;
-        let disableElevation = false;
         if (this.audio) {
             this.audio.volume = this.props.volume;
             this.audio.muted = this.props.muted;
             if (this.props.playing && !this.audio.playing) {
                 this.audio.play();
                 color = this.audio.muted ? 'secondary' : 'primary';
-                disableElevation = !this.audio.muted;
             } else if (!this.props.playing) {
                 this.audio.pause();
                 this.audio.currentTime = 0;
                 color = 'secondary';
-                disableElevation = false;
             }
 
         } else {
             color = 'secondary'
-            disableElevation = false;
         }
         return (
             <CircleButton
@@ -54,7 +53,6 @@ class AudioButton extends React.Component {
                 size="large"
                 onClick={this.props.onClick}
                 m={1}
-                disableElevation={disableElevation}
             >
                 {this.getChar()}
             </CircleButton>

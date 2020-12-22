@@ -40,10 +40,10 @@ class TestRunner extends React.Component {
     }
 
     handleSubmit(selectedOption) {
+        const augmentedOption = Object.assign({}, selectedOption);
+        augmentedOption.test = this.config.tests[this.state.testStep].title;
         let results = JSON.parse(JSON.stringify(this.state.results));
-        results[this.state.testStep].push(selectedOption);
-        console.log('Copied results');
-        console.log(results);
+        results[this.state.testStep].push(augmentedOption);
 
         if (this.state.repeatStep + 1 === this.config.tests[this.state.testStep].repeat) {
             // Last repeat, move to next test
@@ -76,9 +76,6 @@ class TestRunner extends React.Component {
 
     render() {
         const steps = [];
-        // TODO: iterations
-        console.log('TestRunner.state.results');
-        console.log(this.state.results);
         for (let i = 0; i < this.config.tests.length; ++i) {
             for (let j = 0; j < this.config.tests[i].repeat; ++j) {
                 steps.push(

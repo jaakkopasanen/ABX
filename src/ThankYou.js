@@ -16,9 +16,10 @@ class ThankYou extends React.Component {
                     </Box>
                 )
             }
+            const title = this.props.results[i].length ? this.props.results[i][0].test : '';
             results.push(
                 <Box key={i}>
-                    <Typography variant="h4">{i}</Typography>
+                    <Typography variant="h4">{title}</Typography>
                     {repeats}
                 </Box>
             )

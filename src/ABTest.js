@@ -48,11 +48,39 @@ class ABTest extends React.Component {
         this.props.onSubmit(this.options[this.state.selected]);
     }
 
+    circleCoordindates(i, n, r) {
+        let alpha0;
+        switch (n) {
+            case 3:
+                alpha0 = Math.PI / 2 + Math.PI * 2 / 3 / 2
+                break;
+            case 5:
+                alpha0 = Math.PI / 2 + Math.PI * 2 / 5
+                break;
+            default:
+                alpha0 = Math.PI;
+        }
+        const top = 'calc(50% - ' + Math.sin(alpha0 - Math.PI * 2 / n * i) * r + 'px)';
+        const left = 'calc(50% + ' + Math.cos(alpha0 - Math.PI * 2 / n * i) * r + 'px)';
+        return {
+            top: top,
+            left: left
+        }
+    }
+
     render() {
         const audioButtons = [];
         for (let i = 0; i < this.state.options.length; ++i) {
+            const n = this.state.options.length;
+            const r = Math.max(1, n / 5) * 50;
+            const coordinates = this.circleCoordindates(i, n, r);
+
             audioButtons.push(
-                <Box key={i} mx="8px">
+                <div key={i} style={{
+                    position: "absolute",
+                    top: coordinates.top,
+                    left: coordinates.left,
+                }}>
                     <AudioButton
                         ix={i}
                         url={this.state.options[i]}
@@ -61,23 +89,26 @@ class ABTest extends React.Component {
                         playing={this.state.playing}
                         onClick={() => this.handleClick(i)}
                     />
-                </Box>
+                </div>
             )
         }
         return (
             <Box display="flex" flexDirection="row" justifyContent="center">
-                <Box display="flex" flexDirection="column" width="400px">
-                    <Box><Typography variant="h1">{this.props.title}</Typography></Box>
-                    <Box><Typography>{this.props.description}</Typography></Box>
-                    <Box display="flex" flexDirection="row" justifyContent="center" mt="16px">{audioButtons}</Box>
-                    <Box display="flex" flexDirection="row" mt="24px">
-                        <VolumeUpIcon style={{fontSize: 28}} />
+                <Box display="flex" flexDirection="column">
+                    <Box><Typography variant="h2" className="centerText">{this.props.title}</Typography></Box>
+                    <Box><Typography className="centerText">{this.props.description}</Typography></Box>
+                    <Box display="flex" flexDirection="row" justifyContent="center" mt="16px" className="audioButtonGroup">
+                        {audioButtons}
+                    </Box>
+                    <Box display="flex" flexDirection="row">
+                        <VolumeUpIcon style={{fontSize: 42}} />
                         <Slider
                             color="secondary"
                             value={this.props.volume}
                             defaultValue={0.5}
                             min={0.0} max={1.0} step={0.01}
                             onChange={this.props.onVolumeChange}
+                            className="volumeSlider"
                         />
                     </Box>
                     <Box display="flex" flexDirection="row" justifyContent="end" mt="16px">

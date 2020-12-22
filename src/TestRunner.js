@@ -2,6 +2,7 @@ import React from "react";
 import Box from "@material-ui/core/Box";
 import ABTest from "./ABTest";
 import ThankYou from "./thankYou";
+import Container from "@material-ui/core/Container";
 
 class TestRunner extends React.Component {
     constructor(props) {
@@ -15,6 +16,8 @@ class TestRunner extends React.Component {
         }
 
         this.results = Array(this.config.tests.length).fill(null);
+
+        this.time = null;
 
         let volume = localStorage.getItem('volume');
         if (volume === null) {
@@ -38,8 +41,16 @@ class TestRunner extends React.Component {
     }
 
     handleVolumeChange(event, newValue) {
-        localStorage.setItem('volume', newValue);
         this.setState({volume: newValue});
+        const timer = Date.now();
+        this.timer = timer;
+        // Avoid updating local storage on each pixel movement
+        setTimeout(() => {
+            if (this.timer === timer) {
+                console.log('set localStorage', this.state.volume);
+                localStorage.setItem('volume', this.state.volume);
+            }
+        }, 1000);
     }
 
     render() {
@@ -68,9 +79,9 @@ class TestRunner extends React.Component {
             </Box>
         )
         return (
-            <Box display="flex" flexDirection="row" justifyContent="center">
+            <Container maxWidth="xs">
                 {steps}
-            </Box>
+            </Container>
         )
     }
 }

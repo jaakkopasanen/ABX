@@ -5,3 +5,17 @@ html, body {
 .optionButton {
     margin: 16px;
 }
+.relative {
+    position: relative;
+}
+.audioButtonGroup {
+    position: relative;
+    min-height: 300px;
+}
+.centerText {
+    text-align: center;
+}
+.volumeSlider {
+    margin-right: 6px;
+    padding: 20px 0 !important
+}

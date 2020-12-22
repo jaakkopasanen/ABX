@@ -84,8 +84,9 @@ class ThankYou extends React.Component {
                 rows.push(
                     <TableRow key={j}>
                         <TableCell>{allStats[i].options[j].name}</TableCell>
-                        <TableCell>{allStats[i].options[j].count}</TableCell>
-                        <TableCell>{allStats[i].options[j].percentage.toFixed(1)}</TableCell>
+                        <TableCell>
+                            {allStats[i].options[j].count} ({allStats[i].options[j].percentage.toFixed(1)}%)
+                        </TableCell>
                         <TableCell>{allStats[i].options[j].x2.toFixed(1)}</TableCell>
                     </TableRow>
                 )
@@ -93,8 +94,7 @@ class ThankYou extends React.Component {
             rows.push(
                 <TableRow key={-1}>
                     <StyledTableCell>Sum</StyledTableCell>
-                    <StyledTableCell>{allStats[i].totalCount}</StyledTableCell>
-                    <StyledTableCell>{(100).toFixed(1)}</StyledTableCell>
+                    <StyledTableCell>{allStats[i].totalCount} (100.0%)</StyledTableCell>
                     <StyledTableCell>{allStats[i].x2Sum.toFixed(1)}</StyledTableCell>
                 </TableRow>
             )
@@ -113,7 +113,6 @@ class ThankYou extends React.Component {
                                             <TableRow>
                                                 <StyledTableCell>Sample</StyledTableCell>
                                                 <StyledTableCell>Selected</StyledTableCell>
-                                                <StyledTableCell>Selected (%)</StyledTableCell>
                                                 <StyledTableCell>X<sup>2</sup></StyledTableCell>
                                             </TableRow>
                                         </TableHead>

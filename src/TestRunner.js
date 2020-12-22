@@ -16,11 +16,19 @@ class TestRunner extends React.Component {
 
         this.results = Array(this.config.tests.length).fill(null);
 
+        let volume = localStorage.getItem('volume');
+        if (volume === null) {
+            volume = 0.5;
+        } else {
+            volume = +volume;  // Cast to number
+        }
         this.state = {
+            volume:  volume,
             step: 0,
         }
 
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleVolumeChange = this.handleVolumeChange.bind(this);
     }
 
     handleSubmit(selectedOption) {
@@ -29,11 +37,13 @@ class TestRunner extends React.Component {
         console.log(this.results);
     }
 
+    handleVolumeChange(event, newValue) {
+        localStorage.setItem('volume', newValue);
+        this.setState({volume: newValue});
+    }
+
     render() {
         const steps = [];
-        // TODO: Global volume control?
-        // TODO: nTests < length
-        // TODO: testGroups
         // TODO: iterations
         for (let i = 0; i < this.config.tests.length; ++i) {
             steps.push(
@@ -43,12 +53,14 @@ class TestRunner extends React.Component {
                         description={this.config.tests[i].description}
                         options={this.config.tests[i].options}
                         onSubmit={this.handleSubmit}
+                        volume={this.state.volume}
+                        onVolumeChange={this.handleVolumeChange}
                     />
                 </Box>
             )
         }
         steps.push(
-            <Box display={this.state.step === this.config.tests.length ? 'flex' : 'none'}>
+            <Box key={steps.length} display={this.state.step === this.config.tests.length ? 'flex' : 'none'}>
                 <ThankYou
                     title={this.config.thankYou.title}
                     description={this.config.thankYou.description}

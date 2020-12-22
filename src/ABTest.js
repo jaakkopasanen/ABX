@@ -97,7 +97,12 @@ class ABTest extends React.Component {
                 <Box display="flex" flexDirection="column">
                     <Box><Typography variant="h2" className="centerText">{this.props.title}</Typography></Box>
                     <Box><Typography className="centerText">{this.props.description}</Typography></Box>
-                    <Box display="flex" flexDirection="row" justifyContent="center" mt="16px" className="audioButtonGroup">
+                    <Box
+                        display="flex"
+                        flexDirection="row"
+                        justifyContent="center"
+                        className="audioButtonGroup"
+                    >
                         {audioButtons}
                     </Box>
                     <Box display="flex" flexDirection="row">

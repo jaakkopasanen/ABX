@@ -13,33 +13,22 @@ const config = {
         title: 'Thank you for participating!',
         description: 'Your results have been submitted.'
     },
+    options: {
+        'Tibetan Bells': 'https://dl.dropbox.com/s/wjsrxo46abwzvkx/bells-tibetan-daniel_simon.wav',
+        'Tolling Bell': 'https://dl.dropbox.com/s/jo4qol1fkl5j0x7/tolling-bell_daniel-simion.wav',
+        'Cartoon Birds': 'https://dl.dropbox.com/s/w3r33kl2c0ee3op/cartoon-birds-2_daniel-simion.wav',
+    },
     tests: [{
         type: 'AB',
         title: 'AB Test 1',
         description: 'Select the most preferred option',
-        options: [{
-            name: 'Tibetan Bells',
-            url: 'https://dl.dropbox.com/s/wjsrxo46abwzvkx/bells-tibetan-daniel_simon.wav',
-        }, {
-            name: 'Tolling Bell',
-            url: 'https://dl.dropbox.com/s/jo4qol1fkl5j0x7/tolling-bell_daniel-simion.wav',
-        }, {
-            name: 'Cartoon Birds',
-            url: 'https://dl.dropbox.com/s/w3r33kl2c0ee3op/cartoon-birds-2_daniel-simion.wav',
-        }],
+        options: ['Tibetan Bells', 'Tolling Bell', 'Cartoon Birds'],
         repeat: 2
     }, {
         type: 'AB',
         title: 'AB Test 2',
         description: 'Select the most preferred option',
-        options: [{
-            name: 'Tibetan Bells',
-            url: 'https://dl.dropbox.com/s/wjsrxo46abwzvkx/bells-tibetan-daniel_simon.wav',
-        }, {
-            name: 'Tolling Bell',
-            url: 'https://dl.dropbox.com/s/jo4qol1fkl5j0x7/tolling-bell_daniel-simion.wav',
-        }],
-        repeat: 1
+        options: ['Tibetan Bells', 'Tolling Bell'],
     }]
 };
 

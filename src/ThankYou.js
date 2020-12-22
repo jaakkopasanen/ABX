@@ -7,19 +7,18 @@ class ThankYou extends React.Component {
         const results = [];
         for (let i = 0; i < this.props.results.length; ++i) {
             const repeats = [];
-            for (let j = 0; j < this.props.results[i].length; ++j) {
+            for (let j = 0; j < this.props.results[i].choices.length; ++j) {
                 repeats.push(
                     <Box key={j}>
                         <Typography>
-                            {this.props.results[i][j].name}
+                            {this.props.results[i].choices[j].name}
                         </Typography>
                     </Box>
                 )
             }
-            const title = this.props.results[i].length ? this.props.results[i][0].test : '';
             results.push(
                 <Box key={i}>
-                    <Typography variant="h4">{title}</Typography>
+                    <Typography variant="h4">{this.props.results[i].test}</Typography>
                     {repeats}
                 </Box>
             )

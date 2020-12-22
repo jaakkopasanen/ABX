@@ -15,10 +15,17 @@ class TestRunner extends React.Component {
             this.config = Object.assign({}, props.config)
         }
         for (let i = 0; i < this.config.tests.length; ++i) {
-            if (this.config.tests[i].repeat === null) {
-                // Repeat defaults to 1
+            // Repeat defaults to 1
+            if (!this.config.tests[i].repeat) {
                 this.config.tests[i].repeat = 1;
             }
+            // Create option objects by querying the options with the given names
+            this.config.tests[i].options = this.config.tests[i].options.map((name) => {
+                return {
+                    name: name,
+                    url: this.config.options[name]
+                }
+            });
         }
 
         let volume = localStorage.getItem('volume');
@@ -32,7 +39,7 @@ class TestRunner extends React.Component {
             timer: null,
             testStep: 0,
             repeatStep: 0,
-            results: Array(this.config.tests.length).fill([]),
+            results: this.config.tests.map(test => ({test: test.title, choices: []})),
         }
 
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -40,10 +47,8 @@ class TestRunner extends React.Component {
     }
 
     handleSubmit(selectedOption) {
-        const augmentedOption = Object.assign({}, selectedOption);
-        augmentedOption.test = this.config.tests[this.state.testStep].title;
         let results = JSON.parse(JSON.stringify(this.state.results));
-        results[this.state.testStep].push(augmentedOption);
+        results[this.state.testStep].choices.push(selectedOption);
 
         if (this.state.repeatStep + 1 === this.config.tests[this.state.testStep].repeat) {
             // Last repeat, move to next test

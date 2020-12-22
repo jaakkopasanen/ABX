@@ -45,7 +45,7 @@ class ABTest extends React.Component {
             return;
         }
         this.setState({playing: false});
-        this.props.onSubmit(this.options[this.state.selected]);
+        this.props.onSubmit(this.state.options[this.state.selected]);
     }
 
     circleCoordindates(i, n, r) {
@@ -83,7 +83,7 @@ class ABTest extends React.Component {
                 }}>
                     <AudioButton
                         ix={i}
-                        url={this.state.options[i]}
+                        url={this.state.options[i].url}
                         volume={this.props.volume}
                         muted={this.state.muted[i]}
                         playing={this.state.playing}

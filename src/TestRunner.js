@@ -39,7 +39,12 @@ class TestRunner extends React.Component {
             timer: null,
             testStep: 0,
             repeatStep: 0,
-            results: this.config.tests.map(test => ({test: test.title, choices: []})),
+            results: this.config.tests.map(test => ({
+                test: test.title,
+                choices: [],
+                optionNames: test.options.map(option => option.name),
+                nOptions: test.options.length,
+            })),
         }
 
         this.handleSubmit = this.handleSubmit.bind(this);

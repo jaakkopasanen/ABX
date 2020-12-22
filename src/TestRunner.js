@@ -110,7 +110,7 @@ class TestRunner extends React.Component {
             </Box>
         )
         return (
-            <Container maxWidth="xs">
+            <Container maxWidth="sm">
                 {steps}
             </Container>
         )

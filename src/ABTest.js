@@ -113,7 +113,7 @@ class ABTest extends React.Component {
                             </Box>
                         </Box>
                     </Paper>
-                    <Box mt="16px">
+                    <Box mt="10px">
                         <Paper className="paperPadding">
                             <Box display="flex" flexDirection="row" p="10px">
                                 <VolumeUpIcon style={{fontSize: 32, padding: '5px 0'}} />

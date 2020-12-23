@@ -40,7 +40,8 @@ class TestRunner extends React.Component {
             testStep: 0,
             repeatStep: 0,
             results: this.config.tests.map(test => ({
-                test: test.title,
+                name: test.title,
+                testType: test.type,
                 choices: [],
                 optionNames: test.options.map(option => option.name),
                 nOptions: test.options.length,

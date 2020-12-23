@@ -19,7 +19,7 @@ const config = {
         'Cartoon Birds': 'https://dl.dropbox.com/s/w3r33kl2c0ee3op/cartoon-birds-2_daniel-simion.wav',
     },
     tests: [{
-        type: 'AB',  // ABX, Triangle, rating, ranking, MUSHRA
+        type: 'AB',  // ABX, Triangle, rating, ranking, MUSHRA, seek
         title: 'AB Test 1',
         description: 'Select the most preferred option',
         options: ['Tibetan Bells', 'Tolling Bell', 'Cartoon Birds'],

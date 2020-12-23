@@ -8,32 +8,10 @@ class TestRunner extends React.Component {
     constructor(props) {
         super(props);
 
-        if (typeof(props.config) === 'string') {
-            // Download JSON file
-            this.config = null;
-        } else {
-            this.config = Object.assign({}, props.config)
-        }
-        for (let i = 0; i < this.config.tests.length; ++i) {
-            // Repeat defaults to 1
-            if (!this.config.tests[i].repeat) {
-                this.config.tests[i].repeat = 1;
-            }
-            // Create option objects by querying the options with the given names
-            this.config.tests[i].options = this.config.tests[i].options.map((name) => {
-                return {
-                    name: name,
-                    url: this.config.options[name]
-                }
-            });
-        }
+        this.config = this.parseConfig(this.props.config);
 
         let volume = localStorage.getItem('volume');
-        if (volume === null) {
-            volume = 0.5;
-        } else {
-            volume = +volume;  // Cast to number
-        }
+        volume = volume === null ? 0.5 : +volume;
         this.state = {
             volume:  volume,
             timer: null,
@@ -50,6 +28,44 @@ class TestRunner extends React.Component {
 
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleVolumeChange = this.handleVolumeChange.bind(this);
+    }
+
+    parseConfig(inConfig) {
+        let config;
+        if (typeof(inConfig) === 'string') {
+            // Download JSON file
+            config = null;
+        } else {
+            config = Object.assign({}, inConfig)
+        }
+
+        // Convert links to downloadable links
+        for (const [key, val] of Object.entries(config.options)) {
+            config.options[key] = this.rawLink(val);
+        }
+
+        for (let i = 0; i < config.tests.length; ++i) {
+            // Repeat defaults to 1
+            if (!config.tests[i].repeat) {
+                config.tests[i].repeat = 1;
+            }
+            // Create option objects by querying the options with the given names
+            config.tests[i].options = config.tests[i].options.map((name) => {
+                return {
+                    name: name,
+                    url: config.options[name]
+                }
+            });
+        }
+        return config;
+    }
+
+    rawLink(urlStr) {
+        let url = new URL(urlStr);
+        if (url.host.includes('dropbox.com')) {
+            url.searchParams.set('dl', 1);
+        }
+        return url.toString();
     }
 
     handleSubmit(selectedOption) {

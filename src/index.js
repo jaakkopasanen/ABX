@@ -14,9 +14,9 @@ const config = {
         description: 'Your results have been submitted.'
     },
     options: {
-        'Tibetan Bells': 'https://dl.dropbox.com/s/wjsrxo46abwzvkx/bells-tibetan-daniel_simon.wav',
-        'Tolling Bell': 'https://dl.dropbox.com/s/jo4qol1fkl5j0x7/tolling-bell_daniel-simion.wav',
-        'Cartoon Birds': 'https://dl.dropbox.com/s/w3r33kl2c0ee3op/cartoon-birds-2_daniel-simion.wav',
+        'Tibetan Bells': 'https://www.dropbox.com/s/wjsrxo46abwzvkx/bells-tibetan-daniel_simon.wav?dl=0',
+        'Tolling Bell': 'https://www.dropbox.com/s/jo4qol1fkl5j0x7/tolling-bell_daniel-simion.wav?dl=0',
+        'Cartoon Birds': 'https://www.dropbox.com/s/w3r33kl2c0ee3op/cartoon-birds-2_daniel-simion.wav?dl=0',
     },
     tests: [{
         type: 'AB',  // ABX, Triangle, rating, ranking, MUSHRA, seek

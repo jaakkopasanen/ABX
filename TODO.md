@@ -1,0 +1,17 @@
+# TODO
+- Welcome screen
+- Form
+- Thank you screen styling
+- Values
+- Value based stats
+- Audio processing tools
+- Standard audio samples
+- Express server
+- Emailing with Nodemailer
+- GDPR
+- Production build
+- Docker image
+- Documentation
+- Hostname abx.app
+- Email DNS records: DKIM, ...
+- ABX

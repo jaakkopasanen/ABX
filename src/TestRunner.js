@@ -9,6 +9,7 @@ class TestRunner extends React.Component {
         super(props);
 
         this.config = null;
+        this.audio = {};
         let volume = localStorage.getItem('volume');
         volume = volume === null ? 0.5 : +volume;
         this.state = {
@@ -21,15 +22,15 @@ class TestRunner extends React.Component {
 
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleVolumeChange = this.handleVolumeChange.bind(this);
+        this.handleAudioButtonClick = this.handleAudioButtonClick.bind(this);
     }
 
     componentDidMount() {
-        this.parseConfig(this.props.config).then(config => {
-            console.log('componentDidMount');
-            console.log(config);
-            this.config = config;
+        this.parseConfig(this.props.config).then(configAndAudio => {
+            this.config = configAndAudio.config;
+            this.audio = configAndAudio.audio;
             this.setState({
-                results: config.tests.map(test => ({
+                results: this.config.tests.map(test => ({
                     name: test.title,
                     testType: test.type,
                     choices: [],
@@ -42,9 +43,14 @@ class TestRunner extends React.Component {
 
     async parseConfig(inConfig) {
         return this.fetchConfig(inConfig).then(config => {
+            const audio = {};
             // Convert links to downloadable links
             for (const [key, val] of Object.entries(config.options)) {
                 config.options[key] = this.rawLink(val);
+                audio[config.options[key]] = new Audio(config.options[key]);
+                audio[config.options[key]].muted = true;
+                audio[config.options[key]].loop = true;
+                audio[config.options[key]].volume = this.state.volume;
             }
             for (let i = 0; i < config.tests.length; ++i) {
                 // Repeat defaults to 1
@@ -55,11 +61,12 @@ class TestRunner extends React.Component {
                 config.tests[i].options = config.tests[i].options.map((name) => {
                     return {
                         name: name,
-                        url: config.options[name]
+                        url: config.options[name],
+                        audio: audio[config.options[name]],
                     }
                 });
             }
-            return config;
+            return {config: config, audio: audio};
         });
     }
 
@@ -103,6 +110,9 @@ class TestRunner extends React.Component {
     }
 
     handleVolumeChange(event, newValue) {
+        for (const [_, audio] of Object.entries(this.audio)) {
+            audio.volume = newValue;
+        }
         const timer = Date.now();
         this.setState({
             volume: newValue,
@@ -114,6 +124,29 @@ class TestRunner extends React.Component {
                 localStorage.setItem('volume', this.state.volume);
             }
         }, 1000);
+    }
+
+    handleAudioButtonClick(selectedUrl) {
+        // TODO: Add 5-100 ms of silence to mitigate the 0-2 ms difference in start times?
+        if (this.audio[selectedUrl].paused) {
+            // Nothing playing right now
+            for (const [url, audio] of Object.entries(this.audio)) {
+                audio.muted = !(url === selectedUrl);
+                audio.play();
+            }
+        } else if (this.audio[selectedUrl].muted) {
+            // Clicked different button than what is currently playing
+            for (const [url, audio] of Object.entries(this.audio)) {
+                audio.muted = !(url === selectedUrl);
+            }
+        } else {
+            // Clicked the currently playing button, stop all
+            for (const [_, audio] of Object.entries(this.audio)) {
+                audio.muted = true;
+                audio.pause();
+                audio.currentTime = 0;
+            }
+        }
     }
 
     render() {
@@ -135,6 +168,7 @@ class TestRunner extends React.Component {
                             onSubmit={this.handleSubmit}
                             volume={this.state.volume}
                             onVolumeChange={this.handleVolumeChange}
+                            onClick={this.handleAudioButtonClick}
                         />
                     </Box>
                 )

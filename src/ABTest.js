@@ -1,6 +1,6 @@
 import React from "react";
 import Box from "@material-ui/core/Box";
-import AudioButton from "./AudioButton";
+import CircleButton from "./AudioButton";
 import Typography from "@material-ui/core/Typography";
 import VolumeUpIcon from "@material-ui/icons/VolumeUp";
 import Slider from "@material-ui/core/Slider";
@@ -16,34 +16,18 @@ class ABTest extends React.Component {
         this.state = {
             options: ixs.map((ix) => this.props.options[ix]),  // Shuffle options
             selected: null,
-            muted: Array(this.props.options.length).fill(true),
-            playing: false,
         };
         this.handleClick = this.handleClick.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     handleClick(i) {
-        if (this.state.playing && i === this.state.selected) {
-            // Clicked the already selected button, stop playing
-            this.setState({
-                selected: null,
-                muted: Array(this.state.options.length).fill(true),
-                playing: false,
-            });
-            return;
-        }
-        const muted = Array(this.state.options.length).fill(true);
-        muted[i] = false;
-        this.setState({
-            selected: i,
-            muted: muted,
-            playing: true,
-        });
+        this.setState({selected: i === this.state.selected ? null : i});
+        this.props.onClick(this.props.options[i].url);
     }
 
     handleSubmit() {
-        if (!this.state.playing) {
+        if (this.state.selected === null) {
             return;
         }
         this.setState({playing: false});
@@ -83,14 +67,15 @@ class ABTest extends React.Component {
                     top: coordinates.top,
                     left: coordinates.left,
                 }}>
-                    <AudioButton
-                        ix={i}
-                        url={this.state.options[i].url}
-                        volume={this.props.volume}
-                        muted={this.state.muted[i]}
-                        playing={this.state.playing}
+                    <CircleButton
+                        audio={this.state.options[i].audio}
                         onClick={() => this.handleClick(i)}
-                    />
+                        variant="contained"
+                        color={this.state.selected === i ? 'primary' : 'secondary'}
+                        size="large"
+                    >
+                        {getChar(i)}
+                    </CircleButton>
                 </div>
             )
         }
@@ -98,7 +83,7 @@ class ABTest extends React.Component {
                 <Box display="flex" flexDirection="column" className="width100p" mt="16px">
                     <Paper>
                         <Box p="20px">
-                            <Box mt="12px" mb="32px">
+                            <Box mt="12px" mb="40px">
                                 <Typography variant="h2" className="centerText">{this.props.title || ''}</Typography>
                                 <Typography className="centerText">{this.props.description || ''}</Typography>
                             </Box>

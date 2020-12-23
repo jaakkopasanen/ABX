@@ -26,21 +26,22 @@ class AudioButton extends React.Component {
     }
 
     render() {
-        let color;
+        let color = 'secondary';
         if (this.audio) {
             this.audio.volume = this.props.volume;
             this.audio.muted = this.props.muted;
-            if (this.props.playing && !this.audio.playing) {
+           if (!this.audio.muted) {
+               color = 'primary';
+           }
+            if (this.props.playing && this.audio.paused) {
+                // Should be playing but is not, start playing
+                console.log('Started playing', this.props.ix);
                 this.audio.play();
-                color = this.audio.muted ? 'secondary' : 'primary';
             } else if (!this.props.playing) {
+                // Should not be playing
                 this.audio.pause();
                 this.audio.currentTime = 0;
-                color = 'secondary';
             }
-
-        } else {
-            color = 'secondary'
         }
         return (
             <CircleButton
@@ -56,4 +57,4 @@ class AudioButton extends React.Component {
     }
 }
 
-export default AudioButton;
+export default CircleButton;

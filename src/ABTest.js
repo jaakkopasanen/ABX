@@ -115,7 +115,7 @@ class ABTest extends React.Component {
                                 >
                                     {audioButtons}
                                 </Box>
-                                <Box display="flex" flexDirection="row" justifyContent="end" mt="16px">
+                                <Box display="flex" flexDirection="row" justifyContent="flex-end" mt="16px">
                                     <Button
                                         variant="outlined"
                                         color="primary"
@@ -131,7 +131,7 @@ class ABTest extends React.Component {
                     <Box mt="16px">
                         <Paper className="paperPadding">
                             <Box display="flex" flexDirection="row" p="10px">
-                                <VolumeUpIcon style={{fontSize: 42}} />
+                                <VolumeUpIcon style={{fontSize: 32, padding: '5px 0'}} />
                                 <Slider
                                     color="secondary"
                                     value={this.props.volume}

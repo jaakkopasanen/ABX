@@ -8,8 +8,7 @@ class TestRunner extends React.Component {
     constructor(props) {
         super(props);
 
-        this.config = this.parseConfig(this.props.config);
-
+        this.config = null;
         let volume = localStorage.getItem('volume');
         volume = volume === null ? 0.5 : +volume;
         this.state = {
@@ -17,53 +16,69 @@ class TestRunner extends React.Component {
             timer: null,
             testStep: 0,
             repeatStep: 0,
-            results: this.config.tests.map(test => ({
-                name: test.title,
-                testType: test.type,
-                choices: [],
-                optionNames: test.options.map(option => option.name),
-                nOptions: test.options.length,
-            })),
-        }
+            results: [],
+        };
 
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleVolumeChange = this.handleVolumeChange.bind(this);
     }
 
-    parseConfig(inConfig) {
-        let config;
-        if (typeof(inConfig) === 'string') {
-            // Download JSON file
-            config = null;
-        } else {
-            config = Object.assign({}, inConfig)
-        }
-
-        // Convert links to downloadable links
-        for (const [key, val] of Object.entries(config.options)) {
-            config.options[key] = this.rawLink(val);
-        }
-
-        for (let i = 0; i < config.tests.length; ++i) {
-            // Repeat defaults to 1
-            if (!config.tests[i].repeat) {
-                config.tests[i].repeat = 1;
-            }
-            // Create option objects by querying the options with the given names
-            config.tests[i].options = config.tests[i].options.map((name) => {
-                return {
-                    name: name,
-                    url: config.options[name]
-                }
+    componentDidMount() {
+        this.parseConfig(this.props.config).then(config => {
+            console.log('componentDidMount');
+            console.log(config);
+            this.config = config;
+            this.setState({
+                results: config.tests.map(test => ({
+                    name: test.title,
+                    testType: test.type,
+                    choices: [],
+                    optionNames: test.options.map(option => option.name),
+                    nOptions: test.options.length,
+                }))
             });
+        });
+    }
+
+    async parseConfig(inConfig) {
+        return this.fetchConfig(inConfig).then(config => {
+            // Convert links to downloadable links
+            for (const [key, val] of Object.entries(config.options)) {
+                config.options[key] = this.rawLink(val);
+            }
+            for (let i = 0; i < config.tests.length; ++i) {
+                // Repeat defaults to 1
+                if (!config.tests[i].repeat) {
+                    config.tests[i].repeat = 1;
+                }
+                // Create option objects by querying the options with the given names
+                config.tests[i].options = config.tests[i].options.map((name) => {
+                    return {
+                        name: name,
+                        url: config.options[name]
+                    }
+                });
+            }
+            return config;
+        });
+    }
+
+    async fetchConfig(config) {
+        if (typeof(config) === 'string') {
+            // Download JSON file
+            const url = this.rawLink(config);
+            return await fetch(url).then(res => res.json());
+        } else {
+            return Object.assign({}, config);
         }
-        return config;
     }
 
     rawLink(urlStr) {
         let url = new URL(urlStr);
         if (url.host.includes('dropbox.com')) {
-            url.searchParams.set('dl', 1);
+            url.searchParams.delete('dl');
+            url.host = url.host.replace('www.', 'dl.')
+                .replace('dropbox.com', 'dropboxusercontent.com');
         }
         return url.toString();
     }
@@ -102,6 +117,9 @@ class TestRunner extends React.Component {
     }
 
     render() {
+        if (!this.config) {
+            return "";
+        }
         const steps = [];
         for (let i = 0; i < this.config.tests.length; ++i) {
             for (let j = 0; j < this.config.tests[i].repeat; ++j) {

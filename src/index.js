@@ -4,6 +4,7 @@ import TestRunner from "./TestRunner";
 import './index.css';
 
 // https://www.dropboxforum.com/t5/Dropbox-files-folders/public-links-to-raw-files/td-p/110391
+/*
 const config = {
     welcome: {
         title: 'EQ Reqularization AB Test',
@@ -23,7 +24,7 @@ const config = {
         title: 'AB Test 1',
         description: 'Select the most preferred option',
         options: ['Tibetan Bells', 'Tolling Bell', 'Cartoon Birds'],
-        repeat: 10
+        repeat: 2
     }, {
         type: 'AB',
         title: 'AB Test 2',
@@ -31,6 +32,8 @@ const config = {
         options: ['Tibetan Bells', 'Tolling Bell'],
     }]
 };
+*/
+const config = 'https://www.dropbox.com/s/t5yrp29zasg0ubw/test.json?dl=0';
 
 
 

@@ -33,11 +33,9 @@ const config = {
     }]
 };
 */
-const config = 'https://www.dropbox.com/s/t5yrp29zasg0ubw/test.json?dl=0';
-
-
+const url = new URL(window.location.toString()).searchParams.get('test');
 
 ReactDOM.render(
-    <TestRunner className="test" config={config} />,
+    <TestRunner className="test" config={url} />,
     document.getElementById('root')
 );

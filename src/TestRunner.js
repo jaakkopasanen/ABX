@@ -91,6 +91,12 @@ class TestRunner extends React.Component {
     }
 
     handleSubmit(selectedOption) {
+        for (const [_, audio] of Object.entries(this.audio)) {
+            audio.pause();
+            audio.currentTime = 0;
+            audio.muted = true;
+        }
+
         let results = JSON.parse(JSON.stringify(this.state.results));
         results[this.state.testStep].choices.push(selectedOption);
 

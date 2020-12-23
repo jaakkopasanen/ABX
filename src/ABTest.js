@@ -1,6 +1,6 @@
 import React from "react";
 import Box from "@material-ui/core/Box";
-import CircleButton from "./AudioButton";
+import CircleButton from "./CircleButton";
 import Typography from "@material-ui/core/Typography";
 import VolumeUpIcon from "@material-ui/icons/VolumeUp";
 import Slider from "@material-ui/core/Slider";
@@ -23,7 +23,7 @@ class ABTest extends React.Component {
 
     handleClick(i) {
         this.setState({selected: i === this.state.selected ? null : i});
-        this.props.onClick(this.props.options[i].url);
+        this.props.onClick(this.state.options[i].url);
     }
 
     handleSubmit() {
@@ -68,7 +68,6 @@ class ABTest extends React.Component {
                     left: coordinates.left,
                 }}>
                     <CircleButton
-                        audio={this.state.options[i].audio}
                         onClick={() => this.handleClick(i)}
                         variant="contained"
                         color={this.state.selected === i ? 'primary' : 'secondary'}

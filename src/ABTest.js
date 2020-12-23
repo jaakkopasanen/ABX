@@ -105,7 +105,7 @@ class ABTest extends React.Component {
                                         variant="outlined"
                                         color="primary"
                                         onClick={this.handleSubmit}
-                                        disabled={!this.state.playing}
+                                        disabled={this.state.selected === null}
                                     >
                                         {`Select ${getChar(this.state.selected)}`}
                                     </Button>

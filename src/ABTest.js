@@ -6,7 +6,8 @@ import VolumeUpIcon from "@material-ui/icons/VolumeUp";
 import Slider from "@material-ui/core/Slider";
 import Button from "@material-ui/core/Button";
 import shuffle from "./random";
-import {Divider, Paper} from "@material-ui/core";
+import { getChar } from "./utils";
+import { Divider, Paper } from "@material-ui/core";
 
 class ABTest extends React.Component {
     constructor(props) {
@@ -121,7 +122,7 @@ class ABTest extends React.Component {
                                         onClick={this.handleSubmit}
                                         disabled={!this.state.playing}
                                     >
-                                        Next
+                                        {`Select ${getChar(this.state.selected)}`}
                                     </Button>
                                 </Box>
                             </Box>

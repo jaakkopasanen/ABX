@@ -1,6 +1,7 @@
 import React from "react";
 import Button from "@material-ui/core/Button";
 import {withStyles} from "@material-ui/core";
+import { getChar } from "./utils";
 
 const size = 64;
 
@@ -22,11 +23,6 @@ class AudioButton extends React.Component {
         this.audio = new Audio(this.props.url);
         this.audio.muted = true;
         this.audio.loop = true;
-    }
-
-    getChar() {
-        const A = 'A'.charCodeAt(0);
-        return String.fromCharCode(A + this.props.ix)
     }
 
     render() {
@@ -54,7 +50,7 @@ class AudioButton extends React.Component {
                 onClick={this.props.onClick}
                 m={1}
             >
-                {this.getChar()}
+                {getChar(this.props.ix)}
             </CircleButton>
         );
     }

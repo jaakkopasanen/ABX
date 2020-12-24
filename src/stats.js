@@ -51,13 +51,46 @@ function Gammacdf(x, a) {
     return GI
 }
 
-function chdtr(x, df) {
+function chiSquaredPValue(x, df) {
     if (df <= 0) {
         alert("Degrees of freedom must be positive")
         return;
     }
     const Chisqcdf = Gammacdf(x / 2, df / 2)
-    return Math.round(Chisqcdf * 100000) / 100000;
+    return 1 - Math.round(Chisqcdf * 100000) / 100000;
 }
 
-export default chdtr;
+function factorial(num) {
+    let rval=1;
+    for (let i = 2; i <= num; i++) {
+        rval = rval * i;
+    }
+    return rval;
+}
+
+function multinomialPMF(xs, ps) {
+    if (typeof ps === 'number') {
+        // Single number given, create array full of it
+        ps = Array(xs.length).fill(ps);
+    }
+    if (!Array.isArray(ps)) {
+        // Something else than array or a number given
+        throw new Error('ps must be an array of a number');
+    }
+    if (ps.reduce((a, b) => a + b, 0) !== 1.0) {
+        // Probabilities don't sum up to 1.0
+        throw new Error('ps must sum to 1.0');
+    }
+    const n = xs.reduce((a, b) => a + b, 0);
+    let denom = 1.0;
+    for (const x of xs) {
+        denom = denom * factorial(x);
+    }
+    let prob = 1.0;
+    for (let i = 0; i < ps.length; ++i) {
+        prob = prob * Math.pow(ps[i], xs[i]);
+    }
+    return factorial(n) / denom * prob;
+}
+
+export { chiSquaredPValue, multinomialPMF };

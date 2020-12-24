@@ -2,8 +2,7 @@
 - Welcome screen
 - Form
 - Thank you screen styling
-- Values
-- Value based stats
+- Multi submission stats
 - Audio processing tools
 - Standard audio samples
 - Express server

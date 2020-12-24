@@ -4,7 +4,6 @@ import TestRunner from "./TestRunner";
 import './index.css';
 
 // https://www.dropboxforum.com/t5/Dropbox-files-folders/public-links-to-raw-files/td-p/110391
-/*
 const config = {
     welcome: {
         title: 'EQ Reqularization AB Test',
@@ -24,18 +23,18 @@ const config = {
         title: 'AB Test 1',
         description: 'Select the most preferred option',
         options: ['Tibetan Bells', 'Tolling Bell', 'Cartoon Birds'],
-        repeat: 2
+        repeat: 3,
     }, {
         type: 'AB',
         title: 'AB Test 2',
         description: 'Select the most preferred option',
         options: ['Tibetan Bells', 'Tolling Bell'],
+        repeat: 3,
     }]
 };
-*/
-const url = new URL(window.location.toString()).searchParams.get('test');
+//const config = new URL(window.location.toString()).searchParams.get('test');
 
 ReactDOM.render(
-    <TestRunner className="test" config={url} />,
+    <TestRunner className="test" config={config} />,
     document.getElementById('root')
 );

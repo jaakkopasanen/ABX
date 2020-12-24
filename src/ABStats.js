@@ -9,7 +9,7 @@ import TableBody from "@material-ui/core/TableBody";
 import Paper from "@material-ui/core/Paper";
 import TableCell from "@material-ui/core/TableCell";
 import {withStyles} from "@material-ui/core";
-import chdtr from "./stats";
+import { multinomialPMF } from "./stats";
 
 const StyledTableCell = withStyles((theme) => ({
     root: {
@@ -24,28 +24,27 @@ class ABStats extends React.Component {
             options: [],
             nOptions: this.props.optionNames.length,
             optionNames: this.props.optionNames.slice(),
+            totalCount: this.props.choices.length,
+            x2Sum: 0,
         };
-        let totalCount = 0;
-        let x2Sum = 0;
+
+        // Iterate through user's choices
         for (let j = 0; j < this.props.choices.length; ++j) {
-            let exists = false;
-            for (let k = 0; k < stats.options.length; ++k) {
-                if (stats.options[k].name === this.props.choices[j].name) {
-                    ++stats.options[k].count;
-                    exists = true;
-                    break;
-                }
-            }
-            if (!exists) {
+            // Find the option with the name of the current choice
+            const option = stats.options.filter(option => option.name === this.props.choices[j].name);
+            if (option.length) {
+                // Found, increment count
+                ++option[0].count;
+            } else {
+                // Doesn't exist, create new
                 stats.options.push({
                     name: this.props.choices[j].name,
                     count: 1,
                 });
             }
-            ++totalCount;
         }
-        stats.totalCount = totalCount;
 
+        // Add options which were never selected with zero counts
         for (let name of stats.optionNames) {
             if (!stats.options.map(option => option.name).includes(name)) {
                 stats.options.push({
@@ -54,22 +53,23 @@ class ABStats extends React.Component {
                 });
             }
         }
-
-        for (let j = 0; j < stats.options.length; ++j) {
-            const count = stats.options[j].count;
-            const expectation = totalCount / stats.nOptions;  // Equal number of counts expected
-            stats.options[j].percentage = stats.options[j].count / totalCount * 100;
-            stats.options[j].x2 = (count - expectation)**2 / expectation;
-            x2Sum += stats.options[j].x2;
+        for (let option of stats.options) {
+            option.percentage = option.count / stats.totalCount * 100;
         }
-        stats.x2Sum = x2Sum;
+
+        // Sort by counts
         stats.options.sort((a, b) => b.count - a.count);
-        stats.pValue = 1 - chdtr(x2Sum, stats.nOptions - 1);
+
+        // Calculate p-value
+        stats.pValue = multinomialPMF(stats.options.map(option => option.count), 1 / stats.nOptions);
 
         return stats;
     }
 
     render() {
+        if (!this.props.choices.length) {
+            return '';
+        }
         const stats = this.computeStats();
         const rows = [];
         for (let j = 0; j < stats.options.length; ++j) {
@@ -80,7 +80,6 @@ class ABStats extends React.Component {
                     <TableCell>
                         {stats.options[j].count} ({stats.options[j].percentage.toFixed(1)}%)
                     </TableCell>
-                    <TableCell>{stats.options[j].x2.toFixed(1)}</TableCell>
                 </TableRow>
             )
         }
@@ -89,7 +88,6 @@ class ABStats extends React.Component {
             <TableRow key={-1}>
                 <StyledTableCell>Sum</StyledTableCell>
                 <StyledTableCell>{stats.totalCount} (100.0%)</StyledTableCell>
-                <StyledTableCell>{stats.x2Sum.toFixed(1)}</StyledTableCell>
             </TableRow>
         )
         return (
@@ -105,7 +103,6 @@ class ABStats extends React.Component {
                                     <TableRow>
                                         <StyledTableCell>Sample</StyledTableCell>
                                         <StyledTableCell>Selected</StyledTableCell>
-                                        <StyledTableCell>X<sup>2</sup></StyledTableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody className="tableWithSumRow">

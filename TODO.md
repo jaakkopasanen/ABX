@@ -2,10 +2,9 @@
 - Multi submission stats
 - Audio processing tools
 - Standard audio samples
-  
-- Express server
+
+- SSL cert
 - Emailing with Nodemailer / Dropbox API
-- Production build
 - Docker image
 - Hostname abx.app
 - Email DNS records: DKIM, ...

@@ -28,8 +28,7 @@ const config = {
         }]
     },
     results: {
-        title: 'Thank you for participating!',
-        description: 'Your results have been submitted.'
+        description: '#### Thank you for participating!\n\nYour results have been submitted.'
     },
     options: {
         'Tibetan Bells': 'https://www.dropbox.com/s/wjsrxo46abwzvkx/bells-tibetan-daniel_simon.wav?dl=0',

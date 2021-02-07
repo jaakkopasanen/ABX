@@ -1,8 +1,4 @@
 # TODO
-- Welcome screen
-- Form
-- Thank you screen styling
-  
 - Multi submission stats
 - Audio processing tools
 - Standard audio samples

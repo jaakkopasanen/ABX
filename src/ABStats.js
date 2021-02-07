@@ -90,35 +90,31 @@ class ABStats extends React.Component {
                 <StyledTableCell>{stats.totalCount} (100.0%)</StyledTableCell>
             </TableRow>
         )
+        rows.push(
+            <TableRow key={-2}>
+                <StyledTableCell>p-value</StyledTableCell>
+                <StyledTableCell>{stats.pValue.toPrecision(3)}</StyledTableCell>
+            </TableRow>
+        )
         return (
-            <Paper>
-                <Box p="16px">
-                    <Box mb="16px">
-                        <Typography variant="h5">{stats.name}</Typography>
-                    </Box>
-                    <Box mb="32px">
-                        <TableContainer>
-                            <Table>
-                                <TableHead>
-                                    <TableRow>
-                                        <StyledTableCell>Sample</StyledTableCell>
-                                        <StyledTableCell>Selected</StyledTableCell>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody className="tableWithSumRow">
-                                    {rows}
-                                </TableBody>
-                            </Table>
-                        </TableContainer>
-                    </Box>
-
-                    <Box>
-                        <Typography>
-                            <b>p-value</b> {stats.pValue.toPrecision(3)}
-                        </Typography>
-                    </Box>
+            <Box>
+                <Typography variant="h6">{stats.name}</Typography>
+                <Box mb="24px">
+                    <TableContainer>
+                        <Table>
+                            <TableHead>
+                                <TableRow>
+                                    <StyledTableCell>Sample</StyledTableCell>
+                                    <StyledTableCell>Selected</StyledTableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody className="tableWithSumRow">
+                                {rows}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
                 </Box>
-            </Paper>
+            </Box>
         )
     }
 }

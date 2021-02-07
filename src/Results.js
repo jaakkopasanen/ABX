@@ -1,7 +1,12 @@
 import React from "react";
 import Box from "@material-ui/core/Box";
 import Typography from "@material-ui/core/Typography";
+import Paper from "@material-ui/core/Paper";
 import ABStats from './ABStats';
+import {HorizontalSplit} from "@material-ui/icons";
+import {Divider} from "@material-ui/core";
+import reactMuiMarkdownRenderers from "./reactMuiMarkdownRenderers";
+import ReactMarkdown from "react-markdown";
 
 class Results extends React.Component {
     render() {
@@ -24,16 +29,17 @@ class Results extends React.Component {
             )
         }
         return (
-            <Box display="flex" flexDirection="column">
-                <Box mb="16px">
-                    <Typography variant="h3">{this.props.title || 'Thank you!'}</Typography>
-                </Box>
-                <Typography>{this.props.description}</Typography>
-                <Box mt="32px" mb="16px">
-                    <Typography variant="h4">Your answers</Typography>
-                </Box>
-                {allStats}
+            <Box mt="16px" className="width100p">
+                <Paper>
+                    <Box display="flex" flexDirection="column" p="16px">
+                        <Box key={-1} mb="16px">
+                            <ReactMarkdown renderers={reactMuiMarkdownRenderers} children={this.props.description} />
+                        </Box>
+                        {allStats}
+                    </Box>
+                </Paper>
             </Box>
+
         )
     }
 }

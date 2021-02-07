@@ -1,5 +1,6 @@
 const path = require('path');
 const express = require('express');
+const http = require('http');
 const https = require('https');
 
 const app = express();
@@ -15,12 +16,19 @@ app.post('/submit', (req, res) => {
 
 if (process.env.NODE_ENV === 'production') {
     app.use(express.static('build'));
-    https.createServer({
-        key: PRIVATE_KEY_PATH,
-        cert: CERT_PATH
-    }, app).listen(PORT, () => {
-        console.log(`Production server listening ${PORT}`)
-    })
+    if (PRIVATE_KEY_PATH && CERT_PATH) {
+        https.createServer({
+            key: PRIVATE_KEY_PATH,
+            cert: CERT_PATH
+        }, app).listen(PORT, () => {
+            console.log(`Production server listening ${PORT} with HTTPS`);
+        });
+    } else {
+        http.createServer({}, app).listen(PORT, () => {
+            console.log(`Production server listening ${PORT} with HTTP`);
+        });
+    }
+
 
 } else {
     app.use(express.static('public'));

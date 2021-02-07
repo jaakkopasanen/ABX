@@ -6,7 +6,6 @@ import Table from "@material-ui/core/Table";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import TableBody from "@material-ui/core/TableBody";
-import Paper from "@material-ui/core/Paper";
 import TableCell from "@material-ui/core/TableCell";
 import {withStyles} from "@material-ui/core";
 import { multinomialPMF } from "./stats";
@@ -101,7 +100,7 @@ class ABStats extends React.Component {
                 <Typography variant="h6">{stats.name}</Typography>
                 <Box mb="24px">
                     <TableContainer>
-                        <Table>
+                        <Table size="small">
                             <TableHead>
                                 <TableRow>
                                     <StyledTableCell>Sample</StyledTableCell>

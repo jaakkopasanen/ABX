@@ -8,6 +8,8 @@
     "@testing-library/jest-dom": "^5.11.6",
     "@testing-library/react": "^11.2.2",
     "@testing-library/user-event": "^12.5.0",
+    "express": "^4.17.1",
+    "node-dev": "^6.2.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-markdown": "^5.0.3",
@@ -15,6 +17,8 @@
     "web-vitals": "^0.2.4"
   },
   "scripts": {
+    "run": "node app.js",
+    "dev": "node-dev app.js",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
@@ -37,5 +41,6 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "proxy": "http://localhost:3001"
 }

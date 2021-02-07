@@ -47,7 +47,8 @@ const config = {
         description: 'Select the most preferred option',
         options: ['Tibetan Bells', 'Tolling Bell'],
         repeat: 3,
-    }]
+    }],
+    email: 'abx@example.com'
 };
 //const config = new URL(window.location.toString()).searchParams.get('test');
 

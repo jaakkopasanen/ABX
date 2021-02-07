@@ -13,8 +13,8 @@ class TestRunner extends React.Component {
         this.audio = {};
         let volume = localStorage.getItem('volume');
         volume = volume === null ? 0.5 : +volume;
-        this.form = {};
         this.state = {
+            form: {},
             volume:  volume,
             timer: null,
             testStep: -1,
@@ -23,7 +23,7 @@ class TestRunner extends React.Component {
         };
 
         this.start = this.start.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
+        this.next = this.next.bind(this);
         this.handleVolumeChange = this.handleVolumeChange.bind(this);
         this.handleAudioButtonClick = this.handleAudioButtonClick.bind(this);
     }
@@ -95,12 +95,12 @@ class TestRunner extends React.Component {
 
     start(form) {
         this.setState({
-            testStep: 0
+            testStep: 0,
+            form: Object.assign({}, form)
         });
-        this.form = Object.assign({}, form);
     }
 
-    handleSubmit(selectedOption) {
+    next(selectedOption) {
         for (const audio of Object.values(this.audio)) {
             audio.pause();
             audio.currentTime = 0;
@@ -111,13 +111,39 @@ class TestRunner extends React.Component {
         results[this.state.testStep].choices.push(selectedOption);
 
         if (this.state.repeatStep + 1 === this.config.tests[this.state.testStep].repeat) {
-            // Last repeat, move to next test
+            // Last repeat
+            if (this.state.testStep + 1 === this.config.tests.length && this.config.email) {
+                // Last test, submit results if email is given in the config
+                fetch('/submit', {
+                    method: 'POST',
+                    cache: 'no-cache',
+                    credentials: 'omit',
+                    headers: {'Content-Type': 'application/json'},
+                    redirect: 'follow',
+                    referrerPolicy: 'no-referrer',
+                    body: JSON.stringify({
+                        form: this.state.form,
+                        testResults: results.map(result => {
+                            return {
+                                name: result.name,
+                                testType: result.testType,
+                                choices: result.choices.map(choice => choice.name),
+                                optionNames: result.optionNames,
+                            };
+                        }),
+                        email: this.config.email,
+                    })
+                });
+            }
+            // Move to the next test
             this.setState({
                 testStep: this.state.testStep + 1,
                 repeatStep: 0,
                 results: results,
             })
+
         } else {
+            // Repeat test
             this.setState({
                 repeatStep: this.state.repeatStep + 1,
                 results: results,
@@ -196,7 +222,7 @@ class TestRunner extends React.Component {
                             title={this.config.tests[i].title}
                             description={this.config.tests[i].description}
                             options={this.config.tests[i].options}
-                            onSubmit={this.handleSubmit}
+                            onSubmit={this.next}
                             volume={this.state.volume}
                             onVolumeChange={this.handleVolumeChange}
                             onClick={this.handleAudioButtonClick}

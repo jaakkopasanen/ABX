@@ -19,7 +19,7 @@ class Welcome extends React.Component {
     }
 
     handleClick() {
-        this.props.onClick();
+        this.props.onClick(Object.assign({}, this.state));
     }
 
     renderForm() {
@@ -61,7 +61,6 @@ class Welcome extends React.Component {
                         className="width100p"
                         value={this.state[this.props.form[i].name]}
                         onChange={(event) => {
-                            console.log(`${this.props.form[i].name}: ${event.target.value}`);
                             const newState = {};
                             newState[this.props.form[i].name] = event.target.value;
                             this.setState(newState);

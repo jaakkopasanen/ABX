@@ -1,10 +1,7 @@
 import React from "react";
 import Box from "@material-ui/core/Box";
-import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
 import ABStats from './ABStats';
-import {HorizontalSplit} from "@material-ui/icons";
-import {Divider} from "@material-ui/core";
 import reactMuiMarkdownRenderers from "./reactMuiMarkdownRenderers";
 import ReactMarkdown from "react-markdown";
 

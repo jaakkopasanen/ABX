@@ -6,10 +6,28 @@ import './index.css';
 // https://www.dropboxforum.com/t5/Dropbox-files-folders/public-links-to-raw-files/td-p/110391
 const config = {
     welcome: {
-        title: 'EQ Reqularization AB Test',
-        description: 'Series of ABC listening tests for equalizer regularization',
+        description: '#### EQ Regularization AB Test\n\n' +
+            'You will go through a series of ABC listening tests. There\'s 3 tests in total and each has ' +
+            '20 iterations. In each test you must choose the option which sounds best to you. The option you have ' +
+            'selected when moving forward will be your answer. At the end you will see your results.\n\n' +
+            'Your results will be submitted to [abxtest.app](https://abxtest.app) website along with the details ' +
+            'you\'ve given in the form below. The information in the form will be used for acquiring statistics ' +
+            'about the different demographics and are completely anonymous.',
+        form: [{
+            name: 'Age',
+            type: 'number'
+        }, {
+            name: 'Gender',
+            type: 'select',
+            options: ['Female', 'Male', 'Other']
+        }, {
+            name: 'Experience',
+            type: 'select',
+            options: ['Trained listener', 'Audio engineer', 'Audio retailer', 'Audio reviewer',
+                'Self-proclaimed audiophile', 'Musician', 'None of the above']
+        }]
     },
-    thankYou: {
+    results: {
         title: 'Thank you for participating!',
         description: 'Your results have been submitted.'
     },

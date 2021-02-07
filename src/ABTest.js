@@ -80,38 +80,40 @@ class ABTest extends React.Component {
         }
         return (
                 <Box display="flex" flexDirection="column" className="width100p" mt="16px">
-                    <Paper>
-                        <Box p="20px">
-                            <Box mt="12px" mb="40px">
-                                <Typography variant="h2" className="centerText">{this.props.title || ''}</Typography>
-                                <Typography className="centerText">{this.props.description || ''}</Typography>
-                            </Box>
-                            <Box>
-                                <Divider />
-                            </Box>
-                            <Box>
-                                <Box
-                                    display="flex"
-                                    flexDirection="row"
-                                    justifyContent="center"
-                                    className="audioButtonGroup"
+                    <Box>
+                        <Paper>
+                            <Box p="20px">
+                                <Box mt="12px" mb="40px">
+                                    <Typography variant="h2" className="centerText">{this.props.title || ''}</Typography>
+                                    <Typography className="centerText">{this.props.description || ''}</Typography>
+                                </Box>
+                                <Box>
+                                    <Divider />
+                                </Box>
+                                <Box>
+                                    <Box
+                                        display="flex"
+                                        flexDirection="row"
+                                        justifyContent="center"
+                                        className="audioButtonGroup"
 
-                                >
-                                    {audioButtons}
-                                </Box>
-                                <Box display="flex" flexDirection="row" justifyContent="flex-end" mt="16px">
-                                    <Button
-                                        variant="outlined"
-                                        color="primary"
-                                        onClick={this.handleSubmit}
-                                        disabled={this.state.selected === null}
                                     >
-                                        {`Select ${getChar(this.state.selected)}`}
-                                    </Button>
+                                        {audioButtons}
+                                    </Box>
+                                    <Box display="flex" flexDirection="row" justifyContent="flex-end" mt="16px">
+                                        <Button
+                                            variant="outlined"
+                                            color="primary"
+                                            onClick={this.handleSubmit}
+                                            disabled={this.state.selected === null}
+                                        >
+                                            {`Select ${getChar(this.state.selected)}`}
+                                        </Button>
+                                    </Box>
                                 </Box>
                             </Box>
-                        </Box>
-                    </Paper>
+                        </Paper>
+                    </Box>
                     <Box mt="10px">
                         <Paper className="paperPadding">
                             <Box display="flex" flexDirection="row" p="10px">

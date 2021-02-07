@@ -1,7 +1,8 @@
 import React from "react";
 import Box from "@material-ui/core/Box";
+import Welcome from "./Welcome";
 import ABTest from "./ABTest";
-import ThankYou from "./ThankYou";
+import Results from "./Results";
 import Container from "@material-ui/core/Container";
 
 class TestRunner extends React.Component {
@@ -12,14 +13,16 @@ class TestRunner extends React.Component {
         this.audio = {};
         let volume = localStorage.getItem('volume');
         volume = volume === null ? 0.5 : +volume;
+        this.form = {};
         this.state = {
             volume:  volume,
             timer: null,
-            testStep: 0,
+            testStep: -1,
             repeatStep: 0,
             results: [],
         };
 
+        this.start = this.start.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleVolumeChange = this.handleVolumeChange.bind(this);
         this.handleAudioButtonClick = this.handleAudioButtonClick.bind(this);
@@ -90,8 +93,15 @@ class TestRunner extends React.Component {
         return url.toString();
     }
 
+    start(form) {
+        this.setState({
+            testStep: 0
+        });
+        this.form = Object.assign({}, form);
+    }
+
     handleSubmit(selectedOption) {
-        for (const [_, audio] of Object.entries(this.audio)) {
+        for (const audio of Object.values(this.audio)) {
             audio.pause();
             audio.currentTime = 0;
             audio.muted = true;
@@ -116,7 +126,7 @@ class TestRunner extends React.Component {
     }
 
     handleVolumeChange(event, newValue) {
-        for (const [_, audio] of Object.entries(this.audio)) {
+        for (const audio of Object.values(this.audio)) {
             audio.volume = newValue;
         }
         const timer = Date.now();
@@ -147,7 +157,7 @@ class TestRunner extends React.Component {
             }
         } else {
             // Clicked the currently playing button, stop all
-            for (const [_, audio] of Object.entries(this.audio)) {
+            for (const audio of Object.values(this.audio)) {
                 audio.muted = true;
                 audio.pause();
                 audio.currentTime = 0;
@@ -160,6 +170,21 @@ class TestRunner extends React.Component {
             return "";
         }
         const steps = [];
+
+        if ('welcome' in this.config) {
+            // Add welcome screen
+            steps.push(
+                <Box key={'welcome'} display={this.state.testStep === -1 ? 'flex' : 'none'}>
+                    <Welcome
+                        description={this.config.welcome.description}
+                        form={this.config.welcome.form}
+                        onClick={this.start}
+                    />
+                </Box>
+            )
+        }
+
+        // Add tests
         for (let i = 0; i < this.config.tests.length; ++i) {
             for (let j = 0; j < this.config.tests[i].repeat; ++j) {
                 steps.push(
@@ -180,11 +205,13 @@ class TestRunner extends React.Component {
                 )
             }
         }
+
+        // Add results screen
         steps.push(
             <Box key={steps.length} display={this.state.testStep === this.config.tests.length ? 'flex' : 'none'}>
-                <ThankYou
-                    title={this.config.thankYou.title}
-                    description={this.config.thankYou.description}
+                <Results
+                    title={this.config.results.title}
+                    description={this.config.results.description}
                     results={this.state.results}
                 />
             </Box>

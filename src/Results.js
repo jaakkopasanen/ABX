@@ -3,7 +3,7 @@ import Box from "@material-ui/core/Box";
 import Typography from "@material-ui/core/Typography";
 import ABStats from './ABStats';
 
-class ThankYou extends React.Component {
+class Results extends React.Component {
     render() {
         const allStats = [];
         for (let i = 0; i < this.props.results.length; ++i) {  // Looping tests
@@ -38,4 +38,4 @@ class ThankYou extends React.Component {
     }
 }
 
-export default ThankYou;
+export default Results;

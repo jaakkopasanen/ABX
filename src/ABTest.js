@@ -94,8 +94,8 @@ class ABTest extends React.Component {
                             <Box>
                                 <Divider />
                             </Box>
-                            <Box display="flex" flexDirection="row" justifyContent="end">
-                                {this.props.stepStr}
+                            <Box display="flex" flexDirection="row" justifyContent="end" mt="6px">
+                                <Typography color="textSecondary">{this.props.stepStr}</Typography>
                             </Box>
                             <Box>
                                 <Box

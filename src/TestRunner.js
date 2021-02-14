@@ -84,13 +84,14 @@ class TestRunner extends React.Component {
     }
 
     rawLink(urlStr) {
-        let url = new URL(urlStr);
-        if (url.host.includes('dropbox.com')) {
+        if (RegExp('\'^(https?://)?(www\\.)?dropbox.com\'').test(urlStr)) {
+            let url = new URL(urlStr);
             url.searchParams.delete('dl');
             url.host = url.host.replace('www.', 'dl.')
                 .replace('dropbox.com', 'dropboxusercontent.com');
+            return url.toString();
         }
-        return url.toString();
+        return urlStr;
     }
 
     start(form) {
@@ -122,6 +123,7 @@ class TestRunner extends React.Component {
                     redirect: 'follow',
                     referrerPolicy: 'no-referrer',
                     body: JSON.stringify({
+                        name: this.config.name,
                         form: this.state.form,
                         testResults: results.map(result => {
                             return {

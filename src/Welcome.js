@@ -2,6 +2,7 @@ import React from "react";
 import ReactMarkdown from 'react-markdown';
 import { Box, Button, Paper, TextField, MenuItem } from "@material-ui/core";
 import reactMuiMarkdownRenderers from "./reactMuiMarkdownRenderers";
+import Typography from "@material-ui/core/Typography";
 
 class Welcome extends React.Component {
     constructor(props) {
@@ -16,6 +17,7 @@ class Welcome extends React.Component {
 
         this.handleClick = this.handleClick.bind(this);
         this.renderForm = this.renderForm.bind(this);
+        this.validateForm = this.validateForm.bind(this);
     }
 
     handleClick() {
@@ -81,6 +83,14 @@ class Welcome extends React.Component {
         );
     }
 
+    validateForm() {
+        let isValid = true;
+        for (let field of this.props.form) {
+            isValid = isValid && this.state[field.name] !== '';
+        }
+        return isValid;
+    }
+
     render() {
         return (
             <Box mt="16px" className="width100p">
@@ -97,6 +107,7 @@ class Welcome extends React.Component {
                                 variant="outlined"
                                 color="primary"
                                 onClick={this.handleClick}
+                                disabled={!this.validateForm()}
                             >
                                 Start!
                             </Button>

@@ -1,10 +1,7 @@
 # TODO
-- Emailing with Nodemailer
+- Emailing with sendmail https://www.npmjs.com/package/sendmail
 - Docker image
-- SSL cert
 - Email DNS records: PTR, DKIM, SPF. https://blog.codinghorror.com/so-youd-like-to-send-some-email-through-code/
-
-- "Your answers will be sent via email to {email} after the last test" -> form, not description
 
 - Multi submission stats
 - Audio processing tools

@@ -16,6 +16,7 @@
     "react-markdown": "^5.0.3",
     "react-scripts": "4.0.1",
     "sendmail": "^1.6.1",
+    "smtp-server": "^3.8.0",
     "web-vitals": "^0.2.4"
   },
   "scripts": {

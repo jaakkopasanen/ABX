@@ -1,15 +1,18 @@
+const os = require('os');
 const fs = require('fs');
 const express = require('express');
 const http = require('http');
 const https = require('https');
 const httpsRedirect = require('express-https-redirect');
 const sendmail = require('sendmail');
+const SMTPServer = require('smtp-server').SMTPServer;
 
-const app = express();
-const httpPort = parseInt(process.env.HTTP_PORT) || 3001;
-const httpsPort = parseInt(process.env.HTTPS_PORT) || 3002;
+const hostname = process.env.HOSTNAME || os.hostname();
+const httpPort = parseInt(process.env.HTTP_PORT) || 80;
+const httpsPort = parseInt(process.env.HTTPS_PORT) || 443;
 const sslCertPath = process.env.SSL_CERT_PATH;
 const sslPrivateKeyPath = process.env.SSL_PRIVATE_KEY_PATH;
+const smtpPort = parseInt(process.env.SMTP_PORT);
 const dkimPrivateKeyPath = process.env.DKIM_PRIVATE_KEY_PATH;
 const dkimSelector = process.env.DKIM_SELECTOR;
 const emailFromAddress = process.env.EMAIL_FROM_ADDRESS;
@@ -19,10 +22,20 @@ if (dkimPrivateKeyPath) {
     dkimPrivateKey = fs.readFileSync(dkimPrivateKeyPath);
 }
 
+// SMTP email server
+let smtp;
+if (smtpPort) {
+    smtp = SMTPServer({name: hostname});
+    smtp.listen(smtpPort, hostname, () => {
+        console.log(`SMTP server listening port ${smtpPort}`);
+    });
+}
+
+// Express app
+const app = express();
 if (process.env.NODE_ENV === 'production' && sslPrivateKeyPath && sslCertPath) {
     app.use('/', httpsRedirect());
 }
-
 app.use(express.json());
 
 app.post('/submit', (req, res) => {

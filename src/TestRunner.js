@@ -221,6 +221,7 @@ class TestRunner extends React.Component {
                         <ABTest
                             title={this.config.tests[i].title}
                             description={this.config.tests[i].description}
+                            stepStr={`${j + 1}/${this.config.tests[i].repeat}`}
                             options={this.config.tests[i].options}
                             onSubmit={this.next}
                             volume={this.state.volume}

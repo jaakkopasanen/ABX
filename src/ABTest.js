@@ -79,58 +79,64 @@ class ABTest extends React.Component {
             )
         }
         return (
-                <Box display="flex" flexDirection="column" className="width100p" mt="16px">
-                    <Box>
-                        <Paper>
-                            <Box p="20px">
-                                <Box mt="12px" mb="40px">
-                                    <Typography variant="h2" className="centerText">{this.props.title || ''}</Typography>
-                                    <Typography className="centerText">{this.props.description || ''}</Typography>
-                                </Box>
-                                <Box>
-                                    <Divider />
-                                </Box>
-                                <Box>
-                                    <Box
-                                        display="flex"
-                                        flexDirection="row"
-                                        justifyContent="center"
-                                        className="audioButtonGroup"
+            <Box display="flex" flexDirection="column" className="width100p" mt="16px">
+                <Box>
+                    <Paper>
+                        <Box p="20px">
+                            <Box mt="12px" mb="40px">
+                                <Typography variant="h2" className="centerText">
+                                    {this.props.title || ''}
+                                </Typography>
+                                <Typography className="centerText">
+                                    {this.props.description || ''}
+                                </Typography>
+                            </Box>
+                            <Box>
+                                <Divider />
+                            </Box>
+                            <Box display="flex" flexDirection="row" justifyContent="end">
+                                {this.props.stepStr}
+                            </Box>
+                            <Box>
+                                <Box
+                                    display="flex"
+                                    flexDirection="row"
+                                    justifyContent="center"
+                                    className="audioButtonGroup"
 
+                                >
+                                    {audioButtons}
+                                </Box>
+                                <Box display="flex" flexDirection="row" justifyContent="flex-end" mt="16px">
+                                    <Button
+                                        variant="outlined"
+                                        color="primary"
+                                        onClick={this.handleSubmit}
+                                        disabled={this.state.selected === null}
                                     >
-                                        {audioButtons}
-                                    </Box>
-                                    <Box display="flex" flexDirection="row" justifyContent="flex-end" mt="16px">
-                                        <Button
-                                            variant="outlined"
-                                            color="primary"
-                                            onClick={this.handleSubmit}
-                                            disabled={this.state.selected === null}
-                                        >
-                                            {`Select ${getChar(this.state.selected)}`}
-                                        </Button>
-                                    </Box>
+                                        {`Select ${getChar(this.state.selected)}`}
+                                    </Button>
                                 </Box>
                             </Box>
-                        </Paper>
-                    </Box>
-                    <Box mt="10px">
-                        <Paper className="paperPadding">
-                            <Box display="flex" flexDirection="row" p="10px">
-                                <VolumeUpIcon style={{fontSize: 32, padding: '5px 0'}} />
-                                <Slider
-                                    color="secondary"
-                                    value={this.props.volume}
-                                    defaultValue={0.5}
-                                    min={0.0} max={1.0} step={0.01}
-                                    onChange={this.props.onVolumeChange}
-                                    className="volumeSlider"
-                                />
-                            </Box>
-                        </Paper>
-                    </Box>
-
+                        </Box>
+                    </Paper>
                 </Box>
+                <Box mt="10px">
+                    <Paper className="paperPadding">
+                        <Box display="flex" flexDirection="row" p="10px">
+                            <VolumeUpIcon style={{fontSize: 32, padding: '5px 0'}} />
+                            <Slider
+                                color="secondary"
+                                value={this.props.volume}
+                                defaultValue={0.5}
+                                min={0.0} max={1.0} step={0.01}
+                                onChange={this.props.onVolumeChange}
+                                className="volumeSlider"
+                            />
+                        </Box>
+                    </Paper>
+                </Box>
+            </Box>
         );
     }
 }

@@ -48,7 +48,7 @@ const config = {
         options: ['Tibetan Bells', 'Tolling Bell'],
         repeat: 3,
     }],
-    email: 'abx@example.com'
+    email: 'submit@abxtests.com'
 };
 //const config = new URL(window.location.toString()).searchParams.get('test');
 

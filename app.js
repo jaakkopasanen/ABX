@@ -7,7 +7,6 @@ const httpsRedirect = require('express-https-redirect');
 const sendmail = require('sendmail');
 const SMTPServer = require('smtp-server').SMTPServer;
 
-const hostname = process.env.HOSTNAME || os.hostname();
 const httpPort = parseInt(process.env.HTTP_PORT) || 80;
 const httpsPort = parseInt(process.env.HTTPS_PORT) || 443;
 const sslCertPath = process.env.SSL_CERT_PATH;
@@ -25,8 +24,8 @@ if (dkimPrivateKeyPath) {
 // SMTP email server
 let smtp;
 if (smtpPort) {
-    smtp = SMTPServer({name: hostname});
-    smtp.listen(smtpPort, hostname, () => {
+    smtp = new SMTPServer();
+    smtp.listen(smtpPort, null, () => {
         console.log(`SMTP server listening port ${smtpPort}`);
     });
 }
@@ -37,6 +36,27 @@ if (process.env.NODE_ENV === 'production' && sslPrivateKeyPath && sslCertPath) {
     app.use('/', httpsRedirect());
 }
 app.use(express.json());
+
+app.get('/mail', (req, res) => {
+    let emailOptions = {
+        from: emailFromAddress,
+        to: req.body.email,
+        subject: `[ABX] test email`,
+        html: 'Hello, world!'
+    };
+    if (dkimPrivateKey && dkimSelector) {
+        // Add DKIM
+        emailOptions.dkim = {
+            privateKey: dkimPrivateKey,
+            keySelector: dkimSelector
+        };
+    }
+    sendmail(emailOptions, (err, reply) => {
+        console.log(err && err.stack);
+        // console.dir(reply);
+    });
+    res.send('Got mail!');
+});
 
 app.post('/submit', (req, res) => {
     console.log(JSON.stringify(req.body, null, 4));
@@ -63,6 +83,7 @@ app.post('/submit', (req, res) => {
             // console.dir(reply);
         });
     }
+    res.send('');
 });
 
 if (process.env.NODE_ENV === 'production') {

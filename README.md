@@ -16,6 +16,7 @@ docker run -d \
 -e DKIM_PRIVATE_KEY_PATH=/abx/dkim.key \
 -e DKIM_SELECTOR=selector \
 -e EMAIL_FROM_ADDRESS=noreply@example.com \
+-e SMTP_PORT=25 \
 --restart on-failure \
 jaakkopasanen/abx:latest
 ```

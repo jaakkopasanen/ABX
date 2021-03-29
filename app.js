@@ -1,86 +1,65 @@
-const os = require('os');
+require('dotenv').config();
 const fs = require('fs');
 const express = require('express');
 const http = require('http');
 const https = require('https');
 const httpsRedirect = require('express-https-redirect');
-const sendmail = require('sendmail');
-const SMTPServer = require('smtp-server').SMTPServer;
+const mailjet = require('node-mailjet')
 
 const httpPort = parseInt(process.env.HTTP_PORT) || 80;
 const httpsPort = parseInt(process.env.HTTPS_PORT) || 443;
-const sslCertPath = process.env.SSL_CERT_PATH;
-const sslPrivateKeyPath = process.env.SSL_PRIVATE_KEY_PATH;
-const smtpPort = parseInt(process.env.SMTP_PORT);
-const dkimPrivateKeyPath = process.env.DKIM_PRIVATE_KEY_PATH;
-const dkimSelector = process.env.DKIM_SELECTOR;
+const sslCert = process.env.SSL_CERT_PATH ? fs.readFileSync(process.env.SSL_CERT_PATH) : undefined;
+const sslPrivateKey = process.env.SSL_PRIVATE_KEY_PATH ? fs.readFileSync(process.env.SSL_PRIVATE_KEY_PATH) : undefined;
+
 const emailFromAddress = process.env.EMAIL_FROM_ADDRESS;
-
-let dkimPrivateKey;
-if (dkimPrivateKeyPath) {
-    dkimPrivateKey = fs.readFileSync(dkimPrivateKeyPath);
+const emailFromName = process.env.EMAIL_FROM_NAME;
+if (!process.env.MAILJET_API_KEY_PUBLIC) {
+    throw 'MAILJET_API_KEY_PUBLIC environment variable must be a file path or key value';
 }
-
-// SMTP email server
-let smtp;
-if (smtpPort) {
-    smtp = new SMTPServer();
-    smtp.listen(smtpPort, null, () => {
-        console.log(`SMTP server listening port ${smtpPort}`);
-    });
+if (!process.env.MAILJET_API_KEY_PRIVATE) {
+    throw 'MAILJET_API_KEY_PRIVATE environment variable must be a file path or key value';
 }
+const mailjetApiKeyPublic = fs.existsSync(process.env.MAILJET_API_KEY_PUBLIC)
+    ? fs.readFileSync(process.env.MAILJET_API_KEY_PUBLIC)
+    : process.env.MAILJET_API_KEY_PUBLIC;
+const mailjetApiKeyPrivate = fs.existsSync(process.env.MAILJET_API_KEY_PRIVATE)
+    ? fs.readFileSync(process.env.MAILJET_API_KEY_PRIVATE)
+    : process.env.MAILJET_API_KEY_PRIVATE;
+
+const mailjetClient = mailjet.connect(mailjetApiKeyPublic, mailjetApiKeyPrivate);
 
 // Express app
 const app = express();
-if (process.env.NODE_ENV === 'production' && sslPrivateKeyPath && sslCertPath) {
+if (process.env.NODE_ENV === 'production' && sslPrivateKey && sslCert) {
     app.use('/', httpsRedirect());
 }
 app.use(express.json());
-
-app.get('/mail', (req, res) => {
-    let emailOptions = {
-        from: emailFromAddress,
-        to: req.body.email,
-        subject: `[ABX] test email`,
-        html: 'Hello, world!'
-    };
-    if (dkimPrivateKey && dkimSelector) {
-        // Add DKIM
-        emailOptions.dkim = {
-            privateKey: dkimPrivateKey,
-            keySelector: dkimSelector
-        };
-    }
-    sendmail(emailOptions, (err, reply) => {
-        console.log(err && err.stack);
-        // console.dir(reply);
-    });
-    res.send('Got mail!');
-});
 
 app.post('/submit', (req, res) => {
     console.log(JSON.stringify(req.body, null, 4));
     if (emailFromAddress && req.body.email) {
         const dateTime = new Date().toISOString()
-        let emailOptions = {
-            from: emailFromAddress,
-            to: req.body.email,
-            subject: `[ABX] ${req.body.name} test results ${dateTime}`,
-            attachments: [{
-                filename: `${req.body.name} ${dateTime}.json`,
-                content: JSON.stringify(req.body, null, 4)
+        mailjetClient.post('send', {version: 'v3.1'}).request({
+            'Messages': [{
+                'From': {
+                    'Email': emailFromAddress,
+                    'Name': emailFromName
+                },
+                'To': [{
+                    'Email': req.body.email
+                }],
+                'Subject': `[ABX] ${req.body.name} test results ${dateTime}`,
+                'TextPart': 'ABX test submission',
+                'Attachments': [{
+                    'ContentType': 'application/json',
+                    'Filename': `${req.body.name} ${dateTime}.json`,
+                    'Base64Content': Buffer.from(req.body).toString("base64")
+                }]
             }]
-        };
-        if (dkimPrivateKey && dkimSelector) {
-            // Add DKIM
-            emailOptions.dkim = {
-                privateKey: dkimPrivateKey,
-                keySelector: dkimSelector
-            };
-        }
-        sendmail(emailOptions, (err, reply) => {
-            console.log(err && err.stack);
-            // console.dir(reply);
+        }).then((result) => {
+            console.log(result.body);
+        }).catch((err) => {
+            console.error(err);
         });
     }
     res.send('');
@@ -88,10 +67,10 @@ app.post('/submit', (req, res) => {
 
 if (process.env.NODE_ENV === 'production') {
     app.use(express.static('build'));
-    if (sslPrivateKeyPath && sslCertPath) {
+    if (sslPrivateKey && sslCert) {
         https.createServer({
-            key: fs.readFileSync(sslPrivateKeyPath),
-            cert: fs.readFileSync(sslCertPath)
+            key: sslPrivateKey,
+            cert: sslCert
         }, app).listen(httpsPort, () => {
             console.log(`Production server listening port ${httpsPort} with HTTPS`);
         });
@@ -99,7 +78,6 @@ if (process.env.NODE_ENV === 'production') {
     http.createServer({}, app).listen(httpPort, () => {
         console.log(`Production server listening port ${httpPort} with HTTP`);
     });
-
 
 } else {
     app.use(express.static('public'));

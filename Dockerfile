@@ -1,8 +1,8 @@
 FROM node:14-alpine
-WORKDIR /app
 ENV NODE_ENV production
+WORKDIR /app
 COPY . .
-RUN npm install
-RUN npm cache clean --force
-RUN npm build
+RUN npm ci
+RUN npm run build
+RUN rm -rf public/ src/ package.json package-lock.json
 CMD ["node", "app.js"]

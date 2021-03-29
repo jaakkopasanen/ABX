@@ -6,18 +6,20 @@ Read on if you're interested in deploying and hosting ABX yourself.
 
 ### Deploy with Docker
 ```bash
-docker run -d \
+docker run -d --restart on-failure --name abx \
+-p 80:80 -p 443:443 \
 -v /abx:/abx \
+-v /etc/letsencrypt/live/abxtests.com:/etc/letsencrypt/live/abxtests.com:ro \
+-v /etc/letsencrypt/archive/abxtests.com:/etc/letsencrypt/archive/abxtests.com:ro \
 -e NODE_ENV=production \
 -e HTTP_PORT=80 \
 -e HTTPS_PORT=443 \
--e SSL_CERT_PATH=/etc/letsencrypt/live/example.com/fullchain.pem \
--e SSL_PRIVATE_KEY_PATH=/etc/letsencrypt/live/example.com/privkey.pem \
--e DKIM_PRIVATE_KEY_PATH=/abx/dkim.key \
--e DKIM_SELECTOR=selector \
--e EMAIL_FROM_ADDRESS=noreply@example.com \
--e SMTP_PORT=25 \
---restart on-failure \
+-e SSL_CERT_PATH=/etc/letsencrypt/live/abxtests.com/fullchain.pem \
+-e SSL_PRIVATE_KEY_PATH=/etc/letsencrypt/live/abxtests.com/privkey.pem \
+-e EMAIL_FROM_ADDRESS=noreply@abxtests.com \
+-e EMAIL_FROM_NAME="ABX" \
+-e MAILJET_API_KEY_PUBLIC=/abx/mailjet_api_key_public \
+-e MAILJET_API_KEY_PRIVATE=/abx/mailjet_api_key_private \
 jaakkopasanen/abx:latest
 ```
 
@@ -25,7 +27,7 @@ jaakkopasanen/abx:latest
 Build your own Docker image if you don't want to use one from jaakkopasanen. Docker build includes production build of
 the React app and all other necessary steps.
 ```bash
-docker build -t yourdockerhubusername/abx:latest
+docker build -t yourdockerhubusername/abx:latest .
 docker push yourdockerhubusername/abx:latest
 ```
 

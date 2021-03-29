@@ -1,6 +1,4 @@
 node_modules/
-public/
-src/
 .*
 Dockerfile
 *.md

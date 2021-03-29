@@ -2,6 +2,7 @@ require('dotenv').config();
 const fs = require('fs');
 const dateFormat = require('dateformat');
 const express = require('express');
+const morgan = require('morgan');
 const http = require('http');
 const https = require('https');
 const httpsRedirect = require('express-https-redirect');
@@ -21,22 +22,23 @@ if (!process.env.MAILJET_API_KEY_PRIVATE) {
     throw 'MAILJET_API_KEY_PRIVATE environment variable must be a file path or key value';
 }
 const mailjetApiKeyPublic = fs.existsSync(process.env.MAILJET_API_KEY_PUBLIC)
-    ? fs.readFileSync(process.env.MAILJET_API_KEY_PUBLIC)
+    ? fs.readFileSync(process.env.MAILJET_API_KEY_PUBLIC).toString().trim()
     : process.env.MAILJET_API_KEY_PUBLIC;
 const mailjetApiKeyPrivate = fs.existsSync(process.env.MAILJET_API_KEY_PRIVATE)
-    ? fs.readFileSync(process.env.MAILJET_API_KEY_PRIVATE)
+    ? fs.readFileSync(process.env.MAILJET_API_KEY_PRIVATE).toString().trim()
     : process.env.MAILJET_API_KEY_PRIVATE;
 
 const mailjetClient = mailjet.connect(mailjetApiKeyPublic, mailjetApiKeyPrivate);
 
 // Express app
 const app = express();
+app.use(morgan('tiny'));
 if (process.env.NODE_ENV === 'production' && sslPrivateKey && sslCert) {
     app.use('/', httpsRedirect());
 }
 app.use(express.json());
 
-app.post('/submit', (req, res) => {
+app.post('/submit', (req, res, next) => {
     if (emailFromAddress && req.body.email) {
         // const dateTime = new Date().toISOString()
         const dateTime = dateFormat(new Date(), 'UTC:yyyy-mm-dd HH:MM:ss Z');
@@ -54,7 +56,7 @@ app.post('/submit', (req, res) => {
                 'To': [{
                     'Email': req.body.email
                 }],
-                'Subject': `[ABX] ${req.body.name} test results ${dateTime}`,
+                'Subject': `${req.body.name} test results ${dateTime}`,
                 'TextPart': 'ABX test submission',
                 'Attachments': [{
                     'ContentType': 'application/json',
@@ -63,12 +65,11 @@ app.post('/submit', (req, res) => {
                 }]
             }]
         }).then((result) => {
-            console.log(result.body);
+            res.send('');
         }).catch((err) => {
-            console.error(err);
+            next(err);
         });
     }
-    res.send('');
 });
 
 if (process.env.NODE_ENV === 'production') {

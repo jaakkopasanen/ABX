@@ -12,6 +12,7 @@
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-https-redirect": "^1.0.0",
+    "morgan": "^1.10.0",
     "node-dev": "^6.2.0",
     "node-mailjet": "^3.3.1",
     "react": "^17.0.1",

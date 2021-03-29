@@ -84,11 +84,11 @@ class TestRunner extends React.Component {
     }
 
     rawLink(urlStr) {
-        if (RegExp('\'^(https?://)?(www\\.)?dropbox.com\'').test(urlStr)) {
+        const dropboxPattern = new RegExp('^(https?://)?(www\.)?dropbox.com');
+        if (dropboxPattern.test(urlStr)) {
             let url = new URL(urlStr);
             url.searchParams.delete('dl');
-            url.host = url.host.replace('www.', 'dl.')
-                .replace('dropbox.com', 'dropboxusercontent.com');
+            url.host = url.host.replace(dropboxPattern, 'dl.dropboxusercontent.com')
             return url.toString();
         }
         return urlStr;

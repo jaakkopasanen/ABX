@@ -39,6 +39,11 @@ app.post('/submit', (req, res) => {
     console.log(JSON.stringify(req.body, null, 4));
     if (emailFromAddress && req.body.email) {
         const dateTime = new Date().toISOString()
+        const jsonAttachment = {
+            name: req.body.name,
+            form: req.body.form,
+            testResults: req.body.testResults
+        };
         mailjetClient.post('send', {version: 'v3.1'}).request({
             'Messages': [{
                 'From': {
@@ -53,7 +58,7 @@ app.post('/submit', (req, res) => {
                 'Attachments': [{
                     'ContentType': 'application/json',
                     'Filename': `${req.body.name} ${dateTime}.json`,
-                    'Base64Content': Buffer.from(req.body).toString("base64")
+                    'Base64Content': Buffer.from(JSON.stringify(jsonAttachment, undefined, 4)).toString("base64")
                 }]
             }]
         }).then((result) => {

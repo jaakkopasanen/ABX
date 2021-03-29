@@ -1,5 +1,6 @@
 require('dotenv').config();
 const fs = require('fs');
+const dateFormat = require('dateformat');
 const express = require('express');
 const http = require('http');
 const https = require('https');
@@ -36,9 +37,9 @@ if (process.env.NODE_ENV === 'production' && sslPrivateKey && sslCert) {
 app.use(express.json());
 
 app.post('/submit', (req, res) => {
-    console.log(JSON.stringify(req.body, null, 4));
     if (emailFromAddress && req.body.email) {
-        const dateTime = new Date().toISOString()
+        // const dateTime = new Date().toISOString()
+        const dateTime = dateFormat(new Date(), 'UTC:yyyy-mm-dd HH:MM:ss Z');
         const jsonAttachment = {
             name: req.body.name,
             form: req.body.form,

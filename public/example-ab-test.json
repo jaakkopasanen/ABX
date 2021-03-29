@@ -1,7 +1,7 @@
 {
   "name": "example-ab-test",
   "welcome": {
-    "description": "#### EQ Regularization AB Test\n\nYou will go through a series of ABC listening tests. There's 3 tests in total and each has 20 iterations. In each test you must choose the option which sounds best to you. The option you have selected when moving forward will be your answer. At the end you will see your results.\n\nYour results will be submitted to [abxtest.app](https://abxtest.app) website along with the details you've given in the form below. The information in the form will be used for acquiring statistics about the different demographics and are completely anonymous.",
+    "description": "#### EQ Regularization AB Test\n\nYou will go through a series of ABC listening tests. There's 3 tests in total and each has 20 iterations. In each test you must choose the option which sounds best to you. The option you have selected when moving forward will be your answer. At the end you will see your results.\n\nYour results will be submitted to [abxtests.com](https://abxtests.com) website along with the details you've given in the form below. The information in the form will be used for acquiring statistics about the different demographics and are completely anonymous.",
     "form": [
       {
         "name": "Age",

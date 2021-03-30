@@ -34,13 +34,7 @@ class ABStats extends React.Component {
                 </TableRow>
             )
         }
-        // Sum row
-        rows.push(
-            <TableRow key={-1}>
-                <StyledTableCell>Sum</StyledTableCell>
-                <StyledTableCell>{stats.totalCount} (100.0%)</StyledTableCell>
-            </TableRow>
-        )
+        // p-value row
         rows.push(
             <TableRow key={-2}>
                 <StyledTableCell>p-value</StyledTableCell>

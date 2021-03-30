@@ -2,7 +2,6 @@ import React from "react";
 import ReactMarkdown from 'react-markdown';
 import { Box, Button, Paper, TextField, MenuItem } from "@material-ui/core";
 import reactMuiMarkdownRenderers from "./reactMuiMarkdownRenderers";
-import Typography from "@material-ui/core/Typography";
 
 class Welcome extends React.Component {
     constructor(props) {

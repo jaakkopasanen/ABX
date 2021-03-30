@@ -140,4 +140,35 @@ function abStats(name, optionNames, userSelections) {
     return stats;
 }
 
-export { chiSquaredPValue, multinomialPMF, abStats };
+function tagStats(results, config) {
+    // Create tag groups from all combinations of tags
+    let tagGroups = {};
+    for (const testResult of results) {
+        // Get all tags in the test options
+        let tags = testResult.optionNames.map(optionName => config.options[optionName].tag);
+        // Form tag group name by joining the sorted tag names with VS ie "32kbps VS 64 kbps VS lossless"
+        tags.sort();
+        const tagGroupName = tags.join(' VS ');
+        if (tagGroups[tagGroupName] === undefined) {
+            // Initialize tag group
+            tagGroups[tagGroupName] = {
+                name: tagGroupName,
+                optionNames: tags,
+                userSelections: []
+            }
+        }
+        // Add user selections to the tag group
+        tagGroups[tagGroupName].userSelections = tagGroups[tagGroupName].userSelections.concat(
+            testResult.userSelections.map(selection => ({name: selection.tag}))
+        );
+    }
+
+    // Compute tag group stats
+    const stats = [];
+    for (const [name, tagGroup] of Object.entries(tagGroups)) {
+        stats.push(abStats(name, tagGroup.optionNames, tagGroup.userSelections));
+    }
+    return {tagGroups: tagGroups, stats: stats};
+}
+
+export { chiSquaredPValue, multinomialPMF, abStats, tagStats };

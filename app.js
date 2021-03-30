@@ -45,7 +45,8 @@ app.post('/submit', (req, res, next) => {
         const jsonAttachment = {
             name: req.body.name,
             form: req.body.form,
-            testResults: req.body.testResults
+            testResults: req.body.testResults,
+            tagStats: req.body.tagStats,
         };
         mailjetClient.post('send', {version: 'v3.1'}).request({
             'Messages': [{

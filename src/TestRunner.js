@@ -4,7 +4,7 @@ import Welcome from "./Welcome";
 import ABTest from "./ABTest";
 import Results from "./Results";
 import Container from "@material-ui/core/Container";
-import { abStats} from "./stats";
+import {abStats, tagStats} from "./stats";
 
 class TestRunner extends React.Component {
     constructor(props) {
@@ -74,6 +74,7 @@ class TestRunner extends React.Component {
                         name: name,
                         url: config.options[name].url,
                         audio: audio[config.options[name].url],
+                        tag: config.options[name].tag,
                     }
                 });
             }
@@ -92,7 +93,7 @@ class TestRunner extends React.Component {
     }
 
     rawLink(urlStr) {
-        const dropboxPattern = new RegExp('^(https?://)?(www\.)?dropbox.com');
+        const dropboxPattern = new RegExp(/^(https?:\/\/)?(www\.)?dropbox.com/);
         if (dropboxPattern.test(urlStr)) {
             let url = new URL(urlStr);
             url.searchParams.delete('dl');
@@ -121,7 +122,9 @@ class TestRunner extends React.Component {
         }
 
         let results = JSON.parse(JSON.stringify(this.state.results));
-        results[this.state.testStep].userSelections.push(selectedOption);
+        let option = Object.assign({}, selectedOption);
+        delete option.audio;
+        results[this.state.testStep].userSelections.push(option);
 
         if (this.state.repeatStep + 1 === this.config.tests[this.state.testStep].repeat) {
             // Last repeat
@@ -133,7 +136,7 @@ class TestRunner extends React.Component {
                         stats = abStats(result.name, result.optionNames, result.userSelections);
                         delete stats.optionNames;
                     } else {
-                        throw `Unsupported test type ${result.testType}`
+                        throw new Error(`Unsupported test type ${result.testType}`)
                     }
                     return {
                         name: result.name,
@@ -154,6 +157,7 @@ class TestRunner extends React.Component {
                         name: this.config.name,
                         form: this.state.form,
                         testResults: testResults,
+                        tagStats: tagStats(this.state.results, this.config).stats,
                         email: this.config.email,
                     })
                 });
@@ -263,6 +267,7 @@ class TestRunner extends React.Component {
                     title={this.config.results.title}
                     description={this.config.results.description}
                     results={this.state.results}
+                    config={this.config}
                 />
             </Box>
         )

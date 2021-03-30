@@ -4,6 +4,8 @@ import Paper from "@material-ui/core/Paper";
 import ABStats from './ABStats';
 import reactMuiMarkdownRenderers from "./reactMuiMarkdownRenderers";
 import ReactMarkdown from "react-markdown";
+import Typography from "@material-ui/core/Typography";
+import TagStats from "./TagStats";
 
 class Results extends React.Component {
     render() {
@@ -33,10 +35,15 @@ class Results extends React.Component {
                             <ReactMarkdown renderers={reactMuiMarkdownRenderers} children={this.props.description} />
                         </Box>
                         {allStats}
+                        <Box mb="16px">
+                            <Typography variant="h4">Aggregated results</Typography>
+                        </Box>
+                        <Box>
+                            <TagStats config={this.props.config} results={this.props.results} />
+                        </Box>
                     </Box>
                 </Paper>
             </Box>
-
         )
     }
 }

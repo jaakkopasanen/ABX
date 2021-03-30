@@ -12,7 +12,7 @@ import { Divider, Paper } from "@material-ui/core";
 class ABTest extends React.Component {
     constructor(props) {
         super(props);
-        const ixs = shuffle([...Array(this.props.options.length).keys()])
+        const ixs = shuffle([...Array(this.props.options.length).keys()])  // Randomly shuffled indexes
         this.state = {
             options: ixs.map((ix) => this.props.options[ix]),  // Shuffle options
             selected: null,

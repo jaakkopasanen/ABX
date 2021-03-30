@@ -8,7 +8,7 @@ import TableRow from "@material-ui/core/TableRow";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import {withStyles} from "@material-ui/core";
-import { multinomialPMF } from "./stats";
+import { abStats } from "./stats";
 
 const StyledTableCell = withStyles((theme) => ({
     root: {
@@ -17,59 +17,11 @@ const StyledTableCell = withStyles((theme) => ({
 }))(TableCell);
 
 class ABStats extends React.Component {
-    computeStats() {
-        const stats = {
-            name: this.props.name,
-            options: [],
-            nOptions: this.props.optionNames.length,
-            optionNames: this.props.optionNames.slice(),
-            totalCount: this.props.choices.length,
-            x2Sum: 0,
-        };
-
-        // Iterate through user's choices
-        for (let j = 0; j < this.props.choices.length; ++j) {
-            // Find the option with the name of the current choice
-            const option = stats.options.filter(option => option.name === this.props.choices[j].name);
-            if (option.length) {
-                // Found, increment count
-                ++option[0].count;
-            } else {
-                // Doesn't exist, create new
-                stats.options.push({
-                    name: this.props.choices[j].name,
-                    count: 1,
-                });
-            }
-        }
-
-        // Add options which were never selected with zero counts
-        for (let name of stats.optionNames) {
-            if (!stats.options.map(option => option.name).includes(name)) {
-                stats.options.push({
-                    name: name,
-                    count: 0
-                });
-            }
-        }
-        for (let option of stats.options) {
-            option.percentage = option.count / stats.totalCount * 100;
-        }
-
-        // Sort by counts
-        stats.options.sort((a, b) => b.count - a.count);
-
-        // Calculate p-value
-        stats.pValue = multinomialPMF(stats.options.map(option => option.count), 1 / stats.nOptions);
-
-        return stats;
-    }
-
     render() {
-        if (!this.props.choices.length) {
+        if (!this.props.usersSelections.length) {
             return '';
         }
-        const stats = this.computeStats();
+        const stats = abStats(this.props.name, this.props.optionNames, this.props.usersSelections);
         const rows = [];
         for (let j = 0; j < stats.options.length; ++j) {
             // Data rows

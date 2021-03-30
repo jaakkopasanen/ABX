@@ -15,7 +15,7 @@ class Results extends React.Component {
                     <ABStats
                         name={this.props.results[i].name}
                         optionNames={this.props.results[i].optionNames}
-                        choices={this.props.results[i].choices}
+                        usersSelections={this.props.results[i].usersSelections}
                     />
                 )
             }

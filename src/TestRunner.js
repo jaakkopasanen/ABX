@@ -4,6 +4,7 @@ import Welcome from "./Welcome";
 import ABTest from "./ABTest";
 import Results from "./Results";
 import Container from "@material-ui/core/Container";
+import { abStats} from "./stats";
 
 class TestRunner extends React.Component {
     constructor(props) {
@@ -36,7 +37,7 @@ class TestRunner extends React.Component {
                 results: this.config.tests.map(test => ({
                     name: test.title,
                     testType: test.type,
-                    choices: [],
+                    usersSelections: [],
                     optionNames: test.options.map(option => option.name),
                     nOptions: test.options.length,
                 }))
@@ -102,6 +103,10 @@ class TestRunner extends React.Component {
     }
 
     next(selectedOption) {
+        /* Moving to next test iteration
+        * Args:
+        *   selectedOption: Option object by user selection. See componentDidMount() for structure.
+        * */
         for (const audio of Object.values(this.audio)) {
             audio.pause();
             audio.currentTime = 0;
@@ -109,7 +114,7 @@ class TestRunner extends React.Component {
         }
 
         let results = JSON.parse(JSON.stringify(this.state.results));
-        results[this.state.testStep].choices.push(selectedOption);
+        results[this.state.testStep].usersSelections.push(selectedOption);
 
         if (this.state.repeatStep + 1 === this.config.tests[this.state.testStep].repeat) {
             // Last repeat
@@ -126,11 +131,19 @@ class TestRunner extends React.Component {
                         name: this.config.name,
                         form: this.state.form,
                         testResults: results.map(result => {
+                            let stats;
+                            if (result.testType.toLowerCase() === 'ab') {
+                                stats = abStats(result.name, result.optionNames, result.usersSelections);
+                                delete stats.optionNames;
+                            } else {
+                                throw `Unsupported test type ${result.testType}`
+                            }
                             return {
                                 name: result.name,
                                 testType: result.testType,
-                                choices: result.choices.map(choice => choice.name),
                                 optionNames: result.optionNames,
+                                usersSelections: result.usersSelections.map(selection => selection.name),
+                                stats: stats
                             };
                         }),
                         email: this.config.email,

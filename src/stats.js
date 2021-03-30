@@ -93,4 +93,51 @@ function multinomialPMF(xs, ps) {
     return factorial(n) / denom * prob;
 }
 
-export { chiSquaredPValue, multinomialPMF };
+function abStats(name, optionNames, usersSelections) {
+    const stats = {
+        name: name,
+        options: [],
+        nOptions: optionNames.length,
+        optionNames: optionNames.slice(),
+        totalCount: usersSelections.length
+    };
+
+    // Iterate through user's selections
+    for (let j = 0; j < usersSelections.length; ++j) {
+        // Find the option with the name of the current selection
+        const option = stats.options.filter(option => option.name === usersSelections[j].name);
+        if (option.length) {
+            // Found, increment count
+            ++option[0].count;
+        } else {
+            // Doesn't exist, create new
+            stats.options.push({
+                name: usersSelections[j].name,
+                count: 1,
+            });
+        }
+    }
+
+    // Add options which were never selected with zero counts
+    for (let name of stats.optionNames) {
+        if (!stats.options.map(option => option.name).includes(name)) {
+            stats.options.push({
+                name: name,
+                count: 0
+            });
+        }
+    }
+    for (let option of stats.options) {
+        option.percentage = option.count / stats.totalCount * 100;
+    }
+
+    // Sort by counts
+    stats.options.sort((a, b) => b.count - a.count);
+
+    // Calculate p-value
+    stats.pValue = multinomialPMF(stats.options.map(option => option.count), 1 / stats.nOptions);
+
+    return stats;
+}
+
+export { chiSquaredPValue, multinomialPMF, abStats };

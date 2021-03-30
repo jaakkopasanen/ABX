@@ -93,26 +93,26 @@ function multinomialPMF(xs, ps) {
     return factorial(n) / denom * prob;
 }
 
-function abStats(name, optionNames, usersSelections) {
+function abStats(name, optionNames, userSelections) {
     const stats = {
         name: name,
         options: [],
         nOptions: optionNames.length,
         optionNames: optionNames.slice(),
-        totalCount: usersSelections.length
+        totalCount: userSelections.length
     };
 
     // Iterate through user's selections
-    for (let j = 0; j < usersSelections.length; ++j) {
+    for (let j = 0; j < userSelections.length; ++j) {
         // Find the option with the name of the current selection
-        const option = stats.options.filter(option => option.name === usersSelections[j].name);
+        const option = stats.options.filter(option => option.name === userSelections[j].name);
         if (option.length) {
             // Found, increment count
             ++option[0].count;
         } else {
             // Doesn't exist, create new
             stats.options.push({
-                name: usersSelections[j].name,
+                name: userSelections[j].name,
                 count: 1,
             });
         }

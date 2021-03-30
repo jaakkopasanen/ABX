@@ -37,7 +37,7 @@ class TestRunner extends React.Component {
                 results: this.config.tests.map(test => ({
                     name: test.title,
                     testType: test.type,
-                    usersSelections: [],
+                    userSelections: [],
                     optionNames: test.options.map(option => option.name),
                     nOptions: test.options.length,
                 }))
@@ -48,13 +48,20 @@ class TestRunner extends React.Component {
     async parseConfig(inConfig) {
         return this.fetchConfig(inConfig).then(config => {
             const audio = {};
-            // Convert links to downloadable links
-            for (const [key, val] of Object.entries(config.options)) {
-                config.options[key] = this.rawLink(val);
-                audio[config.options[key]] = new Audio(config.options[key]);
-                audio[config.options[key]].muted = true;
-                audio[config.options[key]].loop = true;
-                audio[config.options[key]].volume = this.state.volume;
+            for (const [name, obj] of Object.entries(config.options)) {
+                // Make URLs downloadable link and create Audio objects
+                if (typeof obj === 'string') {
+                    config.options[name] = {
+                        url: this.rawLink(obj),
+                        tag: obj.tag
+                    };
+                } else {
+                    config.options[name].url = this.rawLink(obj.url);
+                }
+                audio[config.options[name].url] = new Audio(config.options[name].url);
+                audio[config.options[name].url].muted = true;
+                audio[config.options[name].url].loop = true;
+                audio[config.options[name].url].volume = this.state.volume;
             }
             for (let i = 0; i < config.tests.length; ++i) {
                 // Repeat defaults to 1
@@ -65,8 +72,8 @@ class TestRunner extends React.Component {
                 config.tests[i].options = config.tests[i].options.map((name) => {
                     return {
                         name: name,
-                        url: config.options[name],
-                        audio: audio[config.options[name]],
+                        url: config.options[name].url,
+                        audio: audio[config.options[name].url],
                     }
                 });
             }
@@ -114,12 +121,28 @@ class TestRunner extends React.Component {
         }
 
         let results = JSON.parse(JSON.stringify(this.state.results));
-        results[this.state.testStep].usersSelections.push(selectedOption);
+        results[this.state.testStep].userSelections.push(selectedOption);
 
         if (this.state.repeatStep + 1 === this.config.tests[this.state.testStep].repeat) {
             // Last repeat
             if (this.state.testStep + 1 === this.config.tests.length && this.config.email) {
                 // Last test, submit results if email is given in the config
+                const testResults = results.map(result => {
+                    let stats;
+                    if (result.testType.toLowerCase() === 'ab') {
+                        stats = abStats(result.name, result.optionNames, result.userSelections);
+                        delete stats.optionNames;
+                    } else {
+                        throw `Unsupported test type ${result.testType}`
+                    }
+                    return {
+                        name: result.name,
+                        testType: result.testType,
+                        optionNames: result.optionNames,
+                        userSelections: result.userSelections.map(selection => selection.name),
+                        stats: stats
+                    };
+                });
                 fetch('/submit', {
                     method: 'POST',
                     cache: 'no-cache',
@@ -130,22 +153,7 @@ class TestRunner extends React.Component {
                     body: JSON.stringify({
                         name: this.config.name,
                         form: this.state.form,
-                        testResults: results.map(result => {
-                            let stats;
-                            if (result.testType.toLowerCase() === 'ab') {
-                                stats = abStats(result.name, result.optionNames, result.usersSelections);
-                                delete stats.optionNames;
-                            } else {
-                                throw `Unsupported test type ${result.testType}`
-                            }
-                            return {
-                                name: result.name,
-                                testType: result.testType,
-                                optionNames: result.optionNames,
-                                usersSelections: result.usersSelections.map(selection => selection.name),
-                                stats: stats
-                            };
-                        }),
+                        testResults: testResults,
                         email: this.config.email,
                     })
                 });

@@ -18,10 +18,10 @@ const StyledTableCell = withStyles((theme) => ({
 
 class ABStats extends React.Component {
     render() {
-        if (!this.props.usersSelections.length) {
+        if (!this.props.userSelections.length) {
             return '';
         }
-        const stats = abStats(this.props.name, this.props.optionNames, this.props.usersSelections);
+        const stats = abStats(this.props.name, this.props.optionNames, this.props.userSelections);
         const rows = [];
         for (let j = 0; j < stats.options.length; ++j) {
             // Data rows

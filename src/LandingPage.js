@@ -6,6 +6,7 @@ import {Divider, Grid, makeStyles, Paper, SvgIcon} from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import Link from "@material-ui/core/Link";
 
+
 const useStyles = makeStyles(theme => ({
     root: {
         backgroundImage: "url('poly.png')",
@@ -26,16 +27,19 @@ const useStyles = makeStyles(theme => ({
         },
     },
     bannerStackedImage: {
-        marginLeft: "-500px",
+        marginLeft: -500,
         [theme.breakpoints.up('sm')]: {
-            marginLeft: "-450px"
+            marginLeft: -450
         },
         [theme.breakpoints.up('md')]: {
-            marginLeft: "-400px"
+            marginLeft: -400
         },
         [theme.breakpoints.up('lg')]: {
-            marginLeft: "-350px"
+            marginLeft: -350
         }
+    },
+    contentImage: {
+        borderRadius: 8
     }
 }));
 
@@ -58,16 +62,16 @@ export default function LandingPage() {
                         <Box>
                             <img src="android-chrome-192x192.png" height="96px" alt="ABX logo" />
                         </Box>
-                        <Box mt="16px">
+                        <Box mt={2}>
                             <Link href="https://github.com/jaakkopasanen/ABX" target="_blank" rel="noopener" rel="noreferrer">
                                 <Button variant="contained" startIcon={<GitHubIcon />}>Watch</Button>
                             </Link>
                         </Box>
                     </Box>
 
-                    <Box display="flex" alignItems="center">
+                    <Box display="flex" alignItems="center" mb={16}>
                         <Box display="flex" flexDirection="column" className={classes.bannerTitle}>
-                            <Box mt="-48px" mb="24px">
+                            <Box mt={-6} mb={3}>
                                 <Typography variant="h2">Double blind</Typography>
                             </Box>
                             <Box mb="36px">
@@ -84,21 +88,21 @@ export default function LandingPage() {
                         <Box display="flex" flexDirection="row" justifyContent="flex-start" alignItems="center">
                             <Box>
                                 <Paper>
-                                    <Box p="16px">
+                                    <Box p={2}>
                                         <img src="results.png" />
                                     </Box>
                                 </Paper>
                             </Box>
                             <Box className={classes.bannerStackedImage}>
                                 <Paper>
-                                    <Box p="16px">
+                                    <Box p={2}>
                                         <img src="welcome.png" />
                                     </Box>
                                 </Paper>
                             </Box>
                             <Box className={classes.bannerStackedImage}>
                                 <Paper>
-                                    <Box p="16px">
+                                    <Box p={2}>
                                         <img src="ab-test.png" />
                                     </Box>
                                 </Paper>
@@ -106,12 +110,110 @@ export default function LandingPage() {
                         </Box>
                     </Box>
 
-                    <Box display="flex" flexDirection="column" justifyContent="flex-start" alignItems="center" spacing={10}>
-                        <Box mt="24px">
-                            <Typography variant="h3">Lorem ipsum</Typography>
+                    <Box display="flex" flexDirection="column" justifyContent="flex-start" alignItems="flex-start" spacing={10}>
+                        <Box display="flex" flexDirection="row">
+                            <Box>
+                                <Box mb={1.5}>
+                                    <Typography variant="h3">Simplicity, flexibilty</Typography>
+                                </Box>
+                                <Typography paragraph={true}>
+                                    No writing code, no deployments, no setting up servers or
+                                    anything like that. Simply declare your test and give the link to the test
+                                    participants.
+                                </Typography>
+                                <Typography paragraph={true}>
+                                    The tests are declared with a human-friendly YAML syntax. It's easy to write and
+                                    easy to read.
+                                </Typography>
+                                <Typography paragraph={true}>
+                                    Each test session can contain any number of tests. Each test can contain up to
+                                    7 different audio clips. Each test can also be repeated as many times as needed
+                                    to ensure statistical significance.
+                                </Typography>
+                            </Box>
+                            <Box ml={3} mt={2}>
+                                <img src="yaml-example.png" className={classes.contentImage} />
+                            </Box>
+                        </Box>
+
+                        <Box display="flex" flexDirection="row" mt={6}>
+                            <Box flexGrow="1" flexBasis="0">
+                                <Box mb={1.5}>
+                                    <Typography variant="h3">Unbiased</Typography>
+                                </Box>
+                                <Typography paragraph={true}>
+                                    ABX app has been designed with the goal of minimizing the biases and maximizing
+                                    user experience.
+                                </Typography>
+                                <Typography paragraph={true}>
+                                    The options presented to the user are shuffled automatically with
+                                    Fisher-Yates algorithm which ensures that all possible orders are equally probable.
+                                </Typography>
+                                <Typography paragraph={true}>
+                                    Buttons are arranged in a circular pattern to make it equally easy for the user to
+                                    select each one.
+                                </Typography>
+                                <Typography paragraph={true}>
+                                    All the different audio clips play in sync and user can switch between the clips
+                                    without having to start from the beginning.
+                                </Typography>
+                            </Box>
+                            <Box flexGrow="1" flexBasis="0" ml={3} mt={2} display="flex" flexDirection="row" justifyContent="center" alignItems="center">
+                                <img src="button-group.png" height="203px" />
+                            </Box>
+                        </Box>
+
+                        <Box display="flex" flexDirection="row" mt={6}>
+                            <Box flexGrow="1" flexBasis="0">
+                                <Box mb={1.5}>
+                                    <Typography variant="h3">Statistician at your service</Typography>
+                                </Box>
+                                <Typography paragraph={true}>
+                                    Results are calculated at the end of each test. The participant is presented with
+                                    the summary of her/his selections. p-value is calculated automatically for each
+                                    individual test with the polynomial probability mass function.
+                                </Typography>
+                                <Typography paragraph={true}>
+                                    As an extra treat, ABX app calculates aggregated statistics based on tags you've
+                                    specified. Want to know how different filters or codecs stack up across all the
+                                    different songs? This is the way.
+                                </Typography>
+                                <Typography paragraph={true}>
+                                    The same statistics will be sent to your email after each participant has completed
+                                    the test suite. Gather up the files and run your stats on the whole population.
+                                    You can even specify a survey form in the welcome screen to get data about different
+                                    demographics.
+                                </Typography>
+                            </Box>
+                            <Box flexGrow="1" flexBasis="0" ml={3} mt={2}>
+                                <Paper>
+                                    <Box p={2}>
+                                        <img src="result-table.png" />
+                                    </Box>
+                                </Paper>
+                            </Box>
+                        </Box>
+
+                        <Box display="flex" flexDirection="row" mt={6} mb={12}>
+                            <Box flexGrow="1" flexBasis="0">
+                                <Box mb={1.5}>
+                                    <Typography variant="h3">Get started</Typography>
+                                </Box>
+                                <Typography paragraph={true}>
+                                    Start creating your own listening tests now. Head to the project's GitHub page&nbsp;
+                                    <Link href="https://github.com/jaakkopasanen/ABX"  target="_blank" rel="noopener" rel="noreferrer">
+                                        jaakkopasanen/ABX
+                                    </Link> for a guide on how to declare your own test.
+                                </Typography>
+                                <Typography paragraph={true}>
+                                    In case you want to host ABX app your self, say you have some super secret and
+                                    important test to conduct, you can do that easily too. You'll find the details on
+                                    how to deploy your own ABX app in a docker container in no time. It's all open
+                                    source!
+                                </Typography>
+                            </Box>
                         </Box>
                     </Box>
-
                 </Box>
             </Container>
         </Box>

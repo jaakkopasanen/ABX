@@ -58,7 +58,7 @@ class ABTest extends React.Component {
         const audioButtons = [];
         for (let i = 0; i < this.state.options.length; ++i) {
             const n = this.state.options.length;
-            const r = Math.max(1, n / 5) * 50;
+            const r = Math.max(1, n / 5) * 70;
             const coordinates = this.circleCoordindates(i, n, r);
 
             audioButtons.push(

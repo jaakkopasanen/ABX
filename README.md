@@ -18,7 +18,7 @@ doesn't provide correct content types and therefore cannot be used for hosting t
 The configuration file itself is written with [YAML](https://yaml.org/) syntax. This is rather human friendly and should
 be easy enough for you to get started right away without any prior experience with it. Here's an example file:
 ```yaml
-name: mp3-vs-lossless
+name: demo-test
 welcome:
   description: |-
     #### ABX Demo

@@ -2,26 +2,40 @@ import React from "react";
 import Container from "@material-ui/core/Container";
 import Box from "@material-ui/core/Box";
 import Typography from "@material-ui/core/Typography";
-import {Divider, Grid, makeStyles, SvgIcon} from "@material-ui/core";
+import {Divider, Grid, makeStyles, Paper, SvgIcon} from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import Link from "@material-ui/core/Link";
 
 const useStyles = makeStyles(theme => ({
     root: {
-        background: 'white',
-        position: "absolute",
-        top: 0, bottom: 0, left: 0, right: 0,
+        backgroundImage: "url('poly.png')",
+        backgroundColor: "white",
+        backgroundRepeat: "no-repeat",
+        backgroundSize: "100%",
         overflowX: "hidden",
-        overflowY: "scroll"
+        overflowY: "auto"
     },
     topBar: {
         height: 96,
     },
-    fullHeight: {
-        height: "100%"
+    bannerTitle: {
+        minWidth: 200,
+        [theme.breakpoints.up('md')]: {
+            minWidth: 300,
+            marginRight: 48
+        },
     },
-    fullWidth: {
-        width: "100%"
+    bannerStackedImage: {
+        marginLeft: "-500px",
+        [theme.breakpoints.up('sm')]: {
+            marginLeft: "-450px"
+        },
+        [theme.breakpoints.up('md')]: {
+            marginLeft: "-400px"
+        },
+        [theme.breakpoints.up('lg')]: {
+            marginLeft: "-350px"
+        }
     }
 }));
 
@@ -46,38 +60,58 @@ export default function LandingPage() {
                         </Box>
                         <Box mt="16px">
                             <Link href="https://github.com/jaakkopasanen/ABX" target="_blank" rel="noopener" rel="noreferrer">
-                                <Button variant="outlined" startIcon={<GitHubIcon />}>Watch</Button>
+                                <Button variant="contained" startIcon={<GitHubIcon />}>Watch</Button>
                             </Link>
                         </Box>
                     </Box>
 
                     <Box display="flex" alignItems="center">
-                        <Box display="flex" flexDirection="column">
-                            <Box mb="24px">
+                        <Box display="flex" flexDirection="column" className={classes.bannerTitle}>
+                            <Box mt="-48px" mb="24px">
                                 <Typography variant="h2">Double blind</Typography>
                             </Box>
-                            <Box mb="24px">
+                            <Box mb="36px">
                                 <Typography>
                                     Create and conduct listening tests easily. Get started in just a couple of minutes.
                                 </Typography>
                             </Box>
                             <Box>
-                                <Button variant="outlined" color="secondary" size="large">Try the Demo</Button>
+                                <Link href="/?test=demo.yml" target="_blank" rel="noopener" rel="noreferrer">
+                                    <Button variant="contained" color="secondary" size="large">Try the Demo</Button>
+                                </Link>
                             </Box>
                         </Box>
-                        <Grid item xs={6}>
-                            {/*<img src="https://www.apple.com/euro/ios/app-store/b/screens_alt/images/og.png?202007290247" />*/}
-                            <img src="banner.png" />
-                        </Grid>
+                        <Box display="flex" flexDirection="row" justifyContent="flex-start" alignItems="center">
+                            <Box>
+                                <Paper>
+                                    <Box p="16px">
+                                        <img src="results.png" />
+                                    </Box>
+                                </Paper>
+                            </Box>
+                            <Box className={classes.bannerStackedImage}>
+                                <Paper>
+                                    <Box p="16px">
+                                        <img src="welcome.png" />
+                                    </Box>
+                                </Paper>
+                            </Box>
+                            <Box className={classes.bannerStackedImage}>
+                                <Paper>
+                                    <Box p="16px">
+                                        <img src="ab-test.png" />
+                                    </Box>
+                                </Paper>
+                            </Box>
+                        </Box>
                     </Box>
 
-                    <Divider className="width100p" />
-
-                    <Grid container direction="column" justify="flex-start" alignItems="stretch" spacing={10}>
-                        <Grid item>
+                    <Box display="flex" flexDirection="column" justifyContent="flex-start" alignItems="center" spacing={10}>
+                        <Box mt="24px">
                             <Typography variant="h3">Lorem ipsum</Typography>
-                        </Grid>
-                    </Grid>
+                        </Box>
+                    </Box>
+
                 </Box>
             </Container>
         </Box>

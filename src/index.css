@@ -1,12 +1,7 @@
 html, body {
     margin: 0;
-    height: 100%;
-    background: #f6f6f6;
-}
-.white-bg {
-    position: absolute;
-    top: 0; left: 0; bottom: 0; right: 0;
-    background: white;
+    /*height: 100%;*/
+    /*background: #f6f6f6;*/
 }
 .optionButton {
     margin: 16px;

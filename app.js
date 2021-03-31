@@ -6,7 +6,7 @@ const morgan = require('morgan');
 const http = require('http');
 const https = require('https');
 const httpsRedirect = require('express-https-redirect');
-const mailjet = require('node-mailjet')
+const mailjet = require('node-mailjet');
 
 const httpPort = parseInt(process.env.HTTP_PORT) || 80;
 const httpsPort = parseInt(process.env.HTTPS_PORT) || 443;

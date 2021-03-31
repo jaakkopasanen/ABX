@@ -5,6 +5,7 @@ import ABTest from "./ABTest";
 import Results from "./Results";
 import Container from "@material-ui/core/Container";
 import {abStats, tagStats} from "./stats";
+import yaml from "js-yaml";
 
 class TestRunner extends React.Component {
     constructor(props) {
@@ -82,17 +83,14 @@ class TestRunner extends React.Component {
         });
     }
 
-    async fetchConfig(config) {
-        if (typeof(config) === 'string') {
-            // Download JSON file
-            const url = this.rawLink(config);
-            return await fetch(url).then(res => res.json());
-        } else {
-            return Object.assign({}, config);
-        }
+    async fetchConfig(url) {
+        /* Downloads config YAML file */
+        const content = await fetch(this.rawLink(url)).then(res => res.text());
+        return yaml.load(content);
     }
 
     rawLink(urlStr) {
+        /* Turns Dropbox share links to download links for which Dropbox serves correct content types */
         const dropboxPattern = new RegExp(/^(https?:\/\/)?(www\.)?dropbox.com/);
         if (dropboxPattern.test(urlStr)) {
             let url = new URL(urlStr);

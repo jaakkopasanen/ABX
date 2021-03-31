@@ -155,7 +155,7 @@ class TestRunner extends React.Component {
                         name: this.config.name,
                         form: this.state.form,
                         testResults: testResults,
-                        tagStats: tagStats(this.state.results, this.config).stats,
+                        tagStats: tagStats(results, this.config).stats,
                         email: this.config.email,
                     })
                 });

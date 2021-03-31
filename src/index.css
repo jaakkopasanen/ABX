@@ -3,6 +3,11 @@ html, body {
     height: 100%;
     background: #f6f6f6;
 }
+.white-bg {
+    position: absolute;
+    top: 0; left: 0; bottom: 0; right: 0;
+    background: white;
+}
 .optionButton {
     margin: 16px;
 }
@@ -11,6 +16,9 @@ html, body {
 }
 .width100p {
     width: 100%;
+}
+.height100p {
+    height: 100%;
 }
 .centerText {
     text-align: center;

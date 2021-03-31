@@ -112,6 +112,7 @@ tests:
       - Sons of Winter and Stars (64 kbps MP3)
       - Sons of Winter and Stars (32 kbps MP3)
     repeat: 10
+email: youremail@gmail.com
 ```
 You can start by copying this file, changing some fields, saving it to your Dropbox and getting the share link to test.
 
@@ -150,6 +151,8 @@ which don't need multi-line texts and therefore these fields are missing the `|-
 - `options` list the audio clips. The clips will be randomly shuffled in each test iteration.
 - `repeat` tells how many iterations of the test should be done.
 
+`email` specifies the email address where the results should be sent to. This is optional and can be omitted if you
+don't wish to collect the results. The results will be provided as JSON documents.
 
 ## Deployment
 Read on if you're interested in deploying and hosting ABX yourself.

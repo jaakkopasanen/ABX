@@ -84,7 +84,7 @@ class ABTest extends React.Component {
                     <Paper>
                         <Box p="20px">
                             <Box mt="12px" mb="40px">
-                                <Typography variant="h2" className="centerText">
+                                <Typography variant="h3" className="centerText">
                                     {this.props.title || ''}
                                 </Typography>
                                 <Typography className="centerText">

@@ -45,7 +45,7 @@ function decodeTestResults(dataStr, config) {
         i += 1 + test.options.length * 2;
         testResults.push({
             name: test.title,
-            testType: test.type,
+            testType: test.testType,
             optionNames: test.options,
             stats: stats
         });

@@ -8,6 +8,8 @@ import Button from "@material-ui/core/Button";
 import shuffle from "./random";
 import { getChar } from "./utils";
 import { Divider, Paper } from "@material-ui/core";
+import reactMuiMarkdownRenderers from "./reactMuiMarkdownRenderers";
+import ReactMarkdown from "react-markdown";
 
 class ABTest extends React.Component {
     constructor(props) {
@@ -58,7 +60,10 @@ class ABTest extends React.Component {
         const audioButtons = [];
         for (let i = 0; i < this.state.options.length; ++i) {
             const n = this.state.options.length;
-            const r = Math.max(1, n / 5) * 70;
+            const buttonDiameter = 64;
+            const space = 24;  // Space between buttons
+            // Calculate radius required to satisfy the space with the button size
+            const r = ((space + buttonDiameter) / 2) / Math.sin(Math.PI / n);
             const coordinates = this.circleCoordindates(i, n, r);
 
             audioButtons.push(
@@ -84,12 +89,10 @@ class ABTest extends React.Component {
                     <Paper>
                         <Box p="20px">
                             <Box mt="12px" mb="40px">
-                                <Typography variant="h3" className="centerText">
-                                    {this.props.title || ''}
-                                </Typography>
-                                <Typography className="centerText">
-                                    {this.props.description || ''}
-                                </Typography>
+                                <ReactMarkdown
+                                    renderers={reactMuiMarkdownRenderers}
+                                    children={this.props.description}
+                                />
                             </Box>
                             <Box>
                                 <Divider />

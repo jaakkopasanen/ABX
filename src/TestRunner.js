@@ -36,8 +36,8 @@ class TestRunner extends React.Component {
             this.audio = configAndAudio.audio;
             this.setState({
                 results: this.config.tests.map(test => ({
-                    name: test.title,
-                    testType: test.type,
+                    name: test.name,
+                    testType: test.testType,
                     userSelections: [],
                     optionNames: test.options.map(option => option.name),
                     nOptions: test.options.length,
@@ -49,20 +49,14 @@ class TestRunner extends React.Component {
     async parseConfig(inConfig) {
         return this.fetchConfig(inConfig).then(config => {
             const audio = {};
-            for (const [name, obj] of Object.entries(config.options)) {
+            for (let i = 0; i < config.options.length; ++i) {
                 // Make URLs downloadable link and create Audio objects
-                if (typeof obj === 'string') {
-                    config.options[name] = {
-                        url: this.rawLink(obj),
-                        tag: obj.tag
-                    };
-                } else {
-                    config.options[name].url = this.rawLink(obj.url);
-                }
-                audio[config.options[name].url] = new Audio(config.options[name].url);
-                audio[config.options[name].url].muted = true;
-                audio[config.options[name].url].loop = true;
-                audio[config.options[name].url].volume = this.state.volume;
+                config.options[i].audioUrl = this.rawLink(config.options[i].audioUrl);
+                // Create audio object and identify it with the audio URL
+                audio[config.options[i].audioUrl] = new Audio(config.options[i].audioUrl);
+                audio[config.options[i].audioUrl].muted = true;
+                audio[config.options[i].audioUrl].loop = true;
+                audio[config.options[i].audioUrl].volume = this.state.volume;
             }
             for (let i = 0; i < config.tests.length; ++i) {
                 // Repeat defaults to 1
@@ -71,11 +65,12 @@ class TestRunner extends React.Component {
                 }
                 // Create option objects by querying the options with the given names
                 config.tests[i].options = config.tests[i].options.map((name) => {
+                    const option = config.options.find(option => option.name === name);
                     return {
                         name: name,
-                        url: config.options[name].url,
-                        audio: audio[config.options[name].url],
-                        tag: config.options[name].tag,
+                        audioUrl: option.audioUrl,
+                        audio: audio[option.audioUrl],
+                        tag: option.tag,
                     }
                 });
             }
@@ -133,6 +128,7 @@ class TestRunner extends React.Component {
                     if (result.testType.toLowerCase() === 'ab') {
                         stats = abStats(result.name, result.optionNames, result.userSelections);
                         delete stats.optionNames;
+                        delete stats.name;
                     } else {
                         throw new Error(`Unsupported test type ${result.testType}`)
                     }
@@ -244,7 +240,6 @@ class TestRunner extends React.Component {
                         display={this.state.testStep === i  && this.state.repeatStep === j ? 'flex' : 'none'}
                     >
                         <ABTest
-                            title={this.config.tests[i].title}
                             description={this.config.tests[i].description}
                             stepStr={`${j + 1}/${this.config.tests[i].repeat}`}
                             options={this.config.tests[i].options}
@@ -262,7 +257,6 @@ class TestRunner extends React.Component {
         steps.push(
             <Box key={steps.length} display={this.state.testStep === this.config.tests.length ? 'flex' : 'none'}>
                 <Results
-                    title={this.config.results.title}
                     description={this.config.results.description}
                     results={this.state.results}
                     config={this.config}

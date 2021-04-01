@@ -2,10 +2,7 @@ import React from "react";
 import Container from "@material-ui/core/Container";
 import Box from "@material-ui/core/Box";
 import Typography from "@material-ui/core/Typography";
-import {Divider, Grid, makeStyles, Paper, SvgIcon} from "@material-ui/core";
-import Button from "@material-ui/core/Button";
-import Link from "@material-ui/core/Link";
-
+import {Button, Link, makeStyles, Paper, SvgIcon} from "@material-ui/core";
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -63,7 +60,7 @@ export default function LandingPage() {
                             <img src="android-chrome-192x192.png" height="96px" alt="ABX logo" />
                         </Box>
                         <Box mt={2}>
-                            <Link href="https://github.com/jaakkopasanen/ABX" target="_blank" rel="noopener" rel="noreferrer">
+                            <Link href="https://github.com/jaakkopasanen/ABX" target="_blank" rel="noopener">
                                 <Button variant="contained" startIcon={<GitHubIcon />}>Watch</Button>
                             </Link>
                         </Box>
@@ -80,7 +77,7 @@ export default function LandingPage() {
                                 </Typography>
                             </Box>
                             <Box>
-                                <Link href="/?test=demo.yml" target="_blank" rel="noopener" rel="noreferrer">
+                                <Link href="/?test=demo.yml" target="_blank" rel="noopener">
                                     <Button variant="contained" color="secondary" size="large">Try the Demo</Button>
                                 </Link>
                             </Box>
@@ -89,21 +86,21 @@ export default function LandingPage() {
                             <Box>
                                 <Paper>
                                     <Box p={2}>
-                                        <img src="results.png" />
+                                        <img src="results.png" alt="results table" />
                                     </Box>
                                 </Paper>
                             </Box>
                             <Box className={classes.bannerStackedImage}>
                                 <Paper>
                                     <Box p={2}>
-                                        <img src="welcome.png" />
+                                        <img src="welcome.png" alt="welcome screen" />
                                     </Box>
                                 </Paper>
                             </Box>
                             <Box className={classes.bannerStackedImage}>
                                 <Paper>
                                     <Box p={2}>
-                                        <img src="ab-test.png" />
+                                        <img src="ab-test.png" alt="AB test screen" />
                                     </Box>
                                 </Paper>
                             </Box>
@@ -132,7 +129,7 @@ export default function LandingPage() {
                                 </Typography>
                             </Box>
                             <Box ml={3} mt={2}>
-                                <img src="yaml-example.png" className={classes.contentImage} />
+                                <img src="yaml-example.png" className={classes.contentImage} alt="Configuration file" />
                             </Box>
                         </Box>
 
@@ -159,7 +156,7 @@ export default function LandingPage() {
                                 </Typography>
                             </Box>
                             <Box flexGrow="1" flexBasis="0" ml={3} mt={2} display="flex" flexDirection="row" justifyContent="center" alignItems="center">
-                                <img src="button-group.png" height="203px" />
+                                <img src="button-group.png" height="203px" alt="Button group" />
                             </Box>
                         </Box>
 
@@ -188,7 +185,7 @@ export default function LandingPage() {
                             <Box flexGrow="1" flexBasis="0" ml={3} mt={2}>
                                 <Paper>
                                     <Box p={2}>
-                                        <img src="result-table.png" />
+                                        <img src="result-table.png" alt="Result table" />
                                     </Box>
                                 </Paper>
                             </Box>
@@ -201,7 +198,7 @@ export default function LandingPage() {
                                 </Box>
                                 <Typography paragraph={true}>
                                     Start creating your own listening tests now. Head to the project's GitHub page&nbsp;
-                                    <Link href="https://github.com/jaakkopasanen/ABX"  target="_blank" rel="noopener" rel="noreferrer">
+                                    <Link href="https://github.com/jaakkopasanen/ABX"  target="_blank" rel="noopener">
                                         jaakkopasanen/ABX
                                     </Link> for a guide on how to declare your own test.
                                 </Typography>

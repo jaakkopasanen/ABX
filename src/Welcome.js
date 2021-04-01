@@ -9,7 +9,6 @@ class Welcome extends React.Component {
 
         const form = {};
         for (let i = 0; i < this.props.form.length; ++i) {
-            //form[this.props.form[i].name] = this.props.form[i].type === 'select' ? this.props.form[i].options[0] : '';
             form[this.props.form[i].name] = '';
         }
         this.state = form;
@@ -30,7 +29,7 @@ class Welcome extends React.Component {
         const inputs = [];
         for (let i = 0; i < this.props.form.length; ++i) {
             let input;
-            if (this.props.form[i].type === 'text') {
+            if (this.props.form[i].inputType === 'text') {
                 input = (
                     <TextField
                         label={this.props.form[i].name}
@@ -39,7 +38,7 @@ class Welcome extends React.Component {
                     />
                 );
 
-            } else if (this.props.form[i].type === 'number') {
+            } else if (this.props.form[i].inputType === 'number') {
                 input = (
                     <TextField
                         type="number"
@@ -54,7 +53,7 @@ class Welcome extends React.Component {
                     />
                 );
 
-            } else if (this.props.form[i].type === 'select') {
+            } else if (this.props.form[i].inputType === 'select') {
                 input = (
                     <TextField
                         label={this.props.form[i].name}

@@ -77,9 +77,9 @@ function multinomialPMF(xs, ps) {
         // Something else than array or a number given
         throw new Error('ps must be an array of a number');
     }
-    if (ps.reduce((a, b) => a + b, 0) !== 1.0) {
+    if (Math.abs(ps.reduce((a, b) => a + b, 0) - 1.0) > 1e-5) {
         // Probabilities don't sum up to 1.0
-        throw new Error('ps must sum to 1.0');
+        throw new Error(`ps must sum to 1.0 but is ${Math.abs(ps.reduce((a, b) => a + b, 0) - 1.0)}`);
     }
     const n = xs.reduce((a, b) => a + b, 0);
     let denom = 1.0;
@@ -145,7 +145,7 @@ function tagStats(results, config) {
     let tagGroups = {};
     for (const testResult of results) {
         // Get all tags in the test options
-        let tags = testResult.optionNames.map(optionName => config.options[optionName].tag);
+        let tags = testResult.optionNames.map(optionName => config.options.find(option => option.name === optionName).tag);
         // Form tag group name by joining the sorted tag names with VS ie "32kbps VS 64 kbps VS lossless"
         tags.sort();
         const tagGroupName = tags.join(' VS ');

@@ -145,9 +145,8 @@ statistics because they had different combinations of tags.
 `tests` section lists the actual listening tests. There can be any number of tests but in practice this should be quite
 limited to avoid exhausting the participants. Each test has four different fields:
 - `type` tells if the listening test is AB or ABX.
-- `title` is the title of the test and is displayed to the user at the top of each test screen and in the results page.
-- `description` uses the same Markdown syntax as the other descriptions. This example has only very short descriptions
-which don't need multi-line texts and therefore these fields are missing the `|-`.
+- `name` is the title of the test and is displayed to the user at the top of each test screen and in the results page.
+- `description` of the test is a single piece of text shown to the user below the title. Markdown is not supported here.
 - `options` list the audio clips. The clips will be randomly shuffled in each test iteration.
 - `repeat` tells how many iterations of the test should be done.
 

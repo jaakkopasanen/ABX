@@ -56,8 +56,8 @@ export default function LandingPage() {
             <Container maxWidth="md">
                 <Box>
                     <Box display="flex" justifyContent="space-between" alignItems="flex-start">
-                        <Box>
-                            <img src="android-chrome-192x192.png" height="96px" alt="ABX logo" />
+                        <Box mt={2}>
+                            <img src="abx-logo-192x109.png" height="64px" alt="ABX logo" />
                         </Box>
                         <Box mt={2}>
                             <Link href="https://github.com/jaakkopasanen/ABX" target="_blank" rel="noopener">
@@ -115,7 +115,7 @@ export default function LandingPage() {
                                 </Box>
                                 <Typography paragraph={true}>
                                     No writing code, no deployments, no setting up servers or
-                                    anything like that. Simply declare your test and give the link to the test
+                                    configuring devices. Simply declare your test and give the link to the test
                                     participants.
                                 </Typography>
                                 <Typography paragraph={true}>
@@ -123,9 +123,9 @@ export default function LandingPage() {
                                     easy to read.
                                 </Typography>
                                 <Typography paragraph={true}>
-                                    Each test session can contain any number of tests. Each test can contain up to
-                                    7 different audio clips. Each test can also be repeated as many times as needed
-                                    to ensure statistical significance.
+                                    Each test session can contain any number of tests, each test can contain any number
+                                    of audio clips and can also be repeated as many times as needed to ensure
+                                    statistical significance.
                                 </Typography>
                             </Box>
                             <Box ml={3} mt={2}>

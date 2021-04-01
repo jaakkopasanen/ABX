@@ -18,7 +18,7 @@ doesn't provide correct content types and therefore cannot be used for hosting t
 The configuration file itself is written with [YAML](https://yaml.org/) syntax. This is rather human friendly and should
 be easy enough for you to get started right away without any prior experience with it. Here's an example file:
 ```yaml
-name: demo-test
+name: Demo test
 welcome:
   description: |-
     #### ABX Demo
@@ -37,15 +37,15 @@ welcome:
     email sent to the research would also include the form data.
   form:
     - name: Age
-      type: number
+      inputType: number
     - name: Gender
-      type: select
+      inputType: select
       options:
         - Female
         - Male
         - Other
     - name: Experience
-      type: select
+      inputType: select
       options:
         - Trained listener
         - Audio engineer
@@ -60,52 +60,52 @@ results:
 
     Here are your results
 options:
-  Sons of Winter and Stars (lossless):
-    url: https://www.dropbox.com/s/9e92quf9tr7aj8s/Wintersun%20-%20Sons%20of%20Winter%20and%20Stars%20lossless.wav?dl=0
+  - name: Sons of Winter and Stars (lossless)
+    audioUrl: https://www.dropbox.com/s/9e92quf9tr7aj8s/Wintersun%20-%20Sons%20of%20Winter%20and%20Stars%20lossless.wav?dl=0
     tag: lossless
-  Sons of Winter and Stars (64 kbps MP3):
-    url: https://www.dropbox.com/s/epvit0keu9w7emp/Wintersun%20-%20Sons%20of%20Winter%20and%20Stars%2064%20kbps.mp3?dl=0
+  - name: Sons of Winter and Stars (64 kbps MP3)
+    audioUrl: https://www.dropbox.com/s/epvit0keu9w7emp/Wintersun%20-%20Sons%20of%20Winter%20and%20Stars%2064%20kbps.mp3?dl=0
     tag: 64 kbps
-  Sons of Winter and Stars (32 kbps MP3):
-    url: https://www.dropbox.com/s/6y0av9tydwsfv6y/Wintersun%20-%20Sons%20of%20Winter%20and%20Stars%2032%20kbps.mp3?dl=0
+  - name: Sons of Winter and Stars (32 kbps MP3)
+    audioUrl: https://www.dropbox.com/s/6y0av9tydwsfv6y/Wintersun%20-%20Sons%20of%20Winter%20and%20Stars%2032%20kbps.mp3?dl=0
     tag: 32 kbps
-  Hotel California (lossless):
-    url: https://www.dropbox.com/s/9j3zdynxrfipezn/Eagles%20-%20Hotel%20California%20lossless.wav?dl=0
+  - name: Hotel California (lossless)
+    audioUrl: https://www.dropbox.com/s/9j3zdynxrfipezn/Eagles%20-%20Hotel%20California%20lossless.wav?dl=0
     tag: lossless
-  Hotel California (64 kbps MP3):
-    url: https://www.dropbox.com/s/5p1gayvfmb3fc0z/Eagles%20-%20Hotel%20California%2064%20kbps.mp3?dl=0
+  - name: Hotel California (64 kbps MP3)
+    audioUrl: https://www.dropbox.com/s/5p1gayvfmb3fc0z/Eagles%20-%20Hotel%20California%2064%20kbps.mp3?dl=0
     tag: 64 kbps
-  Hotel California (32 kbps MP3):
-    url: https://www.dropbox.com/s/bu5aa181sk3q2ca/Eagles%20-%20Hotel%20California%2032%20kbps.mp3?dl=0
+  - name: Hotel California (32 kbps MP3)
+    audioUrl: https://www.dropbox.com/s/bu5aa181sk3q2ca/Eagles%20-%20Hotel%20California%2032%20kbps.mp3?dl=0
     tag: 32 kbps
-  Bird on a Wire (lossless):
-    url: https://www.dropbox.com/s/5froi1pxux8pns0/Jennifer%20Warnes%20-%20Bird%20on%20a%20Wire%20lossless.wav?dl=0
+  - name: Bird on a Wire (lossless)
+    audioUrl: https://www.dropbox.com/s/5froi1pxux8pns0/Jennifer%20Warnes%20-%20Bird%20on%20a%20Wire%20lossless.wav?dl=0
     tag: lossless
-  Bird on a Wire (64 kbps MP3):
-    url: https://www.dropbox.com/s/7jb5cif5o5bda9n/Jennifer%20Warnes%20-%20Bird%20on%20a%20Wire%2064%20kbps.mp3?dl=0
+  - name: Bird on a Wire (64 kbps MP3)
+    audioUrl: https://www.dropbox.com/s/7jb5cif5o5bda9n/Jennifer%20Warnes%20-%20Bird%20on%20a%20Wire%2064%20kbps.mp3?dl=0
     tag: 64 kbps
-  Bird on a Wire (32 kbps MP3):
-    url: https://www.dropbox.com/s/2qfxv4x346p1xdi/Jennifer%20Warnes%20-%20Bird%20on%20a%20Wire%2032%20kbps.mp3?dl=0
+  - name: Bird on a Wire (32 kbps MP3)
+    audioUrl: https://www.dropbox.com/s/2qfxv4x346p1xdi/Jennifer%20Warnes%20-%20Bird%20on%20a%20Wire%2032%20kbps.mp3?dl=0
     tag: 32 kbps
 tests:
-  - type: AB
-    title: Jennifer Warnes - Bird on a Wire
+  - testType: AB
+    name: Jennifer Warnes - Bird on a Wire
     description: Select the most preferred option
     options:
       - Bird on a Wire (lossless)
       - Bird on a Wire (64 kbps MP3)
       - Bird on a Wire (32 kbps MP3)
     repeat: 10
-  - type: AB
-    title: Eagles - Hotel California
+  - testType: AB
+    name: Eagles - Hotel California
     description: Select the most preferred option
     options:
       - Hotel California (lossless)
       - Hotel California (64 kbps MP3)
       - Hotel California (32 kbps MP3)
     repeat: 10
-  - type: AB
-    title: Wintersun - Sons of Winter and Stars
+  - testType: AB
+    name: Wintersun - Sons of Winter and Stars
     description: Select the most preferred option
     options:
       - Sons of Winter and Stars (lossless)
@@ -121,20 +121,22 @@ from which listening tests.
 
 `welcome` details the welcome screen which is shown to the participants before the actual listening tests are launched.
 `description` can be used for giving instructions to the participants. The
-description uses [Markdown]() syntax. Note the strange `|-` after the `description: `, this tells YAML that the
-following is a multi-line text and without this the line breaks will be replaced with spaces.
+description uses [Markdown](https://www.markdownguide.org/basic-syntax/) syntax. Note the strange `|-` after the
+`description: `, this tells YAML that the following is a multi-line text and without this the line breaks will be
+replaced with spaces.
 
-`form` can be used as a survey for collecting demographics information from the participants. You should avoid
-collecting personally identifiable information. Form can have any number of input fields, these are listed with the
-bullet point syntax. Each input field needs to know name and type. Supported types are `text`, `number` and
-`select` (dropdown). List the set of available options `select` type input with the same bullet point syntax.
+`form` is optional and can be used as a survey for collecting demographics information from the participants. You should
+avoid collecting personally identifiable information. Form can have any number of input fields, these are listed with the
+bullet point syntax. Each input field needs to know a name and an `inputType`. Supported types are `text`, `number` and
+`select` (dropdown). List the set of available options for `select` type input with the same bullet point syntax.
 
-`results` section only has `description` which is similar to the welcome screen description. The results are shown
-after all of the tests have been completed. The description is displayed at the top of the results screen.
+`results` section only has an optional `description` field, which is similar to the welcome screen description. The
+results are shown after all of the tests have been completed. The description is displayed at the top of the results
+screen.
 
 `options` list the audio samples used in **all** of the listening tests. First you declare the options in this section
 and then in the tests sections you can simply reference them with their names. Each option has the name as the identifier
-and can to have two additional fields: `url` for specifying where the audio clip is hosted and `tag` for grouping
+and can to have two additional fields: `audioUrl` for specifying where the audio clip is hosted and `tag` for grouping
 options together for statistical analysis. `tag` is optional and if you omit it, there won't be aggregated statistics
 in the results. Keep in mind to only group together audio clips which should be analyzed together. In this example all
 of the 32 kpbs MP3 clips are grouped together, as are 64 kbps and lossless clips. The results include aggregated
@@ -144,10 +146,10 @@ statistics because they had different combinations of tags.
 
 `tests` section lists the actual listening tests. There can be any number of tests but in practice this should be quite
 limited to avoid exhausting the participants. Each test has four different fields:
-- `type` tells if the listening test is AB or ABX.
+- `testType` tells if the listening test is AB or ABX.
 - `name` is the title of the test and is displayed to the user at the top of each test screen and in the results page.
 - `description` of the test is a single piece of text shown to the user below the title. Markdown is not supported here.
-- `options` list the audio clips. The clips will be randomly shuffled in each test iteration.
+- `options` list the audio clip names. The clips will be randomly shuffled in each test iteration.
 - `repeat` tells how many iterations of the test should be done.
 
 `email` specifies the email address where the results should be sent to. This is optional and can be omitted if you

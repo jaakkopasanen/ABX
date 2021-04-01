@@ -1,0 +1,172 @@
+{
+    "name": "mp3-vs-lossless",
+    "form": {
+        "Age": "30",
+        "Gender": "Male",
+        "Experience": "Audio engineer"
+    },
+    "testResults": [
+        {
+            "name": "Jennifer Warnes - Bird on a Wire",
+            "testType": "AB",
+            "optionNames": [
+                "Bird on a Wire (lossless)",
+                "Bird on a Wire (64 kbps MP3)",
+                "Bird on a Wire (32 kbps MP3)"
+            ],
+            "userSelections": [
+                "Bird on a Wire (lossless)",
+                "Bird on a Wire (lossless)",
+                "Bird on a Wire (lossless)",
+                "Bird on a Wire (lossless)",
+                "Bird on a Wire (lossless)",
+                "Bird on a Wire (lossless)",
+                "Bird on a Wire (lossless)",
+                "Bird on a Wire (lossless)",
+                "Bird on a Wire (lossless)",
+                "Bird on a Wire (lossless)"
+            ],
+            "stats": {
+                "name": "Jennifer Warnes - Bird on a Wire",
+                "options": [
+                    {
+                        "name": "Bird on a Wire (lossless)",
+                        "count": 10,
+                        "percentage": 100
+                    },
+                    {
+                        "name": "Bird on a Wire (64 kbps MP3)",
+                        "count": 0,
+                        "percentage": 0
+                    },
+                    {
+                        "name": "Bird on a Wire (32 kbps MP3)",
+                        "count": 0,
+                        "percentage": 0
+                    }
+                ],
+                "nOptions": 3,
+                "totalCount": 10,
+                "pValue": 0.000016935087808430282
+            }
+        },
+        {
+            "name": "Eagles - Hotel California",
+            "testType": "AB",
+            "optionNames": [
+                "Hotel California (lossless)",
+                "Hotel California (64 kbps MP3)",
+                "Hotel California (32 kbps MP3)"
+            ],
+            "userSelections": [
+                "Hotel California (lossless)",
+                "Hotel California (64 kbps MP3)",
+                "Hotel California (lossless)",
+                "Hotel California (lossless)",
+                "Hotel California (lossless)",
+                "Hotel California (lossless)",
+                "Hotel California (lossless)",
+                "Hotel California (lossless)",
+                "Hotel California (lossless)",
+                "Hotel California (lossless)"
+            ],
+            "stats": {
+                "name": "Eagles - Hotel California",
+                "options": [
+                    {
+                        "name": "Hotel California (lossless)",
+                        "count": 9,
+                        "percentage": 90
+                    },
+                    {
+                        "name": "Hotel California (64 kbps MP3)",
+                        "count": 1,
+                        "percentage": 10
+                    },
+                    {
+                        "name": "Hotel California (32 kbps MP3)",
+                        "count": 0,
+                        "percentage": 0
+                    }
+                ],
+                "nOptions": 3,
+                "totalCount": 10,
+                "pValue": 0.00016935087808430283
+            }
+        },
+        {
+            "name": "Wintersun - Sons of Winter and Stars",
+            "testType": "AB",
+            "optionNames": [
+                "Sons of Winter and Stars (lossless)",
+                "Sons of Winter and Stars (64 kbps MP3)",
+                "Sons of Winter and Stars (32 kbps MP3)"
+            ],
+            "userSelections": [
+                "Sons of Winter and Stars (lossless)",
+                "Sons of Winter and Stars (lossless)",
+                "Sons of Winter and Stars (lossless)",
+                "Sons of Winter and Stars (lossless)",
+                "Sons of Winter and Stars (lossless)",
+                "Sons of Winter and Stars (lossless)",
+                "Sons of Winter and Stars (lossless)",
+                "Sons of Winter and Stars (lossless)",
+                "Sons of Winter and Stars (lossless)",
+                "Sons of Winter and Stars (lossless)"
+            ],
+            "stats": {
+                "name": "Wintersun - Sons of Winter and Stars",
+                "options": [
+                    {
+                        "name": "Sons of Winter and Stars (lossless)",
+                        "count": 10,
+                        "percentage": 100
+                    },
+                    {
+                        "name": "Sons of Winter and Stars (64 kbps MP3)",
+                        "count": 0,
+                        "percentage": 0
+                    },
+                    {
+                        "name": "Sons of Winter and Stars (32 kbps MP3)",
+                        "count": 0,
+                        "percentage": 0
+                    }
+                ],
+                "nOptions": 3,
+                "totalCount": 10,
+                "pValue": 0.000016935087808430282
+            }
+        }
+    ],
+    "tagStats": [
+        {
+            "name": "32 kbps VS 64 kbps VS lossless",
+            "options": [
+                {
+                    "name": "lossless",
+                    "count": 28,
+                    "percentage": 96.55172413793103
+                },
+                {
+                    "name": "64 kbps",
+                    "count": 1,
+                    "percentage": 3.4482758620689653
+                },
+                {
+                    "name": "32 kbps",
+                    "count": 0,
+                    "percentage": 0
+                }
+            ],
+            "nOptions": 3,
+            "optionNames": [
+                "32 kbps",
+                "64 kbps",
+                "lossless"
+            ],
+            "totalCount": 29,
+            "pValue": 4.2255341021684065e-13
+        }
+    ]
+}

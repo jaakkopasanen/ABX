@@ -1,5 +1,9 @@
 # TODO
+- Button spacing
+- /test/<link>
+- Sharing: base64(7z(userSelections))
 - Landing page
+- Documentation
 - ABX
 - Multi submission stats
 - Keyboard shortcuts

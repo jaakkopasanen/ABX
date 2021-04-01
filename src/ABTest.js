@@ -25,7 +25,7 @@ class ABTest extends React.Component {
 
     handleClick(i) {
         this.setState({selected: i === this.state.selected ? null : i});
-        this.props.onClick(this.state.options[i].url);
+        this.props.onClick(this.state.options[i].audioUrl);
     }
 
     handleSubmit() {
@@ -89,10 +89,15 @@ class ABTest extends React.Component {
                     <Paper>
                         <Box p="20px">
                             <Box mt="12px" mb="40px">
-                                <ReactMarkdown
-                                    renderers={reactMuiMarkdownRenderers}
-                                    children={this.props.description}
-                                />
+                                <Typography variant="h4" className="centerText">
+                                    {this.props.name}
+                                </Typography>
+                                {this.props.description &&
+                                <Box mt={2}>
+                                    <Typography className="centerText">
+                                        {this.props.description}
+                                    </Typography>
+                                </Box>}
                             </Box>
                             <Box>
                                 <Divider />
@@ -106,7 +111,6 @@ class ABTest extends React.Component {
                                     flexDirection="row"
                                     justifyContent="center"
                                     className="audioButtonGroup"
-
                                 >
                                     {audioButtons}
                                 </Box>

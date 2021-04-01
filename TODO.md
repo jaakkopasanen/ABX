@@ -1,6 +1,4 @@
 # TODO
-- Button spacing
-- /test/<link>
 - Sharing: base64(7z(userSelections))
 - Landing page
 - Documentation

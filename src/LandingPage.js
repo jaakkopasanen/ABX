@@ -69,11 +69,11 @@ export default function LandingPage() {
                     <Box display="flex" alignItems="center" mb={16}>
                         <Box display="flex" flexDirection="column" className={classes.bannerTitle}>
                             <Box mt={-6} mb={3}>
-                                <Typography variant="h2">Double blind</Typography>
+                                <Typography variant="h2">Listening tests in the browser</Typography>
                             </Box>
                             <Box mb="36px">
                                 <Typography>
-                                    Create and conduct listening tests easily. Get started in just a couple of minutes.
+                                    Run double blind listening tests on any device super easily.
                                 </Typography>
                             </Box>
                             <Box>

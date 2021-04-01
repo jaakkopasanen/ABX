@@ -6,7 +6,11 @@ import ABStats from "./ABStats";
 class TagStats extends React.Component {
     render() {
         // Create tag groups from all combinations of tags
-        const tagGroups = tagStats(this.props.results, this.props.config).tagGroups;
+        const tagSts = tagStats(this.props.results, this.props.config);
+        if (!tagSts) {
+            return '';
+        }
+        const tagGroups = tagSts.tagGroups;
 
         // Compute tag group stats
         const allStats = [];

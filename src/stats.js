@@ -69,6 +69,11 @@ function factorial(num) {
 }
 
 function multinomialPMF(xs, ps) {
+    /* Calculated multinomial probability with probability mass function
+     * Args:
+     *   xs: counts of choices
+     *   ps: probabilities of choices
+     */
     if (typeof ps === 'number') {
         // Single number given, create array full of it
         ps = Array(xs.length).fill(ps);
@@ -141,12 +146,20 @@ function abStats(name, optionNames, userSelections) {
 }
 
 function tagStats(results, config) {
+    if (Math.min(results.map(result => result.userSelections.length)) === 0) {
+        return;
+    }
     // Create tag groups from all combinations of tags
     let tagGroups = {};
     for (const testResult of results) {
         // Get all tags in the test options
         let tags = testResult.optionNames.map(optionName => config.options.find(option => option.name === optionName).tag);
         // Form tag group name by joining the sorted tag names with VS ie "32kbps VS 64 kbps VS lossless"
+        tags = [...new Set(tags)];
+        tags = tags.filter(x => x !== undefined);
+        if (tags.length === 0) {
+            continue;
+        }
         tags.sort();
         const tagGroupName = tags.join(' VS ');
         if (tagGroups[tagGroupName] === undefined) {
@@ -162,10 +175,14 @@ function tagStats(results, config) {
             testResult.userSelections.map(selection => ({name: selection.tag}))
         );
     }
+    if (Object.keys(tagGroups).length === 0) {
+        return;
+    }
 
     // Compute tag group stats
     const stats = [];
     for (const [name, tagGroup] of Object.entries(tagGroups)) {
+        // TODO: ABX and other test types
         stats.push(abStats(name, tagGroup.optionNames, tagGroup.userSelections));
     }
     return {tagGroups: tagGroups, stats: stats};

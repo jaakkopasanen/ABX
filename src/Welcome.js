@@ -8,8 +8,10 @@ class Welcome extends React.Component {
         super(props);
 
         const form = {};
-        for (let i = 0; i < this.props.form.length; ++i) {
-            form[this.props.form[i].name] = '';
+        if (this.props.form !== undefined) {
+            for (let i = 0; i < this.props.form.length; ++i) {
+                form[this.props.form[i].name] = '';
+            }
         }
         this.state = form;
 
@@ -83,8 +85,10 @@ class Welcome extends React.Component {
 
     validateForm() {
         let isValid = true;
-        for (let field of this.props.form) {
-            isValid = isValid && this.state[field.name] !== '';
+        if (this.props.form !== undefined) {
+            for (let field of this.props.form) {
+                isValid = isValid && this.state[field.name] !== '';
+            }
         }
         return isValid;
     }

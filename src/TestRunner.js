@@ -140,6 +140,10 @@ class TestRunner extends React.Component {
                         stats: stats
                     };
                 });
+                let tagSts = tagStats(results, this.config);
+                if (tagSts) {
+                    tagSts = tagSts.stats;
+                }
                 fetch('/submit', {
                     method: 'POST',
                     cache: 'no-cache',
@@ -151,7 +155,7 @@ class TestRunner extends React.Component {
                         name: this.config.name,
                         form: this.state.form,
                         testResults: testResults,
-                        tagStats: tagStats(results, this.config).stats,
+                        tagStats: tagSts,
                         email: this.config.email,
                     })
                 });
@@ -218,18 +222,16 @@ class TestRunner extends React.Component {
         }
         const steps = [];
 
-        if ('welcome' in this.config) {
-            // Add welcome screen
-            steps.push(
-                <Box key={'welcome'} display={this.state.testStep === -1 ? 'flex' : 'none'}>
-                    <Welcome
-                        description={this.config.welcome.description}
-                        form={this.config.welcome.form}
-                        onClick={this.start}
-                    />
-                </Box>
-            )
-        }
+        // Add welcome screen
+        steps.push(
+            <Box key={'welcome'} display={this.state.testStep === -1 ? 'flex' : 'none'}>
+                <Welcome
+                    description={this.config.welcome.description}
+                    form={this.config.welcome.form}
+                    onClick={this.start}
+                />
+            </Box>
+        )
 
         // Add tests
         for (let i = 0; i < this.config.tests.length; ++i) {
@@ -240,6 +242,7 @@ class TestRunner extends React.Component {
                         display={this.state.testStep === i  && this.state.repeatStep === j ? 'flex' : 'none'}
                     >
                         <ABTest
+                            name={this.config.tests[i].name}
                             description={this.config.tests[i].description}
                             stepStr={`${j + 1}/${this.config.tests[i].repeat}`}
                             options={this.config.tests[i].options}
@@ -257,7 +260,7 @@ class TestRunner extends React.Component {
         steps.push(
             <Box key={steps.length} display={this.state.testStep === this.config.tests.length ? 'flex' : 'none'}>
                 <Results
-                    description={this.config.results.description}
+                    description={this.config.results ? this.config.results.description : ''}
                     results={this.state.results}
                     config={this.config}
                 />

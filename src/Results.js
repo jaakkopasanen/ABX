@@ -95,7 +95,9 @@ class Results extends React.Component {
                         </Box>
                         <Box className="centerText" display={this.state.shared ? 'block': 'none'}>
                             <Box display="flex" flexDirection="row">
-                                <Typography color="primary">{shareUrl}</Typography>
+                                <Typography>
+                                    <Link href={shareUrl} target="_blank" rel="noopener">{shareUrl}</Link>
+                                </Typography>
                                 <Tooltip
                                     open={this.state.isCopiedTooltipOpen}
                                     disableFocusListener

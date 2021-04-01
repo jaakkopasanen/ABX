@@ -8,8 +8,6 @@ import Button from "@material-ui/core/Button";
 import shuffle from "./random";
 import { getChar } from "./utils";
 import { Divider, Paper } from "@material-ui/core";
-import reactMuiMarkdownRenderers from "./reactMuiMarkdownRenderers";
-import ReactMarkdown from "react-markdown";
 
 class ABTest extends React.Component {
     constructor(props) {

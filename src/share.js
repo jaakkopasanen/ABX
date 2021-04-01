@@ -1,6 +1,4 @@
-const fs = require('fs');
-const yaml = require('js-yaml');
-const atob = require('atob');
+import {bytesToBase64} from "./base64";
 
 function encodeTestResults(testResults, config) {
     // Map test names to ordinal numbers
@@ -17,13 +15,13 @@ function encodeTestResults(testResults, config) {
     const data = [];
     for (const result of testResults) {
         data.push(testOrd[result.name]);
-        for (const option of result.stats.options) {
+        for (const option of result.options) {
             data.push(optionOrd[option.name]);
             data.push(option.count);
         }
     }
     // Convert to URI component encoded Base64
-    return encodeURIComponent(Buffer.from(data).toString('base64'));
+    return encodeURIComponent(bytesToBase64(data));
 }
 
 function decodeTestResults(dataStr, config) {
@@ -53,9 +51,4 @@ function decodeTestResults(dataStr, config) {
     return testResults;
 }
 
-const config = yaml.load(fs.readFileSync('public/demo.yml'));
-const results = JSON.parse(fs.readFileSync('mp3-vs-lossless 2021-03-30 13 45 10 UTC.json'));
-const dataStr = encodeTestResults(results.testResults, config);
-console.log('encoded:', dataStr);
-const decoded = decodeTestResults(dataStr, config);
-console.log('decoded:', JSON.stringify(decoded, undefined, 4));
+export {encodeTestResults, decodeTestResults};

@@ -30,7 +30,7 @@ function encodeAbTestResults(testResults, config) {
         optionOrd[config.options[i].name] = i;
     }
     // Create data array with ordinal numbers
-    const data = [];
+    const data = [Math.floor(Math.random() * 256)];  // One random byte to confuse users XD
     for (const result of testResults) {
         // Add ordinal number of the test
         data.push(testOrd[result.name]);
@@ -50,7 +50,7 @@ function decodeAbTestResults(dataStr, config) {
     data = Uint8Array.from(atob(data), c => c.charCodeAt(0));
 
     const testResults = [];
-    let i = 0;
+    let i = 1;  // Skip the random byte added by encoder
     while (i < data.length) {
         const test = Object.assign({}, config.tests[data[i]]);
         // Create stats objects with the count data

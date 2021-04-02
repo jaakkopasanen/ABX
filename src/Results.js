@@ -92,26 +92,30 @@ class Results extends React.Component {
                                     Share your results
                                 </Button>
                             </Box>
-                            <Box className="centerText" display={this.state.shared ? 'block': 'none'}>
-                                <Box display="flex" flexDirection="row">
-                                    <Typography>
-                                        <Link href={shareUrl} target="_blank" rel="noopener">{shareUrl}</Link>
-                                    </Typography>
-                                    <Tooltip
-                                        open={this.state.isCopiedTooltipOpen}
-                                        disableFocusListener
-                                        disableHoverListener
-                                        disableTouchListener
-                                        placement="top"
-                                        title="Copied!"
-                                    >
-                                        <IconButton
-                                            color="primary"
-                                            onClick={() => { this.handleCopyClick(shareUrl); }}
+                            <Box display={this.state.shared ? 'block': 'none'}>
+                                <Box display="flex" flexDirection="row" justifyContent="center">
+                                    <Box display="flex" alignItems="center">
+                                        <Typography align="center">
+                                            <Link href={shareUrl} target="_blank" rel="noopener">{shareUrl}</Link>
+                                        </Typography>
+                                    </Box>
+                                    <Box display="flex" alignItems="center">
+                                        <Tooltip
+                                            open={this.state.isCopiedTooltipOpen}
+                                            disableFocusListener
+                                            disableHoverListener
+                                            disableTouchListener
+                                            placement="top"
+                                            title="Copied!"
                                         >
-                                            <FileCopyIcon />
-                                        </IconButton>
-                                    </Tooltip>
+                                            <IconButton
+                                                color="primary"
+                                                onClick={() => { this.handleCopyClick(shareUrl); }}
+                                            >
+                                                <FileCopyIcon />
+                                            </IconButton>
+                                        </Tooltip>
+                                    </Box>
                                 </Box>
                             </Box>
                         </Box>

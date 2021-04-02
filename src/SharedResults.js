@@ -33,7 +33,7 @@ class SharedResults extends React.Component {
         return (
             <Box className="greyBg" pt={2} pb={2}>
                 <Container maxWidth="sm">
-                    <Box>
+                    <Box mb={2}>
                         <Link href="/" target="_blank">
                             <img src="abx-logo-192x109.png" height="64px" alt="ABX logo" />
                         </Link>

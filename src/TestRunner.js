@@ -233,12 +233,19 @@ class TestRunner extends React.Component {
 
         // Add results screen
         steps.push(
-            <Box key={steps.length} display={this.state.testStep === this.config.tests.length ? 'flex' : 'none'}>
-                <Results
-                    description={this.config.results ? this.config.results.description : ''}
-                    results={this.state.results}
-                    config={this.config}
-                />
+            <Box
+                key={steps.length}
+                display={this.state.testStep === this.config.tests.length ? 'flex' : 'none'}
+                className="greyBg"
+                pt={2} pb={2}
+            >
+                <Container maxWidth="sm">
+                    <Results
+                        description={this.config.results ? this.config.results.description : ''}
+                        results={this.state.results}
+                        config={this.config}
+                    />
+                </Container>
             </Box>
         )
         return (

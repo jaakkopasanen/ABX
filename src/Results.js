@@ -2,6 +2,7 @@ import React from "react";
 import Box from "@material-ui/core/Box";
 import Paper from "@material-ui/core/Paper";
 import ABStats from './ABStats';
+import ABXStats from "./ABXStats";
 import reactMuiMarkdownRenderers from "./reactMuiMarkdownRenderers";
 import ReactMarkdown from "react-markdown";
 import Typography from "@material-ui/core/Typography";
@@ -47,6 +48,14 @@ class Results extends React.Component {
                         optionNames={this.props.results[i].optionNames}
                         userSelections={this.props.results[i].userSelections}
                         stats={this.props.results[i].stats}
+                    />
+                )
+            } else if (this.props.results[i].testType.toLowerCase() === 'abx') {
+                stats = (
+                    <ABXStats
+                        name={this.props.results[i].name}
+                        optionNames={this.props.results[i].optionNames}
+                        userSelectionsAndCorrects={this.props.results[i].userSelectionsAndCorrects}
                     />
                 )
             }

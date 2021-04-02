@@ -212,7 +212,7 @@ class TestRunner extends React.Component {
                         description={this.config.tests[i].description}
                         stepStr={`${j + 1}/${this.config.tests[i].repeat}`}
                         options={this.config.tests[i].options}
-                        onSubmit={this.handleAbTestSubmit}
+                        onSubmit={this.handleAbxTestSubmit}
                         volume={this.state.volume}
                         onVolumeChange={this.handleVolumeChange}
                         onClick={this.handleAudioButtonClick}

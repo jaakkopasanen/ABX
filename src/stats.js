@@ -131,7 +131,7 @@ function enrichAbStats(stats) {
 }
 
 function abStats(name, optionNames, userSelections) {
-    let stats = {
+    const stats = {
         name: name,
         options: [],
         nOptions: optionNames.length,
@@ -139,22 +139,107 @@ function abStats(name, optionNames, userSelections) {
     };
 
     // Iterate through user's selections
-    for (let j = 0; j < userSelections.length; ++j) {
+    for (let i = 0; i < userSelections.length; ++i) {
         // Find the option with the name of the current selection
-        const option = stats.options.filter(option => option.name === userSelections[j].name);
-        if (option.length) {
+        const option = stats.options.find(option => option.name === userSelections[i].name);
+        if (option) {
             // Found, increment count
-            ++option[0].count;
+            ++option.count;
         } else {
             // Doesn't exist, create new
             stats.options.push({
-                name: userSelections[j].name,
+                name: userSelections[i].name,
                 count: 1,
             });
         }
     }
 
     return enrichAbStats(stats);
+}
+
+function enrichAbxStats(stats) {
+    const enrichedStats = Object.assign({}, stats);
+
+    // Add rows for options which were never the correct option
+    for (const name of enrichedStats.optionNames) {
+        if (!enrichedStats.rows.find(row => row.correctOption === name)) {
+            enrichedStats.rows.push({
+                correctOption: name,
+                counts: {}
+            })
+        }
+    }
+
+    // Add zeros counts for missing options in rows
+    for (let i = 0; i < enrichedStats.rows.length; ++i) {
+        for (const name of enrichedStats.optionNames) {
+            if (enrichedStats.rows[i].counts[name] === undefined) {
+                enrichedStats.rows[i].counts[name] = 0;
+            }
+        }
+    }
+
+    // Calculate p-value
+    enrichedStats.correctCount = 0;
+    enrichedStats.incorrectCount = 0;
+    for (const row of enrichedStats.rows) {
+        // Add the count of the correct option to the correct counter
+        enrichedStats.correctCount += row.counts[row.correctOption];
+        // Add the counts of the incorrect options to the incorrect counter
+        for (const [name, count] of Object.entries(row.counts)) {
+            if (name !== row.correctOption) {
+                // Name doesn't match the correct option, this was incorrect selection
+                enrichedStats.incorrectCount += count;
+            }
+        }
+    }
+
+    // Calculate p-value
+    enrichedStats.nOptions = enrichedStats.optionNames.length;
+    enrichedStats.pValue = multinomialPMF(
+        [enrichedStats.correctCount, enrichedStats.incorrectCount],
+        [1 / enrichedStats.nOptions, 1 - 1 / enrichedStats.nOptions]
+    );
+
+    return enrichedStats;
+}
+
+function abxStats(name, optionNames, userSelectionsAndCorrects) {
+    /* Calculates ABX statistics
+    * Args:
+    *   name: Name of the test
+    *   optionNames: Array of options' names included in the test
+    *   userSelectionsAndCorrects: Array of objects with selectedOption and correctOption
+    */
+    const stats = {
+        name: name,
+        rows:[],
+        nOptions: optionNames.length,
+        optionNames: optionNames.slice()
+    }
+
+    for (let i = 0; i < userSelectionsAndCorrects.length; ++i) {
+        const selectedName = userSelectionsAndCorrects[i].selectedOption.name;
+        const correctName = userSelectionsAndCorrects[i].correctOption.name;
+        //const option = stats.options.filter(option => option.name === userSelectionsAndCorrects[i].name);
+        let row = stats.rows.find(row => row.correctOption === correctName);
+        if (!row) {
+            // Doesn't exist, create new
+            row = {
+                correctOption: correctName,
+                counts: {}  // Fill with zeros
+            }
+            stats.rows.push(row);
+        }
+        if (!row.counts[selectedName]) {
+            row.counts[selectedName] = 0;
+        }
+        ++row.counts[selectedName];
+    }
+    const enrichedStats = enrichAbxStats(stats);
+    console.log('abxStats.rows');
+    console.log(enrichedStats.rows);
+    return enrichedStats;
 }
 
 function tagStats(results, config) {
@@ -200,4 +285,4 @@ function tagStats(results, config) {
     return {tagGroups: tagGroups, stats: stats};
 }
 
-export { chiSquaredPValue, multinomialPMF, enrichAbStats, abStats, tagStats };
+export { chiSquaredPValue, multinomialPMF, enrichAbStats, abStats, abxStats, tagStats };

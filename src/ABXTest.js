@@ -29,7 +29,14 @@ class ABXTest extends ABTest {
             return;
         }
         this.stopAudio();
-        this.props.onSubmit(this.state.options[this.state.selected]);
+        this.props.onSubmit(
+            // Selected option
+            Object.assign({}, this.state.options[this.state.selected]),
+            Object.assign({}, this.state.options.find(
+                // Find the option which has the same audio URL as the X (which is the last one in the array)
+                option => option.audioUrl === this.state.options[this.state.options.length - 1].audioUrl
+            ))
+        );
     }
 
     getChar(ix) {

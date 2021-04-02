@@ -12,7 +12,7 @@ options:
     audioUrl: https://www.dropbox.com/s/6y0av9tydwsfv6y/Wintersun%20-%20Sons%20of%20Winter%20and%20Stars%2032%20kbps.mp3?dl=0
 tests:
   - name: Lossless vs 64 kbps MP3
-    testType: AB
+    testType: ABX
     options:
       - lossless
       - 64 kbps

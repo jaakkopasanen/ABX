@@ -20,6 +20,7 @@ class Results extends React.Component {
             shared: false,
             isCopiedTooltipOpen: false,
         };
+        this.shareUrl = null;
         this.handleShareClick = this.handleShareClick.bind(this);
         this.handleCopyClick = this.handleCopyClick.bind(this);
     }
@@ -56,6 +57,7 @@ class Results extends React.Component {
                         name={this.props.results[i].name}
                         optionNames={this.props.results[i].optionNames}
                         userSelectionsAndCorrects={this.props.results[i].userSelectionsAndCorrects}
+                        stats={this.props.results[i].stats}
                     />
                 )
             }
@@ -66,7 +68,9 @@ class Results extends React.Component {
             )
         }
         const tagSts = tagStats(this.props.results, this.props.config);
-        const shareUrl = createShareUrl(this.props.results, this.props.config);
+        if (this.shareUrl === null) {
+            this.shareUrl = createShareUrl(this.props.results, this.props.config);
+        }
         return (
             <Box>
                 <Paper>
@@ -85,7 +89,7 @@ class Results extends React.Component {
                                 <TagStats config={this.props.config} results={this.props.results} />
                             </Box>
                         </Box>}
-                        {shareUrl &&
+                        {this.shareUrl &&
                         <Box>
                             <Box className="centerText" display={this.state.shared ? 'none': 'block'}>
                                 <Button color="secondary" startIcon={<ShareIcon />} onClick={this.handleShareClick}>
@@ -96,7 +100,9 @@ class Results extends React.Component {
                                 <Box display="flex" flexDirection="row" justifyContent="center">
                                     <Box display="flex" alignItems="center">
                                         <Typography align="center">
-                                            <Link href={shareUrl} target="_blank" rel="noopener">{shareUrl}</Link>
+                                            <Link href={this.shareUrl} target="_blank" rel="noopener">
+                                                {this.shareUrl}
+                                            </Link>
                                         </Typography>
                                     </Box>
                                     <Box display="flex" alignItems="center">
@@ -110,7 +116,7 @@ class Results extends React.Component {
                                         >
                                             <IconButton
                                                 color="primary"
-                                                onClick={() => { this.handleCopyClick(shareUrl); }}
+                                                onClick={() => { this.handleCopyClick(this.shareUrl); }}
                                             >
                                                 <FileCopyIcon />
                                             </IconButton>

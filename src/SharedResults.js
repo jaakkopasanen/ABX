@@ -2,7 +2,7 @@ import React from 'react';
 import {Box, Button, Link, Container} from "@material-ui/core";
 import {parseConfig} from "./config";
 import Results from "./Results";
-import {decodeAbTestResults} from "./share";
+import {decodeTestResults} from "./share";
 
 
 class SharedResults extends React.Component {
@@ -16,7 +16,7 @@ class SharedResults extends React.Component {
 
     componentDidMount() {
         parseConfig(this.props.config).then(config => {
-            const results = decodeAbTestResults(this.props.results, config);
+            const results = decodeTestResults(this.props.results, config);
             this.setState({
                 config: Object.assign({}, config),
                 results: results

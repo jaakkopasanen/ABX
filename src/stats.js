@@ -282,4 +282,4 @@ function tagStats(results, config) {
     return {tagGroups: tagGroups, stats: stats};
 }
 
-export { chiSquaredPValue, multinomialPMF, enrichAbStats, abStats, abxStats, tagStats };
+export { chiSquaredPValue, multinomialPMF, enrichAbStats, abStats, enrichAbxStats, abxStats, tagStats };

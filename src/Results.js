@@ -9,7 +9,7 @@ import Typography from "@material-ui/core/Typography";
 import TagStats from "./TagStats";
 import {tagStats} from "./stats";
 import {createShareUrl} from "./share";
-import {Button, IconButton, Link, Tooltip} from "@material-ui/core";
+import {Button, Container, IconButton, Link, Tooltip} from "@material-ui/core";
 import ShareIcon from '@material-ui/icons/Share';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
 
@@ -68,56 +68,60 @@ class Results extends React.Component {
         const tagSts = tagStats(this.props.results, this.props.config);
         const shareUrl = createShareUrl(this.props.results, this.props.config);
         return (
-            <Box mt="16px" className="width100p">
-                <Paper>
-                    <Box display="flex" flexDirection="column" p="16px">
-                        {this.props.description &&
-                        <Box key={-1} mb="16px">
-                            <ReactMarkdown renderers={reactMuiMarkdownRenderers} children={this.props.description}/>
-                        </Box>}
-                        {allStats}
-                        {tagSts &&
-                        <Box>
-                            <Box mb="16px">
-                                <Typography variant="h4">Aggregated results</Typography>
-                            </Box>
-                            <Box>
-                                <TagStats config={this.props.config} results={this.props.results} />
-                            </Box>
-                        </Box>}
-                        {shareUrl &&
-                        <Box>
-                            <Box className="centerText" display={this.state.shared ? 'none': 'block'}>
-                                <Button color="secondary" startIcon={<ShareIcon />} onClick={this.handleShareClick}>
-                                    Share your results
-                                </Button>
-                            </Box>
-                            <Box className="centerText" display={this.state.shared ? 'block': 'none'}>
-                                <Box display="flex" flexDirection="row">
-                                    <Typography>
-                                        <Link href={shareUrl} target="_blank" rel="noopener">{shareUrl}</Link>
-                                    </Typography>
-                                    <Tooltip
-                                        open={this.state.isCopiedTooltipOpen}
-                                        disableFocusListener
-                                        disableHoverListener
-                                        disableTouchListener
-                                        placement="top"
-                                        title="Copied!"
-                                    >
-                                        <IconButton
-                                            color="primary"
-                                            onClick={() => { this.handleCopyClick(shareUrl); }}
-                                        >
-                                            <FileCopyIcon />
-                                        </IconButton>
-                                    </Tooltip>
+            <Box className="greyBg" pt={2} pb={2}>
+                <Container maxWidth="sm">
+                    <Box>
+                        <Paper>
+                            <Box display="flex" flexDirection="column" p="16px">
+                                {this.props.description &&
+                                <Box key={-1} mb="16px">
+                                    <ReactMarkdown renderers={reactMuiMarkdownRenderers} children={this.props.description}/>
+                                </Box>}
+                                {allStats}
+                                {tagSts &&
+                                <Box>
+                                    <Box mb="16px">
+                                        <Typography variant="h4">Aggregated results</Typography>
+                                    </Box>
+                                    <Box>
+                                        <TagStats config={this.props.config} results={this.props.results} />
+                                    </Box>
+                                </Box>}
+                                {shareUrl &&
+                                <Box>
+                                    <Box className="centerText" display={this.state.shared ? 'none': 'block'}>
+                                        <Button color="secondary" startIcon={<ShareIcon />} onClick={this.handleShareClick}>
+                                            Share your results
+                                        </Button>
+                                    </Box>
+                                    <Box className="centerText" display={this.state.shared ? 'block': 'none'}>
+                                        <Box display="flex" flexDirection="row">
+                                            <Typography>
+                                                <Link href={shareUrl} target="_blank" rel="noopener">{shareUrl}</Link>
+                                            </Typography>
+                                            <Tooltip
+                                                open={this.state.isCopiedTooltipOpen}
+                                                disableFocusListener
+                                                disableHoverListener
+                                                disableTouchListener
+                                                placement="top"
+                                                title="Copied!"
+                                            >
+                                                <IconButton
+                                                    color="primary"
+                                                    onClick={() => { this.handleCopyClick(shareUrl); }}
+                                                >
+                                                    <FileCopyIcon />
+                                                </IconButton>
+                                            </Tooltip>
+                                        </Box>
+                                    </Box>
                                 </Box>
+                                }
                             </Box>
-                        </Box>
-                        }
+                        </Paper>
                     </Box>
-                </Paper>
+                </Container>
             </Box>
         )
     }

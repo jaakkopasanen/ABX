@@ -5,7 +5,7 @@ import Typography from "@material-ui/core/Typography";
 import VolumeUpIcon from "@material-ui/icons/VolumeUp";
 import Slider from "@material-ui/core/Slider";
 import Button from "@material-ui/core/Button";
-import { Divider, Paper } from "@material-ui/core";
+import {Container, Divider, Paper} from "@material-ui/core";
 import ABTest from "./ABTest";
 
 class ABXTest extends ABTest {
@@ -101,65 +101,69 @@ class ABXTest extends ABTest {
             )
         }
         return (
-            <Box display="flex" flexDirection="column" className="width100p" mt="16px">
-                <Box>
-                    <Paper>
-                        <Box p="20px">
-                            <Box mt="12px" mb="40px">
-                                <Typography variant="h4" className="centerText">
-                                    {this.props.name}
-                                </Typography>
-                                {this.props.description &&
-                                <Box mt={2}>
-                                    <Typography className="centerText">
-                                        {this.props.description}
-                                    </Typography>
-                                </Box>}
-                            </Box>
-                            <Box>
-                                <Divider />
-                            </Box>
-                            <Box display="flex" flexDirection="row" justifyContent="end" mt="6px" mr="8px">
-                                <Typography color="textSecondary">{this.props.stepStr}</Typography>
-                            </Box>
-                            <Box>
-                                <Box
-                                    display="flex"
-                                    flexDirection="row"
-                                    justifyContent="center"
-                                    className="audioButtonGroup"
-                                >
-                                    {audioButtons}
+            <Box className="greyBg" pt={2} pb={2}>
+                <Container maxWidth="sm">
+                    <Box display="flex" flexDirection="column">
+                        <Box>
+                            <Paper>
+                                <Box p="20px">
+                                    <Box mt="12px" mb="40px">
+                                        <Typography variant="h4" className="centerText">
+                                            {this.props.name}
+                                        </Typography>
+                                        {this.props.description &&
+                                        <Box mt={2}>
+                                            <Typography className="centerText">
+                                                {this.props.description}
+                                            </Typography>
+                                        </Box>}
+                                    </Box>
+                                    <Box>
+                                        <Divider />
+                                    </Box>
+                                    <Box display="flex" flexDirection="row" justifyContent="end" mt="6px" mr="8px">
+                                        <Typography color="textSecondary">{this.props.stepStr}</Typography>
+                                    </Box>
+                                    <Box>
+                                        <Box
+                                            display="flex"
+                                            flexDirection="row"
+                                            justifyContent="center"
+                                            className="audioButtonGroup"
+                                        >
+                                            {audioButtons}
+                                        </Box>
+                                        <Box display="flex" flexDirection="row" justifyContent="flex-end" mt="16px">
+                                            <Button
+                                                variant="outlined"
+                                                color="primary"
+                                                onClick={this.handleSubmit}
+                                                disabled={this.state.selected === null || this.state.selected === this.state.options.length - 1}
+                                            >
+                                                {`Select ${this.getChar(this.state.selected)}`}
+                                            </Button>
+                                        </Box>
+                                    </Box>
                                 </Box>
-                                <Box display="flex" flexDirection="row" justifyContent="flex-end" mt="16px">
-                                    <Button
-                                        variant="outlined"
-                                        color="primary"
-                                        onClick={this.handleSubmit}
-                                        disabled={this.state.selected === null || this.state.selected === this.state.options.length - 1}
-                                    >
-                                        {`Select ${this.getChar(this.state.selected)}`}
-                                    </Button>
+                            </Paper>
+                        </Box>
+                        <Box mt="10px">
+                            <Paper className="paperPadding">
+                                <Box display="flex" flexDirection="row" p="10px">
+                                    <VolumeUpIcon style={{fontSize: 32, padding: '5px 0'}} />
+                                    <Slider
+                                        color="secondary"
+                                        value={this.props.volume}
+                                        defaultValue={0.5}
+                                        min={0.0} max={1.0} step={0.01}
+                                        onChange={this.props.onVolumeChange}
+                                        className="volumeSlider"
+                                    />
                                 </Box>
-                            </Box>
+                            </Paper>
                         </Box>
-                    </Paper>
-                </Box>
-                <Box mt="10px">
-                    <Paper className="paperPadding">
-                        <Box display="flex" flexDirection="row" p="10px">
-                            <VolumeUpIcon style={{fontSize: 32, padding: '5px 0'}} />
-                            <Slider
-                                color="secondary"
-                                value={this.props.volume}
-                                defaultValue={0.5}
-                                min={0.0} max={1.0} step={0.01}
-                                onChange={this.props.onVolumeChange}
-                                className="volumeSlider"
-                            />
-                        </Box>
-                    </Paper>
-                </Box>
+                    </Box>
+                </Container>
             </Box>
         );
     }

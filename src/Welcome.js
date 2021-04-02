@@ -1,6 +1,6 @@
 import React from "react";
 import ReactMarkdown from 'react-markdown';
-import { Box, Button, Paper, TextField, MenuItem } from "@material-ui/core";
+import {Box, Button, Paper, TextField, MenuItem, Container} from "@material-ui/core";
 import reactMuiMarkdownRenderers from "./reactMuiMarkdownRenderers";
 
 class Welcome extends React.Component {
@@ -95,27 +95,31 @@ class Welcome extends React.Component {
 
     render() {
         return (
-            <Box mt="16px" className="width100p">
-                <Paper>
-                    <Box p="20px">
-                        <Box key={0} mt="16px">
-                            <ReactMarkdown renderers={reactMuiMarkdownRenderers} children={this.props.description} />
-                        </Box>
-                        <Box key={1} display={this.props.form ? 'flex' : 'none'} flexDirection="column">
-                            {this.renderForm()}
-                        </Box>
-                        <Box key={2} mt="32px" mb="16px" display="flex" justifyContent="center">
-                            <Button
-                                variant="outlined"
-                                color="primary"
-                                onClick={this.handleClick}
-                                disabled={!this.validateForm()}
-                            >
-                                Start!
-                            </Button>
-                        </Box>
+            <Box className="greyBg" pt={2} pb={2}>
+                <Container maxWidth="sm">
+                    <Box>
+                        <Paper>
+                            <Box p="20px">
+                                <Box key={0} mt="16px">
+                                    <ReactMarkdown renderers={reactMuiMarkdownRenderers} children={this.props.description} />
+                                </Box>
+                                <Box key={1} display={this.props.form ? 'flex' : 'none'} flexDirection="column">
+                                    {this.renderForm()}
+                                </Box>
+                                <Box key={2} mt="32px" mb="16px" display="flex" justifyContent="center">
+                                    <Button
+                                        variant="outlined"
+                                        color="primary"
+                                        onClick={this.handleClick}
+                                        disabled={!this.validateForm()}
+                                    >
+                                        Start!
+                                    </Button>
+                                </Box>
+                            </Box>
+                        </Paper>
                     </Box>
-                </Paper>
+                </Container>
             </Box>
         )
     }

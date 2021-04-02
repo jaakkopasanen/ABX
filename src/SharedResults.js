@@ -31,9 +31,9 @@ class SharedResults extends React.Component {
         url.searchParams.delete('results');
         url = url.toString();
         return (
-            <Box className="greyBg">
+            <Box className="greyBg" pt={2} pb={2}>
                 <Container maxWidth="sm">
-                    <Box mt={2}>
+                    <Box>
                         <Link href="/" target="_blank">
                             <img src="abx-logo-192x109.png" height="64px" alt="ABX logo" />
                         </Link>

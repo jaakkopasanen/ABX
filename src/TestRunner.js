@@ -6,6 +6,7 @@ import Results from "./Results";
 import Container from "@material-ui/core/Container";
 import {abStats, tagStats} from "./stats";
 import { parseConfig} from "./config";
+import ABXTest from "./ABXTest";
 
 class TestRunner extends React.Component {
     constructor(props) {
@@ -13,6 +14,7 @@ class TestRunner extends React.Component {
 
         this.config = null;
         this.audio = {};
+        this.playing = null;
         let volume = localStorage.getItem('volume');
         volume = volume === null ? 0.5 : +volume;
         this.state = {
@@ -27,22 +29,11 @@ class TestRunner extends React.Component {
         this.start = this.start.bind(this);
         this.next = this.next.bind(this);
         this.handleVolumeChange = this.handleVolumeChange.bind(this);
-        this.handleAudioButtonClick = this.handleAudioButtonClick.bind(this);
     }
 
     componentDidMount() {
         parseConfig(this.props.config).then(config => {
             this.config = Object.assign({}, config);
-            this.audio = {};
-            for (let i = 0; i < this.config.options.length; ++i) {
-                // Create audio object and identify it with the audio URL
-                this.audio[this.config.options[i].audioUrl] = new Audio(this.config.options[i].audioUrl);
-                this.audio[this.config.options[i].audioUrl].muted = true;
-                this.audio[this.config.options[i].audioUrl].loop = true;
-                this.audio[this.config.options[i].audioUrl].volume = this.state.volume;
-                this.config.options[i].audio = this.audio[this.config.options[i].audioUrl];
-            }
-
             this.setState({
                 results: this.config.tests.map(test => ({
                     name: test.name,
@@ -152,29 +143,6 @@ class TestRunner extends React.Component {
         }, 1000);
     }
 
-    handleAudioButtonClick(selectedUrl) {
-        // TODO: Add 5-100 ms of silence to mitigate the 0-2 ms difference in start times?
-        if (this.audio[selectedUrl].paused) {
-            // Nothing playing right now
-            for (const [url, audio] of Object.entries(this.audio)) {
-                audio.muted = !(url === selectedUrl);
-                audio.play();
-            }
-        } else if (this.audio[selectedUrl].muted) {
-            // Clicked different button than what is currently playing
-            for (const [url, audio] of Object.entries(this.audio)) {
-                audio.muted = !(url === selectedUrl);
-            }
-        } else {
-            // Clicked the currently playing button, stop all
-            for (const audio of Object.values(this.audio)) {
-                audio.muted = true;
-                audio.pause();
-                audio.currentTime = 0;
-            }
-        }
-    }
-
     render() {
         if (!this.config) {
             return "";
@@ -195,21 +163,38 @@ class TestRunner extends React.Component {
         // Add tests
         for (let i = 0; i < this.config.tests.length; ++i) {
             for (let j = 0; j < this.config.tests[i].repeat; ++j) {
+                let component = null;
+                if (this.config.tests[i].testType.toLowerCase() === 'ab') {
+                    component = (<ABTest
+                        name={this.config.tests[i].name}
+                        description={this.config.tests[i].description}
+                        stepStr={`${j + 1}/${this.config.tests[i].repeat}`}
+                        options={this.config.tests[i].options}
+                        onSubmit={this.next}
+                        volume={this.state.volume}
+                        onVolumeChange={this.handleVolumeChange}
+                        onClick={this.handleAudioButtonClick}
+                    />)
+                } else if (this.config.tests[i].testType.toLowerCase() === 'abx') {
+                    component = (<ABXTest
+                        name={this.config.tests[i].name}
+                        description={this.config.tests[i].description}
+                        stepStr={`${j + 1}/${this.config.tests[i].repeat}`}
+                        options={this.config.tests[i].options}
+                        onSubmit={this.next}
+                        volume={this.state.volume}
+                        onVolumeChange={this.handleVolumeChange}
+                        onClick={this.handleAudioButtonClick}
+                    />)
+                } else {
+                    throw new Error(`Usupported test type ${this.config.tests[i].testType}`)
+                }
                 steps.push(
                     <Box
                         key={`${i}.${j}`}
                         display={this.state.testStep === i  && this.state.repeatStep === j ? 'flex' : 'none'}
                     >
-                        <ABTest
-                            name={this.config.tests[i].name}
-                            description={this.config.tests[i].description}
-                            stepStr={`${j + 1}/${this.config.tests[i].repeat}`}
-                            options={this.config.tests[i].options}
-                            onSubmit={this.next}
-                            volume={this.state.volume}
-                            onVolumeChange={this.handleVolumeChange}
-                            onClick={this.handleAudioButtonClick}
-                        />
+                        {component}
                     </Box>
                 )
             }

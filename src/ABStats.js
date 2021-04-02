@@ -8,7 +8,7 @@ import TableRow from "@material-ui/core/TableRow";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import {withStyles} from "@material-ui/core";
-import {abStats, enrichAbStats} from "./stats";
+import {abStats} from "./stats";
 
 const StyledTableCell = withStyles((theme) => ({
     root: {

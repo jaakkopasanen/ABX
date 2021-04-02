@@ -5,77 +5,36 @@ import Typography from "@material-ui/core/Typography";
 import VolumeUpIcon from "@material-ui/icons/VolumeUp";
 import Slider from "@material-ui/core/Slider";
 import Button from "@material-ui/core/Button";
-import shuffle from "./random";
 import { Divider, Paper } from "@material-ui/core";
+import ABTest from "./ABTest";
 
-class ABTest extends React.Component {
+class ABXTest extends ABTest {
     constructor(props) {
         super(props);
-        const ixs = shuffle([...Array(this.props.options.length).keys()])  // Randomly shuffled indexes
-        this.audio = [];
-        this.silence = 0;
+        const options = this.state.options.slice();
+        options.push({
+            name: 'X',
+            audioUrl: options[Math.floor(Math.random() * options.length)].audioUrl,
+        });
         this.state = {
-            options: ixs.map(ix => this.props.options[ix]),  // Shuffle options
-            selected: null,
+            ...this.state,
+            options: options
         };
-        this.handleClick = this.handleClick.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
-    }
-
-    componentDidMount() {
-        for (const option of this.state.options) {
-            const audio = new Audio(option.audioUrl);
-            audio.muted = true;
-            audio.loop = true;
-            audio.volume = this.props.volume;
-            this.audio.push(audio);
-        }
-    }
-
-    handleClick(ix) {
-        const audioUrl = this.state.options[ix].audioUrl;
-        if (this.state.selected === ix) {
-            // Clicked the currently playing button, stop all
-            for (let i = 0; i < this.audio.length; ++i) {
-                this.audio[i].muted = true;
-                this.audio[i].pause();
-                this.audio[i].currentTime = 0;
-            }
-            this.setState({selected: null});
-
-        } else {
-            // Play the selected one
-            for (let i = 0; i < this.audio.length; ++i) {
-                this.audio[i].muted = true;
-                this.audio[i].play();
-            }
-            if (this.silence) {
-                setTimeout(() => {
-                    this.audio[ix].muted = false;
-                }, this.silence);
-            } else {
-                this.audio[ix].muted = false;
-            }
-            this.setState({selected: ix});
-        }
-    }
-
-    handleSubmit() {
-        if (this.state.selected === null) {
-            return;
-        }
-        this.setState({playing: false});
-        this.props.onSubmit(this.state.options[this.state.selected]);
+        this.silence = 20;
     }
 
     getChar(ix) {
+        if (ix === this.state.options.length - 1) {
+            // X is the last one
+            return 'X';
+        }
         const A = 'A'.charCodeAt(0);
         return String.fromCharCode(A + ix);
     }
 
-    circleCoordindates(i, n, r) {
+    circleCoordindates(i, nButtons, buttonDiameter, buttonSpacing) {
         let alpha0;
-        switch (n) {
+        switch (nButtons) {
             case 3:
                 alpha0 = Math.PI / 2 + Math.PI * 2 / 3 / 2
                 break;
@@ -85,8 +44,9 @@ class ABTest extends React.Component {
             default:
                 alpha0 = Math.PI;
         }
-        const top = 'calc(50% - ' + Math.sin(alpha0 - Math.PI * 2 / n * i) * r + 'px)';
-        const left = 'calc(50% + ' + Math.cos(alpha0 - Math.PI * 2 / n * i) * r + 'px)';
+        const r = ((buttonSpacing + buttonDiameter) / 2) / Math.sin(Math.PI / nButtons);
+        const top = 'calc(50% - ' + Math.sin(alpha0 - Math.PI * 2 / nButtons * i) * r + 'px)';
+        const left = 'calc(50% + ' + Math.cos(alpha0 - Math.PI * 2 / nButtons * i) * r + 'px)';
         return {
             top: top,
             left: left
@@ -94,19 +54,16 @@ class ABTest extends React.Component {
     }
 
     render() {
-        // Set volumes
-        for (const audio of Object.values(this.audio)) {
-            audio.volume = this.props.volume;
-        }
         const audioButtons = [];
         for (let i = 0; i < this.state.options.length; ++i) {
-            const n = this.state.options.length;
-            const buttonDiameter = 64;
-            const space = 24;  // Space between buttons
-            // Calculate radius required to satisfy the space with the button size
-            const r = ((space + buttonDiameter) / 2) / Math.sin(Math.PI / n);
-            const coordinates = this.circleCoordindates(i, n, r);
-
+            const coordinates = this.circleCoordindates(i, this.state.options.length, 64, 24);
+            let color = null;
+            if (i === this.state.options.length - 1) {
+                // X
+                color = this.state.selected === i ? 'primary' : 'default';
+            } else {
+                color = this.state.selected === i ? 'primary' : 'secondary';
+            }
             audioButtons.push(
                 <div key={i} style={{
                     position: "absolute",
@@ -116,7 +73,7 @@ class ABTest extends React.Component {
                     <CircleButton
                         onClick={() => this.handleClick(i)}
                         variant="contained"
-                        color={this.state.selected === i ? 'primary' : 'secondary'}
+                        color={color}
                         size="large"
                     >
                         {this.getChar(i)}
@@ -189,4 +146,4 @@ class ABTest extends React.Component {
     }
 }
 
-export default ABTest;
+export default ABXTest;

@@ -34,11 +34,11 @@ class ABXStats extends React.Component {
             // Add header cell
             let cells = [(<TableCell key={-1}>{stats.rows[i].correctOption}</TableCell>)];
             // Add data cells
-            for (let j = 0; j < this.props.optionNames.length; ++j) {
+            for (let j = 0; j < stats.rows.length; ++j) {
                 if (i === j) {
-                    cells.push(<StyledTableCell key={j}>{stats.rows[i].counts[this.props.optionNames[j]]}</StyledTableCell>)
+                    cells.push(<StyledTableCell key={j}>{stats.rows[i].counts[stats.rows[j].correctOption]}</StyledTableCell>)
                 } else {
-                    cells.push(<TableCell key={j}>{stats.rows[i].counts[this.props.optionNames[j]]}</TableCell>)
+                    cells.push(<TableCell key={j}>{stats.rows[i].counts[stats.rows[j].correctOption]}</TableCell>)
                 }
 
             }

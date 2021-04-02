@@ -2,11 +2,23 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import TestRunner from "./TestRunner";
 import LandingPage from "./LandingPage";
+import SharedResults from "./SharedResults";
 import './index.css';
 
-const config = new URL(window.location.toString()).searchParams.get('test');
+const url = new URL(window.location.toString())
+const config = url.searchParams.get('test');
+const results = url.searchParams.get('results');
+
+let component;
+if (config && results) {
+    component = <SharedResults config={config} results={results} />
+} else if (config) {
+    component = <TestRunner className="test" config={config} />
+} else {
+    component = <LandingPage />
+}
 
 ReactDOM.render(
-    config ? <TestRunner className="test" config={config} /> : <LandingPage />,
+    component,
     document.getElementById('root')
 );

@@ -68,43 +68,74 @@ function factorial(num) {
     return rval;
 }
 
-function multinomialPMF(xs, ps) {
+function multinomialPMF(counts, probabilities) {
     /* Calculated multinomial probability with probability mass function
      * Args:
      *   xs: counts of choices
      *   ps: probabilities of choices
      */
-    if (typeof ps === 'number') {
+    if (typeof probabilities === 'number') {
         // Single number given, create array full of it
-        ps = Array(xs.length).fill(ps);
+        probabilities = Array(counts.length).fill(probabilities);
     }
-    if (!Array.isArray(ps)) {
+    if (!Array.isArray(probabilities)) {
         // Something else than array or a number given
         throw new Error('ps must be an array of a number');
     }
-    if (Math.abs(ps.reduce((a, b) => a + b, 0) - 1.0) > 1e-5) {
+    if (Math.abs(probabilities.reduce((a, b) => a + b, 0) - 1.0) > 1e-5) {
         // Probabilities don't sum up to 1.0
-        throw new Error(`ps must sum to 1.0 but is ${Math.abs(ps.reduce((a, b) => a + b, 0) - 1.0)}`);
+        throw new Error(`ps must sum to 1.0 but is ${Math.abs(probabilities.reduce((a, b) => a + b, 0) - 1.0)}`);
     }
-    const n = xs.reduce((a, b) => a + b, 0);
+    const n = counts.reduce((a, b) => a + b, 0);
     let denom = 1.0;
-    for (const x of xs) {
+    for (const x of counts) {
         denom = denom * factorial(x);
     }
     let prob = 1.0;
-    for (let i = 0; i < ps.length; ++i) {
-        prob = prob * Math.pow(ps[i], xs[i]);
+    for (let i = 0; i < probabilities.length; ++i) {
+        prob = prob * Math.pow(probabilities[i], counts[i]);
     }
     return factorial(n) / denom * prob;
 }
 
+function enrichAbStats(stats) {
+    const enrichedStats = Object.assign({}, stats);
+
+    // Add options which were never selected with zero counts
+    for (const name of stats.optionNames) {
+        if (!stats.options.map(option => option.name).includes(name)) {
+            enrichedStats.options.push({
+                name: name,
+                count: 0
+            });
+        }
+    }
+
+    // Calculate percentages
+    enrichedStats.totalCount = stats.options.reduce((sum, b) => sum + b.count, 0);
+    for (let i = 0; i < enrichedStats.options.length; ++i) {
+        enrichedStats.options[i].percentage = enrichedStats.options[i].count / enrichedStats.totalCount * 100;
+    }
+
+    // Sort by counts
+    enrichedStats.options.sort((a, b) => b.count - a.count);
+
+    // Calculate p-value
+    enrichedStats.nOptions = enrichedStats.optionNames.length;
+    enrichedStats.pValue = multinomialPMF(
+        enrichedStats.options.map(option => option.count),
+        1 / enrichedStats.nOptions
+    );
+
+    return enrichedStats;
+}
+
 function abStats(name, optionNames, userSelections) {
-    const stats = {
+    let stats = {
         name: name,
         options: [],
         nOptions: optionNames.length,
-        optionNames: optionNames.slice(),
-        totalCount: userSelections.length
+        optionNames: optionNames.slice()
     };
 
     // Iterate through user's selections
@@ -123,30 +154,11 @@ function abStats(name, optionNames, userSelections) {
         }
     }
 
-    // Add options which were never selected with zero counts
-    for (let name of stats.optionNames) {
-        if (!stats.options.map(option => option.name).includes(name)) {
-            stats.options.push({
-                name: name,
-                count: 0
-            });
-        }
-    }
-    for (let option of stats.options) {
-        option.percentage = option.count / stats.totalCount * 100;
-    }
-
-    // Sort by counts
-    stats.options.sort((a, b) => b.count - a.count);
-
-    // Calculate p-value
-    stats.pValue = multinomialPMF(stats.options.map(option => option.count), 1 / stats.nOptions);
-
-    return stats;
+    return enrichAbStats(stats);
 }
 
 function tagStats(results, config) {
-    if (Math.min(results.map(result => result.userSelections.length)) === 0) {
+    if (results.userSelections === undefined || Math.min(results.map(result => result.userSelections.length)) === 0) {
         return;
     }
     // Create tag groups from all combinations of tags
@@ -188,4 +200,4 @@ function tagStats(results, config) {
     return {tagGroups: tagGroups, stats: stats};
 }
 
-export { chiSquaredPValue, multinomialPMF, abStats, tagStats };
+export { chiSquaredPValue, multinomialPMF, enrichAbStats, abStats, tagStats };

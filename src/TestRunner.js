@@ -5,7 +5,7 @@ import ABTest from "./ABTest";
 import Results from "./Results";
 import Container from "@material-ui/core/Container";
 import {abStats, tagStats} from "./stats";
-import yaml from "js-yaml";
+import { parseConfig} from "./config";
 
 class TestRunner extends React.Component {
     constructor(props) {
@@ -31,9 +31,18 @@ class TestRunner extends React.Component {
     }
 
     componentDidMount() {
-        this.parseConfig(this.props.config).then(configAndAudio => {
-            this.config = configAndAudio.config;
-            this.audio = configAndAudio.audio;
+        parseConfig(this.props.config).then(config => {
+            this.config = Object.assign({}, config);
+            this.audio = {};
+            for (let i = 0; i < this.config.options.length; ++i) {
+                // Create audio object and identify it with the audio URL
+                this.audio[this.config.options[i].audioUrl] = new Audio(this.config.options[i].audioUrl);
+                this.audio[this.config.options[i].audioUrl].muted = true;
+                this.audio[this.config.options[i].audioUrl].loop = true;
+                this.audio[this.config.options[i].audioUrl].volume = this.state.volume;
+                this.config.options[i].audio = this.audio[this.config.options[i].audioUrl];
+            }
+
             this.setState({
                 results: this.config.tests.map(test => ({
                     name: test.name,
@@ -44,56 +53,6 @@ class TestRunner extends React.Component {
                 }))
             });
         });
-    }
-
-    async parseConfig(inConfig) {
-        return this.fetchConfig(inConfig).then(config => {
-            const audio = {};
-            for (let i = 0; i < config.options.length; ++i) {
-                // Make URLs downloadable link and create Audio objects
-                config.options[i].audioUrl = this.rawLink(config.options[i].audioUrl);
-                // Create audio object and identify it with the audio URL
-                audio[config.options[i].audioUrl] = new Audio(config.options[i].audioUrl);
-                audio[config.options[i].audioUrl].muted = true;
-                audio[config.options[i].audioUrl].loop = true;
-                audio[config.options[i].audioUrl].volume = this.state.volume;
-            }
-            for (let i = 0; i < config.tests.length; ++i) {
-                // Repeat defaults to 1
-                if (!config.tests[i].repeat) {
-                    config.tests[i].repeat = 1;
-                }
-                // Create option objects by querying the options with the given names
-                config.tests[i].options = config.tests[i].options.map((name) => {
-                    const option = config.options.find(option => option.name === name);
-                    return {
-                        name: name,
-                        audioUrl: option.audioUrl,
-                        audio: audio[option.audioUrl],
-                        tag: option.tag,
-                    }
-                });
-            }
-            return {config: config, audio: audio};
-        });
-    }
-
-    async fetchConfig(url) {
-        /* Downloads config YAML file */
-        const content = await fetch(this.rawLink(url)).then(res => res.text());
-        return yaml.load(content);
-    }
-
-    rawLink(urlStr) {
-        /* Turns Dropbox share links to download links for which Dropbox serves correct content types */
-        const dropboxPattern = new RegExp(/^(https?:\/\/)?(www\.)?dropbox.com/);
-        if (dropboxPattern.test(urlStr)) {
-            let url = new URL(urlStr);
-            url.searchParams.delete('dl');
-            url.host = url.host.replace(dropboxPattern, 'dl.dropboxusercontent.com')
-            return url.toString();
-        }
-        return urlStr;
     }
 
     start(form) {

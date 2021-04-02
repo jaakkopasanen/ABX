@@ -18,6 +18,7 @@ class ABTest extends React.Component {
             options: ixs.map(ix => this.props.options[ix]),  // Shuffle options
             selected: null,
         };
+        this.stopAudio = this.stopAudio.bind(this);
         this.handleClick = this.handleClick.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
@@ -32,16 +33,19 @@ class ABTest extends React.Component {
         }
     }
 
+    stopAudio() {
+        for (let i = 0; i < this.audio.length; ++i) {
+            this.audio[i].muted = true;
+            this.audio[i].pause();
+            this.audio[i].currentTime = 0;
+        }
+        this.setState({selected: null});
+    }
+
     handleClick(ix) {
-        const audioUrl = this.state.options[ix].audioUrl;
         if (this.state.selected === ix) {
             // Clicked the currently playing button, stop all
-            for (let i = 0; i < this.audio.length; ++i) {
-                this.audio[i].muted = true;
-                this.audio[i].pause();
-                this.audio[i].currentTime = 0;
-            }
-            this.setState({selected: null});
+            this.stopAudio();
 
         } else {
             // Play the selected one
@@ -64,7 +68,7 @@ class ABTest extends React.Component {
         if (this.state.selected === null) {
             return;
         }
-        this.setState({playing: false});
+        this.stopAudio();
         this.props.onSubmit(this.state.options[this.state.selected]);
     }
 
@@ -73,7 +77,7 @@ class ABTest extends React.Component {
         return String.fromCharCode(A + ix);
     }
 
-    circleCoordindates(i, n, r) {
+    circleCoordinates(i, n, r) {
         let alpha0;
         switch (n) {
             case 3:
@@ -105,10 +109,10 @@ class ABTest extends React.Component {
             const space = 24;  // Space between buttons
             // Calculate radius required to satisfy the space with the button size
             const r = ((space + buttonDiameter) / 2) / Math.sin(Math.PI / n);
-            const coordinates = this.circleCoordindates(i, n, r);
+            const coordinates = this.circleCoordinates(i, n, r);
 
             audioButtons.push(
-                <div key={i} style={{
+                <Box key={i} style={{
                     position: "absolute",
                     top: coordinates.top,
                     left: coordinates.left,
@@ -121,7 +125,7 @@ class ABTest extends React.Component {
                     >
                         {this.getChar(i)}
                     </CircleButton>
-                </div>
+                </Box>
             )
         }
         return (

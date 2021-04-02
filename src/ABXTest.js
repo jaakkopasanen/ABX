@@ -23,6 +23,15 @@ class ABXTest extends ABTest {
         this.silence = 20;
     }
 
+    handleSubmit() {
+        if (this.state.selected === null || this.state.selected === this.state.options.length - 1) {
+            // Refusing to submit if nothing is selected or if X is selected
+            return;
+        }
+        this.stopAudio();
+        this.props.onSubmit(this.state.options[this.state.selected]);
+    }
+
     getChar(ix) {
         if (ix === this.state.options.length - 1) {
             // X is the last one
@@ -32,31 +41,10 @@ class ABXTest extends ABTest {
         return String.fromCharCode(A + ix);
     }
 
-    circleCoordindates(i, nButtons, buttonDiameter, buttonSpacing) {
-        let alpha0;
-        switch (nButtons) {
-            case 3:
-                alpha0 = Math.PI / 2 + Math.PI * 2 / 3 / 2
-                break;
-            case 5:
-                alpha0 = Math.PI / 2 + Math.PI * 2 / 5
-                break;
-            default:
-                alpha0 = Math.PI;
-        }
-        const r = ((buttonSpacing + buttonDiameter) / 2) / Math.sin(Math.PI / nButtons);
-        const top = 'calc(50% - ' + Math.sin(alpha0 - Math.PI * 2 / nButtons * i) * r + 'px)';
-        const left = 'calc(50% + ' + Math.cos(alpha0 - Math.PI * 2 / nButtons * i) * r + 'px)';
-        return {
-            top: top,
-            left: left
-        }
-    }
-
     render() {
         const audioButtons = [];
         for (let i = 0; i < this.state.options.length; ++i) {
-            const coordinates = this.circleCoordindates(i, this.state.options.length, 64, 24);
+            const coordinates = this.circleCoordinates(i, this.state.options.length, 64, 24);
             let color = null;
             if (i === this.state.options.length - 1) {
                 // X
@@ -65,7 +53,7 @@ class ABXTest extends ABTest {
                 color = this.state.selected === i ? 'primary' : 'secondary';
             }
             audioButtons.push(
-                <div key={i} style={{
+                <Box key={i} style={{
                     position: "absolute",
                     top: coordinates.top,
                     left: coordinates.left,
@@ -78,7 +66,7 @@ class ABXTest extends ABTest {
                     >
                         {this.getChar(i)}
                     </CircleButton>
-                </div>
+                </Box>
             )
         }
         return (
@@ -117,7 +105,7 @@ class ABXTest extends ABTest {
                                         variant="outlined"
                                         color="primary"
                                         onClick={this.handleSubmit}
-                                        disabled={this.state.selected === null}
+                                        disabled={this.state.selected === null || this.state.selected === this.state.options.length - 1}
                                     >
                                         {`Select ${this.getChar(this.state.selected)}`}
                                     </Button>

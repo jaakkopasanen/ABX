@@ -13,8 +13,6 @@ class TestRunner extends React.Component {
         super(props);
 
         this.config = null;
-        this.audio = {};
-        this.playing = null;
         let volume = localStorage.getItem('volume');
         volume = volume === null ? 0.5 : +volume;
         this.state = {
@@ -27,7 +25,9 @@ class TestRunner extends React.Component {
         };
 
         this.start = this.start.bind(this);
-        this.next = this.next.bind(this);
+        this.nextStep = this.nextStep.bind(this);
+        this.handleAbTestSubmit = this.handleAbTestSubmit.bind(this);
+        this.handleAbxTestSubmit = this.handleAbxTestSubmit.bind(this);
         this.handleVolumeChange = this.handleVolumeChange.bind(this);
     }
 
@@ -35,13 +35,20 @@ class TestRunner extends React.Component {
         parseConfig(this.props.config).then(config => {
             this.config = Object.assign({}, config);
             this.setState({
-                results: this.config.tests.map(test => ({
-                    name: test.name,
-                    testType: test.testType,
-                    userSelections: [],
-                    optionNames: test.options.map(option => option.name),
-                    nOptions: test.options.length,
-                }))
+                results: this.config.tests.map(test => {
+                    const result = {
+                        name: test.name,
+                        testType: test.testType,
+                        optionNames: test.options.map(option => option.name),
+                        nOptions: test.options.length,
+                    };
+                    if (test.testType.toLowerCase() === 'ab') {
+                        result.userSelections = [];
+                    } else if (test.testType.toLowerCase() === 'abx') {
+                        result.userSelectionsAndCorrects = [];
+                    }
+                    return result;
+                })
             });
         });
     }
@@ -53,62 +60,59 @@ class TestRunner extends React.Component {
         });
     }
 
-    next(selectedOption) {
-        /* Moving to next test iteration
-        * Args:
-        *   selectedOption: Option object by user selection. See componentDidMount() for structure.
-        * */
-        for (const audio of Object.values(this.audio)) {
-            audio.pause();
-            audio.currentTime = 0;
-            audio.muted = true;
+    submitResults(results) {
+        // Last test, submit results if email is given in the config
+        const testResults = results.map(result => {
+            let stats;
+            if (result.testType.toLowerCase() === 'ab') {
+                stats = abStats(result.name, result.optionNames, result.userSelections);
+                delete stats.optionNames;
+                delete stats.name;
+            } else if (result.testType.toLowerCase() === 'abx') {
+                // TODO: Restore
+                console.log('Here we would create abxStats for the email');
+                // stats = abxStats(result.name, result.optionnames, result.userSelectionsAndCorrects);
+                // delete stats.optionNames;
+                // delete stats.name;
+            } else {
+                throw new Error(`Unsupported test type ${result.testType}`)
+            }
+            return {
+                name: result.name,
+                testType: result.testType,
+                optionNames: result.optionNames,
+                userSelections: result.userSelections.map(selection => selection.name),
+                stats: stats
+            };
+        });
+        let tagSts = tagStats(results, this.config);
+        if (tagSts) {
+            tagSts = tagSts.stats;
         }
+        fetch('/submit', {
+            method: 'POST',
+            cache: 'no-cache',
+            credentials: 'omit',
+            headers: {'Content-Type': 'application/json'},
+            redirect: 'follow',
+            referrerPolicy: 'no-referrer',
+            body: JSON.stringify({
+                name: this.config.name,
+                form: this.state.form,
+                testResults: testResults,
+                tagStats: tagSts,
+                email: this.config.email,
+            })
+        });
+    }
 
-        let results = JSON.parse(JSON.stringify(this.state.results));
-        let option = Object.assign({}, selectedOption);
-        delete option.audio;
-        results[this.state.testStep].userSelections.push(option);
-
+    nextStep(results) {
+        /* Moves on to the next step which is next iteration, next test or results */
         if (this.state.repeatStep + 1 === this.config.tests[this.state.testStep].repeat) {
-            // Last repeat
+            // Last repeat of the test
             if (this.state.testStep + 1 === this.config.tests.length && this.config.email) {
-                // Last test, submit results if email is given in the config
-                const testResults = results.map(result => {
-                    let stats;
-                    if (result.testType.toLowerCase() === 'ab') {
-                        stats = abStats(result.name, result.optionNames, result.userSelections);
-                        delete stats.optionNames;
-                        delete stats.name;
-                    } else {
-                        throw new Error(`Unsupported test type ${result.testType}`)
-                    }
-                    return {
-                        name: result.name,
-                        testType: result.testType,
-                        optionNames: result.optionNames,
-                        userSelections: result.userSelections.map(selection => selection.name),
-                        stats: stats
-                    };
-                });
-                let tagSts = tagStats(results, this.config);
-                if (tagSts) {
-                    tagSts = tagSts.stats;
-                }
-                fetch('/submit', {
-                    method: 'POST',
-                    cache: 'no-cache',
-                    credentials: 'omit',
-                    headers: {'Content-Type': 'application/json'},
-                    redirect: 'follow',
-                    referrerPolicy: 'no-referrer',
-                    body: JSON.stringify({
-                        name: this.config.name,
-                        form: this.state.form,
-                        testResults: testResults,
-                        tagStats: tagSts,
-                        email: this.config.email,
-                    })
-                });
+                // Last test, submit results
+                this.submitResults(results);
             }
             // Move to the next test
             this.setState({
@@ -124,6 +128,33 @@ class TestRunner extends React.Component {
                 results: results,
             })
         }
+    }
+
+    handleAbTestSubmit(selectedOption) {
+        /* Moving to next test iteration
+        * Args:
+        *   selectedOption: Option object by user selection. See componentDidMount() for structure.
+        * */
+        let results = JSON.parse(JSON.stringify(this.state.results));
+        let option = Object.assign({}, selectedOption);
+        delete option.audio;
+        results[this.state.testStep].userSelections.push(option);
+        this.nextStep(results);
+    }
+
+    handleAbxTestSubmit(selectedOption, correctOption) {
+        /* Moving to next test iteration
+        * Args:
+        *   selectedOption: Option object by user selection. See componentDidMount() for structure.
+        * */
+        let results = JSON.parse(JSON.stringify(this.state.results));
+        let option = Object.assign({}, selectedOption);
+        delete option.audio;
+        results[this.state.testStep].userSelectionsAndCorrects.push({
+            selectedOption: option,
+            correctOption: correctOption
+        });
+        this.nextStep(results);
     }
 
     handleVolumeChange(event, newValue) {
@@ -170,7 +201,7 @@ class TestRunner extends React.Component {
                         description={this.config.tests[i].description}
                         stepStr={`${j + 1}/${this.config.tests[i].repeat}`}
                         options={this.config.tests[i].options}
-                        onSubmit={this.next}
+                        onSubmit={this.handleAbTestSubmit}
                         volume={this.state.volume}
                         onVolumeChange={this.handleVolumeChange}
                         onClick={this.handleAudioButtonClick}
@@ -181,7 +212,7 @@ class TestRunner extends React.Component {
                         description={this.config.tests[i].description}
                         stepStr={`${j + 1}/${this.config.tests[i].repeat}`}
                         options={this.config.tests[i].options}
-                        onSubmit={this.next}
+                        onSubmit={this.handleAbTestSubmit}
                         volume={this.state.volume}
                         onVolumeChange={this.handleVolumeChange}
                         onClick={this.handleAudioButtonClick}

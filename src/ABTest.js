@@ -77,9 +77,9 @@ class ABTest extends React.Component {
         return String.fromCharCode(A + ix);
     }
 
-    circleCoordinates(i, n, r) {
+    circleCoordinates(i, nButtons, buttonDiameter, buttonSpacing) {
         let alpha0;
-        switch (n) {
+        switch (nButtons) {
             case 3:
                 alpha0 = Math.PI / 2 + Math.PI * 2 / 3 / 2
                 break;
@@ -89,8 +89,9 @@ class ABTest extends React.Component {
             default:
                 alpha0 = Math.PI;
         }
-        const top = 'calc(50% - ' + Math.sin(alpha0 - Math.PI * 2 / n * i) * r + 'px)';
-        const left = 'calc(50% + ' + Math.cos(alpha0 - Math.PI * 2 / n * i) * r + 'px)';
+        const r = ((buttonSpacing + buttonDiameter) / 2) / Math.sin(Math.PI / nButtons);
+        const top = 'calc(50% - ' + Math.sin(alpha0 - Math.PI * 2 / nButtons * i) * r + 'px)';
+        const left = 'calc(50% + ' + Math.cos(alpha0 - Math.PI * 2 / nButtons * i) * r + 'px)';
         return {
             top: top,
             left: left
@@ -104,28 +105,19 @@ class ABTest extends React.Component {
         }
         const audioButtons = [];
         for (let i = 0; i < this.state.options.length; ++i) {
-            const n = this.state.options.length;
-            const buttonDiameter = 64;
-            const space = 24;  // Space between buttons
-            // Calculate radius required to satisfy the space with the button size
-            const r = ((space + buttonDiameter) / 2) / Math.sin(Math.PI / n);
-            const coordinates = this.circleCoordinates(i, n, r);
-
+            const coordinates = this.circleCoordinates(i, this.state.options.length, 64, 24);
             audioButtons.push(
-                <Box key={i} style={{
-                    position: "absolute",
-                    top: coordinates.top,
-                    left: coordinates.left,
-                }}>
-                    <CircleButton
-                        onClick={() => this.handleClick(i)}
-                        variant="contained"
-                        color={this.state.selected === i ? 'primary' : 'secondary'}
-                        size="large"
-                    >
-                        {this.getChar(i)}
-                    </CircleButton>
-                </Box>
+                <CircleButton
+                    key={i}
+                    onClick={() => this.handleClick(i)}
+                    variant="contained"
+                    color={this.state.selected === i ? 'primary' : 'secondary'}
+                    diameter={64}
+                    top={coordinates.top}
+                    left={coordinates.left}
+                >
+                    {this.getChar(i)}
+                </CircleButton>
             )
         }
         return (

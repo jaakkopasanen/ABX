@@ -48,32 +48,56 @@ class ABXTest extends ABTest {
         return String.fromCharCode(A + ix);
     }
 
+    circleCoordinates(i, nButtons, buttonDiameter, buttonSpacing) {
+        if (i === this.state.options.length - 1) {
+            // X is last, X goes to the center
+            return {top: '50%', left: '50%'}
+        }
+        let alpha0;
+        switch (nButtons) {
+            case 3:
+                alpha0 = Math.PI / 2 + Math.PI * 2 / 3 / 2
+                break;
+            case 5:
+                alpha0 = Math.PI / 2 + Math.PI * 2 / 5
+                break;
+            default:
+                alpha0 = Math.PI;
+        }
+        const r = Math.max(
+            buttonDiameter + buttonSpacing,
+            ((buttonSpacing + buttonDiameter) / 2) / Math.sin(Math.PI / nButtons)
+        );
+        const top = 'calc(50% - ' + Math.sin(alpha0 - Math.PI * 2 / nButtons * i) * r + 'px)';
+        const left = 'calc(50% + ' + Math.cos(alpha0 - Math.PI * 2 / nButtons * i) * r + 'px)';
+        return {
+            top: top,
+            left: left
+        }
+    }
+
     render() {
         const audioButtons = [];
         for (let i = 0; i < this.state.options.length; ++i) {
-            const coordinates = this.circleCoordinates(i, this.state.options.length, 64, 24);
+            const coordinates = this.circleCoordinates(i, this.state.options.length - 1, 64, 24);
             let color = null;
             if (i === this.state.options.length - 1) {
-                // X
-                color = this.state.selected === i ? 'primary' : 'default';
+                color = this.state.selected === i ? 'primary' : 'black';
             } else {
                 color = this.state.selected === i ? 'primary' : 'secondary';
             }
             audioButtons.push(
-                <Box key={i} style={{
-                    position: "absolute",
-                    top: coordinates.top,
-                    left: coordinates.left,
-                }}>
-                    <CircleButton
-                        onClick={() => this.handleClick(i)}
-                        variant="contained"
-                        color={color}
-                        size="large"
-                    >
-                        {this.getChar(i)}
-                    </CircleButton>
-                </Box>
+                <CircleButton
+                    key={i}
+                    onClick={() => this.handleClick(i)}
+                    variant="contained"
+                    color={color}
+                    diameter={64}
+                    top={coordinates.top}
+                    left={coordinates.left}
+                >
+                    {this.getChar(i)}
+                </CircleButton>
             )
         }
         return (

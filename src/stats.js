@@ -236,10 +236,7 @@ function abxStats(name, optionNames, userSelectionsAndCorrects) {
         }
         ++row.counts[selectedName];
     }
-    const enrichedStats = enrichAbxStats(stats);
-    console.log('abxStats.rows');
-    console.log(enrichedStats.rows);
-    return enrichedStats;
+    return enrichAbxStats(stats);
 }
 
 function tagStats(results, config) {

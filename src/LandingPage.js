@@ -119,6 +119,9 @@ export default function LandingPage() {
                                     <Typography variant="h3">Simplicity, flexibilty</Typography>
                                 </Box>
                                 <Typography paragraph={true}>
+                                    ABX app creates the tests for you.
+                                </Typography>
+                                <Typography paragraph={true}>
                                     No writing code, no deployments, no setting up servers or
                                     configuring devices. Simply declare your test and give the link to the test
                                     participants.

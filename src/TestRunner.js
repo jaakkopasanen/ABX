@@ -226,9 +226,11 @@ class TestRunner extends React.Component {
             </Box>
         )
         return (
-            <Container maxWidth="sm">
-                {steps}
-            </Container>
+            <Box className="greyBg">
+                <Container maxWidth="sm">
+                    {steps}
+                </Container>
+            </Box>
         )
     }
 }

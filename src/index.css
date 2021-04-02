@@ -1,7 +1,10 @@
 html, body {
     margin: 0;
-    /*height: 100%;*/
-    /*background: #f6f6f6;*/
+}
+.greyBg {
+    background: #f6f6f6;
+    position: absolute;
+    top: 0; bottom: 0; left: 0; right: 0;
 }
 .optionButton {
     margin: 16px;

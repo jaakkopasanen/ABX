@@ -31,7 +31,7 @@ class SharedResults extends React.Component {
         url.searchParams.delete('results');
         url = url.toString();
         return (
-            <Box>
+            <Box className="greyBg">
                 <Container maxWidth="sm">
                     <Box mt={2}>
                         <Link href="/" target="_blank">
@@ -45,7 +45,7 @@ class SharedResults extends React.Component {
                     />
                     <Box className="centerText" mt={3}>
                         <Link href={url} target="_blank">
-                            <Button variant="contained" color="secondary" size="large">Take the test!</Button>
+                            <Button variant="contained" color="secondary" size="large">Take the test</Button>
                         </Link>
                     </Box>
                 </Container>

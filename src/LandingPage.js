@@ -6,12 +6,12 @@ import {Button, Link, makeStyles, Paper, SvgIcon} from "@material-ui/core";
 
 const useStyles = makeStyles(theme => ({
     root: {
-        backgroundImage: "url('poly.png')",
-        backgroundColor: "white",
-        backgroundRepeat: "no-repeat",
-        backgroundSize: "100%",
-        overflowX: "hidden",
-        overflowY: "auto"
+        backgroundImage: 'url("poly.png")',
+        backgroundColor: 'white',
+        backgroundRepeat: 'no-repeat',
+        backgroundSize: '100%',
+        overflowX: 'hidden',
+        overflowY: 'auto'
     },
     topBar: {
         height: 96,
@@ -24,6 +24,8 @@ const useStyles = makeStyles(theme => ({
         },
     },
     bannerStackedImage: {
+        boxShadow: '-50px 25px 60px rgba(0, 0, 0, 0.2)',
+        transform: 'perspective(1000px) rotateY(6deg)',
         marginLeft: -500,
         [theme.breakpoints.up('sm')]: {
             marginLeft: -450
@@ -33,6 +35,9 @@ const useStyles = makeStyles(theme => ({
         },
         [theme.breakpoints.up('lg')]: {
             marginLeft: -350
+        },
+        '&:first-child': {
+            marginLeft: 0
         }
     },
     contentImage: {
@@ -69,11 +74,11 @@ export default function LandingPage() {
                     <Box display="flex" alignItems="center" mb={16}>
                         <Box display="flex" flexDirection="column" className={classes.bannerTitle}>
                             <Box mt={-6} mb={3}>
-                                <Typography variant="h2">Listening tests in the browser</Typography>
+                                <Typography variant="h2">Listening Tests as a Service</Typography>
                             </Box>
                             <Box mb="36px">
                                 <Typography>
-                                    Run double blind listening tests on any device super easily.
+                                    Run double blind listening tests in the browser on any device super easily.
                                 </Typography>
                             </Box>
                             <Box>
@@ -83,7 +88,7 @@ export default function LandingPage() {
                             </Box>
                         </Box>
                         <Box display="flex" flexDirection="row" justifyContent="flex-start" alignItems="center">
-                            <Box>
+                            <Box className={classes.bannerStackedImage}>
                                 <Paper>
                                     <Box p={2}>
                                         <img src="results.png" alt="results table" />

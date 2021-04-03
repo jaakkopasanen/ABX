@@ -16,4 +16,10 @@ tests:
     options:
       - lossless
       - 64 kbps
-    repeat: 2
+    repeat: 10
+  - name: 64 kbps MP3 vs 32 kbps MP3
+    testType: ABX
+    options:
+      - 64 kbps
+      - 32 kbps
+    repeat: 10

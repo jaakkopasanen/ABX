@@ -50,7 +50,7 @@ class ABStats extends React.Component {
         )
         return (
             <Box>
-                <Typography variant="h6">{stats.name}</Typography>
+                <Typography variant="h6">{this.props.name}</Typography>
                 <Box mb="24px">
                     <TableContainer>
                         <Table size="small">

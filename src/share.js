@@ -26,6 +26,33 @@ function createShareUrl(inResults, config) {
     return url.toString();
 }
 
+/* eslint-disable */
+function mulberry32(seed) {
+    /* Pseudo random number generator factory
+     * Use it like so
+     *   const prng = mulberry32(seed);
+     *   for (let i = 0; i < 5; ++i) {
+     *     const x = prng();
+     *   }
+     */
+    return function() {
+        let t = seed += 0x6D2B79F5;
+        t = Math.imul(t ^ t >>> 15, t | 1);
+        t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+        return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    }
+}
+/* eslint-enable */
+
+function createObfuscationMask(seed, len, maxInt) {
+    const prng = mulberry32(seed);
+    const mask = [];
+    for (let i = 0; i < len; ++i) {
+        mask.push(Math.floor(prng() * (maxInt + 1)));
+    }
+    return mask;
+}
+
 function encodeTestResults(testResults, config) {
     // Map test names to ordinal numbers
     const testOrd = {};
@@ -40,16 +67,19 @@ function encodeTestResults(testResults, config) {
     for (let i = 0; i < Object.keys(config.options).length; ++i) {
         optionOrd[config.options[i].name] = i;
     }
+    console.log('optionOrd');
+    console.log(optionOrd);
 
     // Create data array with ordinal numbers
-    const data = [Math.floor(Math.random() * 256)];  // One random byte to confuse users XD
+    const obfuscatorSeed = Math.floor(Math.random() * 256);
+    let data = [obfuscatorSeed];  // Add the obfuscator seed as the first byte
     for (const result of testResults) {
         // Add ordinal number of the test
         data.push(testOrd[result.name]);
 
         if (testTypes[result.name].toLowerCase() === 'ab') {
             for (const option of result.options) {
-                // Add ordinal number of the option in the test
+                // Add ordinal number of the selected option
                 data.push(optionOrd[option.name]);
                 // Add count
                 data.push(option.count);
@@ -62,6 +92,7 @@ function encodeTestResults(testResults, config) {
                 // Add counts
                 for (const name of Object.keys(row.counts)) {
                     // Add ordinal number of the selected option
+                    console.log(name, optionOrd[name]);
                     data.push(optionOrd[name]);
                     // Add count of the selected option
                     data.push(row.counts[name]);
@@ -72,6 +103,16 @@ function encodeTestResults(testResults, config) {
         }
     }
 
+    data = Uint8Array.from(data);  // Make sure the data is bytes
+    console.log(JSON.stringify(data, undefined, 4));
+    // Add random number in range 0..127 to each byte in the data arry
+    // This assumes all values in the array are below 127, true if all of the tests have fewer than 127 iterations
+    const obfuscationMask = createObfuscationMask(obfuscatorSeed, data.length - 1, 127);
+    // Add obfuscation mask to the data bytes
+    for (let i = 1; i < data.length; ++i) {
+        data[i] += obfuscationMask[i - 1];
+    }
+
     // Convert to URI component encoded Base64
     return encodeURIComponent(bytesToBase64(data));
 }
@@ -80,10 +121,22 @@ function decodeTestResults(dataStr, config) {
     let data = decodeURIComponent(dataStr);
     data = Uint8Array.from(atob(data), c => c.charCodeAt(0));
 
+    const obfuscatorSeed = data[0];  // Read the obfuscator seed from the first byte
+    // Subtract obfusction mask from the data bytes
+    const obfuscationMask = createObfuscationMask(obfuscatorSeed, data.length - 1, 127);
+    for (let i = 1; i < data.length; ++i) {
+        data[i] -= obfuscationMask[i - 1];
+    }
+    console.log('data');
+    console.log(JSON.stringify(data, undefined, 4));
+    console.log('options');
+    console.log(config.options.map(opt => opt.name));
+
     const testResults = [];
-    let i = 1;  // Skip the random byte added by encoder
+    let i = 1;  // Skip the obfuscator seed
     while (i < data.length) {
         const test = Object.assign({}, config.tests[data[i]]);
+        console.log(`test: ${data[i]} @ ${i} = "${test.name}"`);
 
         if (test.testType.toLowerCase() === 'ab') {
             // Create AB stats objects with the count data
@@ -112,12 +165,14 @@ function decodeTestResults(dataStr, config) {
             let ix = i + 1;  // Running index, starts from first byte after test indicator byte
             for (let j = 0; j < test.options.length; ++j) {
                 // There's one row per option since data has been enriched
+                console.log(`correctOption: ${data[ix]} @ ${ix} = "${config.options[data[ix]].name}"`);
                 const row = {correctOption: config.options[data[ix]].name, counts: {}};
                 stats.optionNames.push(row.correctOption);
                 ++ix;  // Move on to the first count pair byte
                 for (let k = 0; k < test.options.length; ++k) {
                     // There's one byte pair per option since data has been enriched
                     // Read the selected option and it's count
+                    console.log(`selectedOption: ${data[ix]} @ ${ix} =`);
                     row.counts[config.options[data[ix]].name] = data[ix + 1];
                     ix += 2;
                 }
@@ -130,7 +185,8 @@ function decodeTestResults(dataStr, config) {
                 optionNames: stats.optionNames.slice(),
                 stats: enrichedStats,
             })
-            i += ix;
+            console.log(`Moving i: ${i} + ${ix} = ${i + ix}`);
+            i = ix;  // Move i to the current running index
 
         } else {
             throw new Error(`Unsupported test type ${test.testType}`);

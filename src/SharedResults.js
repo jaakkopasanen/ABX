@@ -23,6 +23,7 @@ class SharedResults extends React.Component {
             })
         });
     }
+
     render() {
         if (!this.state.config || !this.state.results) {
             return null;

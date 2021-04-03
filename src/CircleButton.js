@@ -1,5 +1,5 @@
 import Button from "@material-ui/core/Button";
-import {makeStyles, withStyles} from "@material-ui/core";
+import {makeStyles} from "@material-ui/core";
 
 export default function CircleButton(props) {
     const rootStyles = {

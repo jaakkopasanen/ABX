@@ -9,7 +9,7 @@ import Typography from "@material-ui/core/Typography";
 import TagStats from "./TagStats";
 import {tagStats} from "./stats";
 import {createShareUrl} from "./share";
-import {Button, Container, IconButton, Link, Tooltip} from "@material-ui/core";
+import {Button, IconButton, Link, Tooltip} from "@material-ui/core";
 import ShareIcon from '@material-ui/icons/Share';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
 

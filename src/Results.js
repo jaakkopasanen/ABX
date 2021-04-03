@@ -7,11 +7,12 @@ import reactMuiMarkdownRenderers from "./reactMuiMarkdownRenderers";
 import ReactMarkdown from "react-markdown";
 import Typography from "@material-ui/core/Typography";
 import ABTagStats from "./ABTagStats";
-import {computeAbStats, computeAbTagStats, computeAbxTagStats} from "./stats";
+import {computeAbStats, computeAbTagStats, computeAbxStats, computeAbxTagStats} from "./stats";
 import {createShareUrl} from "./share";
 import {Button, IconButton, Link, Tooltip} from "@material-ui/core";
 import ShareIcon from '@material-ui/icons/Share';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
+import ABXTagStats from "./ABXTagStats";
 
 class Results extends React.Component {
     constructor(props) {
@@ -84,8 +85,19 @@ class Results extends React.Component {
                 }),
             this.props.config
         );
-        //const abxTagStats = computeAbxTagStats(this.props.results, this.props.config);
-        const abxTagStats = null;
+        const abxTagStats = computeAbxTagStats(
+            this.props.results
+                // Filter out other type tests
+                .filter(result => result.testType.toLowerCase() === 'abx')
+                // Compute ABX test stats for each test result
+                .map(result => {
+                    if (result.userSelectionsAndCorrects) {
+                        return computeAbxStats(result.name, result.optionNames, result.userSelectionsAndCorrects);
+                    }
+                    return result.stats;
+                }),
+            this.props.config
+        );
         if (this.shareUrl === null) {
             this.shareUrl = createShareUrl(this.props.results, this.props.config);
         }
@@ -98,7 +110,7 @@ class Results extends React.Component {
                             <ReactMarkdown renderers={reactMuiMarkdownRenderers} children={this.props.description}/>
                         </Box>}
                         {testStats}
-                        {abTagStats &&
+                        {Boolean(abTagStats && abTagStats.length) &&
                         <Box>
                             <Box mb="16px">
                                 <Typography variant="h5">Aggregated AB test results</Typography>
@@ -107,13 +119,13 @@ class Results extends React.Component {
                                 <ABTagStats config={this.props.config} stats={abTagStats} />
                             </Box>
                         </Box>}
-                        {abxTagStats &&
+                        {Boolean(abxTagStats && abxTagStats.length) &&
                         <Box>
                             <Box mb="16px">
                                 <Typography variant="h5">Aggregated ABX test results</Typography>
                             </Box>
                             <Box>
-                                <ABTagStats config={this.props.config} results={this.props.results} />
+                                <ABXTagStats config={this.props.config} results={abxTagStats} />
                             </Box>
                         </Box>
                         }
@@ -126,7 +138,7 @@ class Results extends React.Component {
                             </Box>
                             <Box display={this.state.shared ? 'block': 'none'}>
                                 <Box display="flex" flexDirection="row" justifyContent="center">
-                                    <Box display="flex" alignItems="center">
+                                    <Box display="flex" alignItems="center" className="scrollableLink">
                                         <Typography align="center">
                                             <Link href={this.shareUrl} target="_blank" rel="noopener">
                                                 {this.shareUrl}

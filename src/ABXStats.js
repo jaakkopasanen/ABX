@@ -7,8 +7,9 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
-import {withStyles} from "@material-ui/core";
+import {Badge, Tooltip, withStyles} from "@material-ui/core";
 import {computeAbxStats} from "./stats";
+import Label from "./Label";
 
 const StyledTableCell = withStyles((theme) => ({
     root: {
@@ -32,13 +33,22 @@ class ABXStats extends React.Component {
         const rows = [];
         for (let i = 0; i < stats.rows.length; ++i) {
             // Add header cell
-            let cells = [(<TableCell key={-1}>{stats.rows[i].correctOption}</TableCell>)];
+            let cells = [(
+                <TableCell key={-1}>
+                    <Label><b>{i.toString()}</b></Label>{stats.rows[i].correctOption}
+                </TableCell>
+            )];
             // Add data cells
             for (let j = 0; j < stats.rows.length; ++j) {
+                const count = (
+                    <Tooltip title={stats.rows[j].correctOption}>
+                        <Box>{stats.rows[i].counts[stats.rows[j].correctOption]}</Box>
+                    </Tooltip>
+                );
                 if (i === j) {
-                    cells.push(<StyledTableCell key={j}>{stats.rows[i].counts[stats.rows[j].correctOption]}</StyledTableCell>)
+                    cells.push(<StyledTableCell key={j}>{count}</StyledTableCell>)
                 } else {
-                    cells.push(<TableCell key={j}>{stats.rows[i].counts[stats.rows[j].correctOption]}</TableCell>)
+                    cells.push(<TableCell key={j}>{count}</TableCell>)
                 }
 
             }
@@ -52,7 +62,11 @@ class ABXStats extends React.Component {
 
         const headerCells = [];
         for (let i = 0; i < this.props.optionNames.length; ++i) {
-            headerCells.push(<StyledTableCell key={i}>{this.props.optionNames[i]}</StyledTableCell>)
+            headerCells.push(
+                <StyledTableCell key={i}>
+                    <Label>{i.toString()}</Label>
+                </StyledTableCell>
+            )
         }
         return (
             <Box>
@@ -64,7 +78,7 @@ class ABXStats extends React.Component {
                                 <TableHead>
                                     <TableRow>
                                         <StyledTableCell></StyledTableCell>
-                                        <StyledTableCell colSpan={2} align="left">You selected</StyledTableCell>
+                                        <StyledTableCell colSpan={this.props.optionNames.length} align="left">You selected</StyledTableCell>
                                     </TableRow>
                                     <TableRow>
                                         <StyledTableCell>X is</StyledTableCell>
@@ -90,7 +104,7 @@ class ABXStats extends React.Component {
                                 </TableHead>
                                 <TableBody>
                                     <TableRow>
-                                        <TableCell>{stats.pValue}</TableCell>
+                                        <TableCell>{stats.pValue.toPrecision(3)}</TableCell>
                                         <TableCell>{stats.correctCount}</TableCell>
                                         <TableCell>{stats.incorrectCount}</TableCell>
                                     </TableRow>

@@ -288,54 +288,56 @@ function computeAbTagStats(allTestStats, config) {
     return allTagStats.map(tagStats => enrichAbStats(tagStats));
 }
 
-function computeAbxTagStats(results, config) {
-    if (results.userSelectionsAndCorrects === undefined ||
-        Math.min(results.map(result => result.userSelectionsAndCorrects.length)) === 0
-    ) {
-        return;
-    }
-    // Create tag groups from all combinations of tags
-    let tagGroups = {};
-    for (const testResult of results) {
-        if (testResult.testType.toLowerCase() !== 'abx') {
-            // Skip tests which are not AB tests
-            continue;
-        }
-        // Get all tags in the test options
-        let tags = testResult.optionNames.map(optionName => config.options.find(option => option.name === optionName).tag);
-        // Form tag group name by joining the sorted tag names with VS ie "32kbps VS 64 kbps VS lossless"
-        tags = [...new Set(tags)];
-        if (tags.length < 2) {
-            return null;
-        }
-        tags.sort();
-        const tagGroupName = tags.join(' VS ');
-        if (tagGroups[tagGroupName] === undefined) {
-            // Initialize tag group
-            tagGroups[tagGroupName] = {
-                name: tagGroupName,
-                optionNames: tags,
-                userSelectionsAndCorrects: []
-            }
-        }
-        // Add user selections to the tag group
-        tagGroups[tagGroupName].userSelectionsAndCorrects = tagGroups[tagGroupName].userSelectionsAndCorrects.concat(
-            testResult.userSelectionsAndCorrects.map(selectionAndCorrect => ({
-                selectedOption: selectionAndCorrect.selectedOption.tag,
-                correctOption: selectionAndCorrect.correctOption.tag
-            }))
-        );
-    }
-    if (Object.keys(tagGroups).length === 0) {
-        return;
+function computeAbxTagStats(allTestStats, config) {
+    // Create lookup table to get tags with option names
+    const optionsToTags = {};
+    for (const option of config.options) {
+        optionsToTags[option.name] = option.tag;
     }
 
-    // Compute tag group stats
-    const stats = [];
-    for (const [name, tagGroup] of Object.entries(tagGroups)) {
-        // TODO: ABX and other test types
-        stats.push(computeAbxStats(name, tagGroup.optionNames, tagGroup.userSelections));
+    const allTagStats = [];
+    for (const testStats of allTestStats) {  // Stats for a single ABX test
+        // testStats: name, rows, nOptions, optionNames
+        // row: correctOption, counts: selectedOption, count
+        // Get all tags of the options in this test, uniques and sorted
+        const tags = [...new Set(testStats.rows.map(row => optionsToTags[row.correctOption]))];
+        if (tags.length < 2) continue;  // One is not a group
+        tags.sort();
+        // Form tag group name by joining the individual tags with " vs "
+        const tagGroupName = tags.join(' vs ');
+        // Check if a tag group with the same name already exists
+        let tagGroup = allTagStats.find(tagGroupStats => tagGroupStats.name === tagGroupName);
+        if (!tagGroup) {
+            // Tag group with the same name doesn't exist, create new
+            tagGroup = {
+                name: tagGroupName,
+                rows: tags.map(tag => {
+                    // Initialize all row counts with zeros
+                    const counts = {};
+                    for (const tag of tags) {
+                        counts[tag] = 0;
+                    }
+                    return {
+                        correctOption: tag,
+                        counts: counts
+                    };
+                }),
+                nOptions: tags.length,
+                optionNames: tags
+            };
+            allTagStats.push(tagGroup);
+        }
+        // Increase all counts ain all rows
+        for (const testStatsRow of testStats.rows) {
+            // Find the row with the test stats row's correct option
+            const tag = optionsToTags[testStatsRow.correctOption];
+            const tagGroupRow = tagGroup.rows.find(tagGroupRow => tagGroupRow.correctOption === tag)
+            for (const [selectedOption, count] of Object.entries(testStatsRow.counts)) {
+                tagGroupRow[selectedOption] += count;
+            }
+        }
     }
-    return {tagGroups: tagGroups, stats: stats};}
+    return allTagStats.map(tagStats => enrichAbxStats(tagStats));
+}
 
 export { chiSquaredPValue, multinomialPMF, computeAbStats, computeAbxStats, enrichAbStats, enrichAbxStats, computeAbTagStats, computeAbxTagStats };

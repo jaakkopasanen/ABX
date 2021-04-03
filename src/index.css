@@ -21,3 +21,8 @@ html, body, #root {
     margin-right: 6px;
     padding: 20px 0 !important
 }
+.scrollableLink {
+    max-width: calc(100% - 48px);
+    white-space: nowrap;
+    overflow-x: auto;
+}

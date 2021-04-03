@@ -1,6 +1,6 @@
 import React from "react";
 import Box from "@material-ui/core/Box";
-import ABStats from "./ABStats";
+import ABXStats from "./ABStats";
 
 class ABTagStats extends React.Component {
     render() {
@@ -15,7 +15,7 @@ class ABTagStats extends React.Component {
         for (const tagGroupStats of this.props.stats) {
             allStats.push(
                 <Box key={i} mb="12px">
-                    <ABStats name={tagGroupStats.name} stats={tagGroupStats} />
+                    <ABXStats name={tagGroupStats.name} stats={tagGroupStats} />
                 </Box>
             )
             ++i;

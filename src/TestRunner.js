@@ -4,9 +4,10 @@ import Welcome from "./Welcome";
 import ABTest from "./ABTest";
 import Results from "./Results";
 import Container from "@material-ui/core/Container";
-import {computeAbStats, computeAbTagStats} from "./stats";
+import {computeAbStats, computeAbTagStats, computeAbxStats, computeAbxTagStats} from "./stats";
 import { parseConfig} from "./config";
 import ABXTest from "./ABXTest";
+import {createShareUrl} from "./share";
 
 class TestRunner extends React.Component {
     constructor(props) {
@@ -60,35 +61,21 @@ class TestRunner extends React.Component {
         });
     }
 
-    submitResults(results) {
+    submitResults(allTestResults) {
         // Last test, submit results if email is given in the config
-        const testResults = results.map(result => {
-            let stats;
-            if (result.testType.toLowerCase() === 'ab') {
-                stats = computeAbStats(result.name, result.optionNames, result.userSelections);
-                delete stats.optionNames;
-                delete stats.name;
-            } else if (result.testType.toLowerCase() === 'abx') {
-                // TODO: Restore
-                console.log('Here we would create abxStats for the email');
-                // stats = abxStats(result.name, result.optionnames, result.userSelectionsAndCorrects);
-                // delete stats.optionNames;
-                // delete stats.name;
+        const abStats = [];
+        const abxStats = [];
+        for (const results of allTestResults) {
+            if (results.testType.toLowerCase() === 'ab') {
+                abStats.push(computeAbStats(results.name, results.optionNames, results.userSelections));
+            } else if (results.testType.toLowerCase() === 'abx') {
+                abxStats.push(computeAbxStats(results.name, results.optionNames, results.userSelectionsAndCorrects));
             } else {
-                throw new Error(`Unsupported test type ${result.testType}`)
+                throw new Error(`Unsupported test type ${results.testType}`)
             }
-            return {
-                name: result.name,
-                testType: result.testType,
-                optionNames: result.optionNames,
-                userSelections: result.userSelections.map(selection => selection.name),
-                stats: stats
-            };
-        });
-        let tagStats = computeAbTagStats(results, this.config);
-        if (tagStats) {
-            tagStats = tagStats.stats;
         }
+        const abTagStats = computeAbTagStats(abStats, this.config);
+        const abxTagStats = computeAbxTagStats(abxStats, this.config);
         fetch('/submit', {
             method: 'POST',
             cache: 'no-cache',
@@ -99,8 +86,9 @@ class TestRunner extends React.Component {
             body: JSON.stringify({
                 name: this.config.name,
                 form: this.state.form,
-                testResults: testResults,
-                tagStats: tagStats,
+                testResults: abStats.concat(abxStats),
+                tagStats: abTagStats.concat(abxTagStats),
+                shareUrl: createShareUrl(abStats.concat(abxStats), this.config),
                 email: this.config.email,
             })
         });

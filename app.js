@@ -58,7 +58,13 @@ app.post('/submit', (req, res, next) => {
                     'Email': req.body.email
                 }],
                 'Subject': `${req.body.name} test results ${dateTime}`,
-                'TextPart': 'ABX test submission',
+                'HTMLPart': `<p>
+A test participant has completed a listening test. Test results are in the attached JSON file
+</p>
+<p>
+    You can also see the results here:
+    <a href="${req.body.shareUrl}">${req.body.shareUrl}</a>
+</p>`,
                 'Attachments': [{
                     'ContentType': 'application/json',
                     'Filename': `${req.body.name} ${dateTime}.json`,

@@ -40,7 +40,7 @@ class ABXTest extends ABTest {
     }
 
     getChar(ix) {
-        if (ix === this.state.options.length - 1) {
+        if (ix === null || ix === this.state.options.length - 1) {
             // X is the last one
             return 'X';
         }
@@ -139,6 +139,7 @@ class ABXTest extends ABTest {
                                                 color="primary"
                                                 onClick={this.handleSubmit}
                                                 disabled={this.state.selected === null || this.state.selected === this.state.options.length - 1}
+                                                style={{textTransform: 'none'}}
                                             >
                                                 {`X is ${this.getChar(this.state.selected)}`}
                                             </Button>

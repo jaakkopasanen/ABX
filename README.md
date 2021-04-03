@@ -16,7 +16,11 @@ whole Dropbox UI, but ABX ap will automatically turn the link into a correct dow
 doesn't provide correct content types and therefore cannot be used for hosting the configuration files and audio clips.
 
 The configuration file itself is written with [YAML](https://yaml.org/) syntax. This is rather human friendly and should
-be easy enough for you to get started right away without any prior experience with it. Here's an example file:
+be easy enough for you to get started right away without any prior experience with it. If you need to make changes
+during the study, you should always create a new separate file and distribute the new links to the participants instead
+of editing the existing file! This keeps things consistent.
+
+Here's an example file:
 ```yaml
 name: Demo test
 welcome:
@@ -88,7 +92,7 @@ options:
     audioUrl: https://www.dropbox.com/s/2qfxv4x346p1xdi/Jennifer%20Warnes%20-%20Bird%20on%20a%20Wire%2032%20kbps.mp3?dl=0
     tag: 32 kbps
 tests:
-  - testType: AB
+  - testType: ABX
     name: Jennifer Warnes - Bird on a Wire
     description: Select the most preferred option
     options:
@@ -96,7 +100,7 @@ tests:
       - Bird on a Wire (64 kbps MP3)
       - Bird on a Wire (32 kbps MP3)
     repeat: 10
-  - testType: AB
+  - testType: ABX
     name: Eagles - Hotel California
     description: Select the most preferred option
     options:

@@ -1,5 +1,5 @@
 import {bytesToBase64} from "./base64";
-import {computeAbStats, computeAbxStats, enrichAbStats, enrichAbxStats} from "./stats";
+import {enrichAbStats, enrichAbxStats} from "./stats";
 
 function createShareUrl(allTestStats, config) {
     const url = new URL(window.location.toString());

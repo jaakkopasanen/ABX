@@ -1,24 +1,14 @@
 import {bytesToBase64} from "./base64";
 import {computeAbStats, computeAbxStats, enrichAbStats, enrichAbxStats} from "./stats";
 
-function createShareUrl(inResults, config) {
-    for (const result of inResults) {
-        if (result.userSelections === undefined && result.userSelectionsAndCorrects === undefined) {
-            return null;
-        }
-    }
-    const results = inResults.map(result => {
-        if (result.testType.toLowerCase() === 'ab') {
-            return computeAbStats(result.name, result.optionNames, result.userSelections);
-        } else {
-            return computeAbxStats(result.name, result.optionNames, result.userSelectionsAndCorrects);
-        }
-
-    });
-    // const encodedResults = encodeAbTestResults(results, config);
-    const encodedResults = encodeTestResults(results, config);
+function createShareUrl(allTestStats, config) {
     const url = new URL(window.location.toString());
+    if (url.searchParams.get('results')) {
+        // Results already exists in URL, we came here from share link, no need to share again
+        return null;
+    }
     const configUrl = url.searchParams.get('test');
+    const encodedResults = encodeTestResults(allTestStats, config);
     url.searchParams.delete('test');
     url.searchParams.set('results', encodedResults);
     url.searchParams.set('results', encodedResults);

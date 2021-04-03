@@ -6,7 +6,7 @@ export default function Label(props) {
     const classes = makeStyles(theme => ({
         root: {
             display: "inline-block",
-            backgroundColor: theme.palette.secondary.main,
+            backgroundColor: theme.palette[props.color].main,
             color: 'white',
             borderRadius: 3,
             padding: '0 4px 0 4px',

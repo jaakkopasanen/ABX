@@ -7,12 +7,12 @@ import reactMuiMarkdownRenderers from "./reactMuiMarkdownRenderers";
 import ReactMarkdown from "react-markdown";
 import Typography from "@material-ui/core/Typography";
 import ABTagStats from "./ABTagStats";
+import ABXTagStats from "./ABXTagStats";
 import {computeAbStats, computeAbTagStats, computeAbxStats, computeAbxTagStats} from "./stats";
 import {createShareUrl} from "./share";
 import {Button, IconButton, Link, Tooltip} from "@material-ui/core";
 import ShareIcon from '@material-ui/icons/Share';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
-import ABXTagStats from "./ABXTagStats";
 
 class Results extends React.Component {
     constructor(props) {
@@ -40,66 +40,91 @@ class Results extends React.Component {
     }
 
     render() {
-        const testStats = [];
+        // Exit if some tests are still not done
+        for (const results of this.props.results) {
+            const targetCount = this.props.config.tests.find(test => test.name === results.name).repeat;
+            let count = 0;
+            if (results.testType.toLowerCase() === 'ab') {
+                if (results.stats) {
+                    count = results.stats.options.reduce((count, option) => count + option.count, 0);
+                } else {
+                    count = results.userSelections.length;
+                }
+            } else if (results.testType.toLowerCase() === 'abx') {
+                if (results.stats) {
+                    // Use existing stats to get the total count
+                    for (const row of results.stats.rows) {
+                        count += Object.values(row.counts).reduce((a, b) => a + b, 0);
+                    }
+                } else {
+                    // Count is the number of selections user has already made
+                    count = results.userSelectionsAndCorrects.length;
+                }
+            } else {
+                throw new Error(`Unsupported test type "${results.testType}`);
+            }
+            // Exit if some user selections are still missing
+            if (count < targetCount) {
+                return null;
+            }
+        }
+
+        const abStats = [];
+        const abStatsComponents = [];
+        const abxStats = [];
+        const abxStatsComponents = [];
         for (let i = 0; i < this.props.results.length; ++i) {  // Looping tests
-            let stats;
             if (this.props.results[i].testType.toLowerCase() === 'ab') {
-                stats = (
+                let stats;
+                if (this.props.results[i].stats) {
+                    stats = this.props.results[i].stats;
+                    console.log('Using existing stats');
+                    console.log(stats);
+                } else {
+                    stats = computeAbStats(
+                        this.props.results[i].name,
+                        this.props.results[i].optionNames,
+                        this.props.results[i].userSelections
+                    );
+                }
+                abStats.push(stats);
+                abStatsComponents.push(
                     <ABStats
+                        key={i}
                         name={this.props.results[i].name}
                         optionNames={this.props.results[i].optionNames}
-                        userSelections={this.props.results[i].userSelections}
-                        stats={this.props.results[i].stats}
+                        stats={stats}
                     />
                 )
+
             } else if (this.props.results[i].testType.toLowerCase() === 'abx') {
-                stats = (
+                let stats;
+                if (this.props.results[i].stats) {
+                    stats = this.props.results[i].stats;
+                } else {
+                    stats = computeAbxStats(
+                        this.props.results[i].name,
+                        this.props.results[i].optionNames,
+                        this.props.results[i].userSelectionsAndCorrects
+                    );
+                }
+                abxStats.push(stats);
+                abxStatsComponents.push(
                     <ABXStats
+                        key={i}
                         name={this.props.results[i].name}
                         optionNames={this.props.results[i].optionNames}
-                        userSelectionsAndCorrects={this.props.results[i].userSelectionsAndCorrects}
-                        stats={this.props.results[i].stats}
+                        stats={stats}
                     />
                 )
             }
-            testStats.push(
-                <Box key={i} mb="12px">
-                    {stats}
-                </Box>
-            )
         }
 
-        // Get AB test tag stats
-        const abTagStats = computeAbTagStats(
-            this.props.results
-                // Filter out other type tests
-                .filter(result =>result.testType.toLowerCase() === 'ab')
-                // Compute AB test stats for each test result
-                .map(result => {
-                    if (result.userSelections) {
-                        // Result has user selections, use those
-                        return computeAbStats(result.name, result.optionNames, result.userSelections);
-                    }
-                    // No user selections available (in shared results), use the precomputed stats
-                    return result.stats;
-                }),
-            this.props.config
-        );
-        const abxTagStats = computeAbxTagStats(
-            this.props.results
-                // Filter out other type tests
-                .filter(result => result.testType.toLowerCase() === 'abx')
-                // Compute ABX test stats for each test result
-                .map(result => {
-                    if (result.userSelectionsAndCorrects) {
-                        return computeAbxStats(result.name, result.optionNames, result.userSelectionsAndCorrects);
-                    }
-                    return result.stats;
-                }),
-            this.props.config
-        );
+        // Get AB and ABX test tag stats
+        const abTagStats = computeAbTagStats(abStats, this.props.config);
+        const abxTagStats = computeAbxTagStats(abxStats, this.props.config);
         if (this.shareUrl === null) {
-            this.shareUrl = createShareUrl(this.props.results, this.props.config);
+            this.shareUrl = createShareUrl(abStats.concat(abxStats), this.props.config);
         }
         return (
             <Box>
@@ -109,7 +134,8 @@ class Results extends React.Component {
                         <Box key={-1} mb="16px">
                             <ReactMarkdown renderers={reactMuiMarkdownRenderers} children={this.props.description}/>
                         </Box>}
-                        {testStats}
+                        {abStatsComponents}
+                        {abxStatsComponents}
                         {Boolean(abTagStats && abTagStats.length) &&
                         <Box>
                             <Box mb="16px">
@@ -125,7 +151,7 @@ class Results extends React.Component {
                                 <Typography variant="h5">Aggregated ABX test results</Typography>
                             </Box>
                             <Box>
-                                <ABXTagStats config={this.props.config} results={abxTagStats} />
+                                <ABXTagStats config={this.props.config} stats={abxTagStats} />
                             </Box>
                         </Box>
                         }

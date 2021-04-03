@@ -236,6 +236,9 @@ function computeAbxStats(name, optionNames, userSelectionsAndCorrects) {
         }
         ++row.counts[selectedName];
     }
+    // Sort rows and optionNames alphabetically
+    stats.rows.sort((a, b) => (a.correctOption < b.correctOption ? -1 : 1));
+    stats.optionNames.sort((a, b) => (a.correctOption < b.correctOption ? -1 : 1));
     return enrichAbxStats(stats);
 }
 
@@ -333,7 +336,7 @@ function computeAbxTagStats(allTestStats, config) {
             const tag = optionsToTags[testStatsRow.correctOption];
             const tagGroupRow = tagGroup.rows.find(tagGroupRow => tagGroupRow.correctOption === tag)
             for (const [selectedOption, count] of Object.entries(testStatsRow.counts)) {
-                tagGroupRow[selectedOption] += count;
+                tagGroupRow.counts[optionsToTags[selectedOption]] += count;
             }
         }
     }

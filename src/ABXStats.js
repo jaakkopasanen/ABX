@@ -7,8 +7,7 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
-import {Badge, Tooltip, withStyles} from "@material-ui/core";
-import {computeAbxStats} from "./stats";
+import {Tooltip, withStyles} from "@material-ui/core";
 import Label from "./Label";
 
 const StyledTableCell = withStyles((theme) => ({
@@ -19,23 +18,13 @@ const StyledTableCell = withStyles((theme) => ({
 
 class ABXStats extends React.Component {
     render() {
-        let stats;
-        if (this.props.userSelectionsAndCorrects && this.props.userSelectionsAndCorrects.length > 0) {
-            // User selections are available, calculate stats from those
-            stats = computeAbxStats(this.props.name, this.props.optionNames, this.props.userSelectionsAndCorrects);
-        } else if (this.props.stats) {
-            // User selections are not available in shared results, use the shared stats directly
-            stats = Object.assign({}, this.props.stats);
-        } else {
-            // Not initialized
-            return null;
-        }
+        const stats = Object.assign({}, this.props.stats);
         const rows = [];
         for (let i = 0; i < stats.rows.length; ++i) {
             // Add header cell
             let cells = [(
                 <TableCell key={-1}>
-                    <Label><b>{i.toString()}</b></Label>{stats.rows[i].correctOption}
+                    <Label color="secondary"><b>{i + 1}</b></Label>{stats.rows[i].correctOption}
                 </TableCell>
             )];
             // Add data cells
@@ -64,13 +53,15 @@ class ABXStats extends React.Component {
         for (let i = 0; i < this.props.optionNames.length; ++i) {
             headerCells.push(
                 <StyledTableCell key={i}>
-                    <Label>{i.toString()}</Label>
+                    <Label color="secondary">{i + 1}</Label>
                 </StyledTableCell>
             )
         }
         return (
             <Box>
-                <Typography variant="h6">{this.props.name}</Typography>
+                <Typography variant="h6">
+                    {this.props.name}
+                </Typography>
                 <Box mb={3}>
                     <Box>
                         <TableContainer>

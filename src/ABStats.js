@@ -8,7 +8,6 @@ import TableRow from "@material-ui/core/TableRow";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import {withStyles} from "@material-ui/core";
-import {computeAbStats} from "./stats";
 
 const StyledTableCell = withStyles((theme) => ({
     root: {
@@ -18,17 +17,7 @@ const StyledTableCell = withStyles((theme) => ({
 
 class ABStats extends React.Component {
     render() {
-        let stats;
-        if (this.props.userSelections && this.props.userSelections.length > 0) {
-            // User selections are available, calculate stats from those
-            stats = computeAbStats(this.props.name, this.props.optionNames, this.props.userSelections);
-        } else if (this.props.stats) {
-            // User selections are not available in shared results, use the shared stats directly
-            stats = Object.assign({}, this.props.stats);
-        } else {
-            // Not initialized
-            return null;
-        }
+        const stats = Object.assign({}, this.props.stats);
         const rows = [];
         for (let j = 0; j < stats.options.length; ++j) {
             // Data rows

@@ -4,7 +4,7 @@ import Welcome from "./Welcome";
 import ABTest from "./ABTest";
 import Results from "./Results";
 import Container from "@material-ui/core/Container";
-import {abStats, tagStats} from "./stats";
+import {computeAbStats, computeAbTagStats} from "./stats";
 import { parseConfig} from "./config";
 import ABXTest from "./ABXTest";
 
@@ -65,7 +65,7 @@ class TestRunner extends React.Component {
         const testResults = results.map(result => {
             let stats;
             if (result.testType.toLowerCase() === 'ab') {
-                stats = abStats(result.name, result.optionNames, result.userSelections);
+                stats = computeAbStats(result.name, result.optionNames, result.userSelections);
                 delete stats.optionNames;
                 delete stats.name;
             } else if (result.testType.toLowerCase() === 'abx') {
@@ -85,9 +85,9 @@ class TestRunner extends React.Component {
                 stats: stats
             };
         });
-        let tagSts = tagStats(results, this.config);
-        if (tagSts) {
-            tagSts = tagSts.stats;
+        let tagStats = computeAbTagStats(results, this.config);
+        if (tagStats) {
+            tagStats = tagStats.stats;
         }
         fetch('/submit', {
             method: 'POST',
@@ -100,7 +100,7 @@ class TestRunner extends React.Component {
                 name: this.config.name,
                 form: this.state.form,
                 testResults: testResults,
-                tagStats: tagSts,
+                tagStats: tagStats,
                 email: this.config.email,
             })
         });

@@ -140,7 +140,7 @@ class ABXTest extends ABTest {
                                                 onClick={this.handleSubmit}
                                                 disabled={this.state.selected === null || this.state.selected === this.state.options.length - 1}
                                             >
-                                                {`Select ${this.getChar(this.state.selected)}`}
+                                                {`X is ${this.getChar(this.state.selected)}`}
                                             </Button>
                                         </Box>
                                     </Box>

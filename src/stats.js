@@ -130,7 +130,7 @@ function enrichAbStats(stats) {
     return enrichedStats;
 }
 
-function abStats(name, optionNames, userSelections) {
+function computeAbStats(name, optionNames, userSelections) {
     const stats = {
         name: name,
         options: [],
@@ -204,7 +204,7 @@ function enrichAbxStats(stats) {
     return enrichedStats;
 }
 
-function abxStats(name, optionNames, userSelectionsAndCorrects) {
+function computeAbxStats(name, optionNames, userSelectionsAndCorrects) {
     /* Calculates ABX statistics
     * Args:
     *   name: Name of the test
@@ -239,20 +239,74 @@ function abxStats(name, optionNames, userSelectionsAndCorrects) {
     return enrichAbxStats(stats);
 }
 
-function tagStats(results, config) {
-    if (results.userSelections === undefined || Math.min(results.map(result => result.userSelections.length)) === 0) {
+function computeAbTagStats(allTestStats, config) {
+    // Create lookup table to get tags with option names
+    const optionsToTags = {};
+    for (const option of config.options) {
+        optionsToTags[option.name] = option.tag;
+    }
+
+    const allTagStats = [];
+    for (const testStats of allTestStats) {  // Stats for a single AB test
+        // Get all tags of the options in this test, uniques and sorted
+        const tags = [...new Set(testStats.options.map(option => optionsToTags[option.name]))];
+        if (tags.length < 2) continue;  // One is not a group
+        tags.sort();
+        // Form tag group name by joining the individual tags with " vs "
+        const tagGroupName = tags.join(' vs ');
+        // Check if a tag group with the same name already exists
+        let tagGroup = allTagStats.find(tagGroupStats => tagGroupStats.name === tagGroupName);
+        if (tagGroup) {
+            // Tag group with the same name exists, update counts
+            for (const testStatsOption of testStats.options) {
+                const tag = optionsToTags[testStatsOption.name];
+                const tagGroupOption = tagGroup.options.find(tagGroupOption => tagGroupOption.name === tag);
+                // Option exists because all options are created when the group is created, increase count
+                tagGroupOption.count += testStatsOption.count;
+            }
+        } else {
+            // Tag group with the same name doesn't exist, create new
+            tagGroup = {
+                name: tagGroupName,
+                options: tags.map(tag => ({
+                    name: tag,
+                    count: 0
+                })),
+                nOptions: tags.length,
+                optionNames: tags
+            };
+            for (const testStatsOption of testStats.options) {
+                // Find correct option in the options to preserve the order of the tags
+                const tag = optionsToTags[testStatsOption.name];
+                const tagGroupOption = tagGroup.options.find(tagGroupOption => tagGroupOption.name === tag);
+                // Option exists because all options were just created in the initialization, increase count
+                tagGroupOption.count += testStatsOption.count;
+            }
+            allTagStats.push(tagGroup);
+        }
+    }
+    return allTagStats.map(tagStats => enrichAbStats(tagStats));
+}
+
+function computeAbxTagStats(results, config) {
+    if (results.userSelectionsAndCorrects === undefined ||
+        Math.min(results.map(result => result.userSelectionsAndCorrects.length)) === 0
+    ) {
         return;
     }
     // Create tag groups from all combinations of tags
     let tagGroups = {};
     for (const testResult of results) {
+        if (testResult.testType.toLowerCase() !== 'abx') {
+            // Skip tests which are not AB tests
+            continue;
+        }
         // Get all tags in the test options
         let tags = testResult.optionNames.map(optionName => config.options.find(option => option.name === optionName).tag);
         // Form tag group name by joining the sorted tag names with VS ie "32kbps VS 64 kbps VS lossless"
         tags = [...new Set(tags)];
-        tags = tags.filter(x => x !== undefined);
-        if (tags.length === 0) {
-            continue;
+        if (tags.length < 2) {
+            return null;
         }
         tags.sort();
         const tagGroupName = tags.join(' VS ');
@@ -261,12 +315,15 @@ function tagStats(results, config) {
             tagGroups[tagGroupName] = {
                 name: tagGroupName,
                 optionNames: tags,
-                userSelections: []
+                userSelectionsAndCorrects: []
             }
         }
         // Add user selections to the tag group
-        tagGroups[tagGroupName].userSelections = tagGroups[tagGroupName].userSelections.concat(
-            testResult.userSelections.map(selection => ({name: selection.tag}))
+        tagGroups[tagGroupName].userSelectionsAndCorrects = tagGroups[tagGroupName].userSelectionsAndCorrects.concat(
+            testResult.userSelectionsAndCorrects.map(selectionAndCorrect => ({
+                selectedOption: selectionAndCorrect.selectedOption.tag,
+                correctOption: selectionAndCorrect.correctOption.tag
+            }))
         );
     }
     if (Object.keys(tagGroups).length === 0) {
@@ -277,9 +334,8 @@ function tagStats(results, config) {
     const stats = [];
     for (const [name, tagGroup] of Object.entries(tagGroups)) {
         // TODO: ABX and other test types
-        stats.push(abStats(name, tagGroup.optionNames, tagGroup.userSelections));
+        stats.push(computeAbxStats(name, tagGroup.optionNames, tagGroup.userSelections));
     }
-    return {tagGroups: tagGroups, stats: stats};
-}
+    return {tagGroups: tagGroups, stats: stats};}
 
-export { chiSquaredPValue, multinomialPMF, enrichAbStats, abStats, enrichAbxStats, abxStats, tagStats };
+export { chiSquaredPValue, multinomialPMF, computeAbStats, computeAbxStats, enrichAbStats, enrichAbxStats, computeAbTagStats, computeAbxTagStats };

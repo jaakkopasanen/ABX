@@ -6,8 +6,8 @@ import ABXStats from "./ABXStats";
 import reactMuiMarkdownRenderers from "./reactMuiMarkdownRenderers";
 import ReactMarkdown from "react-markdown";
 import Typography from "@material-ui/core/Typography";
-import TagStats from "./TagStats";
-import {tagStats} from "./stats";
+import ABTagStats from "./ABTagStats";
+import {computeAbStats, computeAbTagStats, computeAbxTagStats} from "./stats";
 import {createShareUrl} from "./share";
 import {Button, IconButton, Link, Tooltip} from "@material-ui/core";
 import ShareIcon from '@material-ui/icons/Share';
@@ -39,7 +39,7 @@ class Results extends React.Component {
     }
 
     render() {
-        const allStats = [];
+        const testStats = [];
         for (let i = 0; i < this.props.results.length; ++i) {  // Looping tests
             let stats;
             if (this.props.results[i].testType.toLowerCase() === 'ab') {
@@ -61,13 +61,31 @@ class Results extends React.Component {
                     />
                 )
             }
-            allStats.push(
+            testStats.push(
                 <Box key={i} mb="12px">
                     {stats}
                 </Box>
             )
         }
-        const tagSts = tagStats(this.props.results, this.props.config);
+
+        // Get AB test tag stats
+        const abTagStats = computeAbTagStats(
+            this.props.results
+                // Filter out other type tests
+                .filter(result =>result.testType.toLowerCase() === 'ab')
+                // Compute AB test stats for each test result
+                .map(result => {
+                    if (result.userSelections) {
+                        // Result has user selections, use those
+                        return computeAbStats(result.name, result.optionNames, result.userSelections);
+                    }
+                    // No user selections available (in shared results), use the precomputed stats
+                    return result.stats;
+                }),
+            this.props.config
+        );
+        //const abxTagStats = computeAbxTagStats(this.props.results, this.props.config);
+        const abxTagStats = null;
         if (this.shareUrl === null) {
             this.shareUrl = createShareUrl(this.props.results, this.props.config);
         }
@@ -79,16 +97,26 @@ class Results extends React.Component {
                         <Box key={-1} mb="16px">
                             <ReactMarkdown renderers={reactMuiMarkdownRenderers} children={this.props.description}/>
                         </Box>}
-                        {allStats}
-                        {tagSts &&
+                        {testStats}
+                        {abTagStats &&
                         <Box>
                             <Box mb="16px">
-                                <Typography variant="h4">Aggregated results</Typography>
+                                <Typography variant="h5">Aggregated AB test results</Typography>
                             </Box>
                             <Box>
-                                <TagStats config={this.props.config} results={this.props.results} />
+                                <ABTagStats config={this.props.config} stats={abTagStats} />
                             </Box>
                         </Box>}
+                        {abxTagStats &&
+                        <Box>
+                            <Box mb="16px">
+                                <Typography variant="h5">Aggregated ABX test results</Typography>
+                            </Box>
+                            <Box>
+                                <ABTagStats config={this.props.config} results={this.props.results} />
+                            </Box>
+                        </Box>
+                        }
                         {this.shareUrl &&
                         <Box>
                             <Box className="centerText" display={this.state.shared ? 'none': 'block'}>

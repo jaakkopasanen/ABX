@@ -1,5 +1,5 @@
 import {bytesToBase64} from "./base64";
-import {abStats, abxStats, enrichAbStats, enrichAbxStats} from "./stats";
+import {computeAbStats, computeAbxStats, enrichAbStats, enrichAbxStats} from "./stats";
 
 function createShareUrl(inResults, config) {
     for (const result of inResults) {
@@ -9,9 +9,9 @@ function createShareUrl(inResults, config) {
     }
     const results = inResults.map(result => {
         if (result.testType.toLowerCase() === 'ab') {
-            return abStats(result.name, result.optionNames, result.userSelections);
+            return computeAbStats(result.name, result.optionNames, result.userSelections);
         } else {
-            return abxStats(result.name, result.optionNames, result.userSelectionsAndCorrects);
+            return computeAbxStats(result.name, result.optionNames, result.userSelectionsAndCorrects);
         }
 
     });
@@ -67,8 +67,6 @@ function encodeTestResults(testResults, config) {
     for (let i = 0; i < Object.keys(config.options).length; ++i) {
         optionOrd[config.options[i].name] = i;
     }
-    console.log('optionOrd');
-    console.log(optionOrd);
 
     // Create data array with ordinal numbers
     const obfuscatorSeed = Math.floor(Math.random() * 256);
@@ -92,7 +90,6 @@ function encodeTestResults(testResults, config) {
                 // Add counts
                 for (const name of Object.keys(row.counts)) {
                     // Add ordinal number of the selected option
-                    console.log(name, optionOrd[name]);
                     data.push(optionOrd[name]);
                     // Add count of the selected option
                     data.push(row.counts[name]);
@@ -104,7 +101,6 @@ function encodeTestResults(testResults, config) {
     }
 
     data = Uint8Array.from(data);  // Make sure the data is bytes
-    console.log(JSON.stringify(data, undefined, 4));
     // Add random number in range 0..127 to each byte in the data arry
     // This assumes all values in the array are below 127, true if all of the tests have fewer than 127 iterations
     const obfuscationMask = createObfuscationMask(obfuscatorSeed, data.length - 1, 127);
@@ -127,16 +123,11 @@ function decodeTestResults(dataStr, config) {
     for (let i = 1; i < data.length; ++i) {
         data[i] -= obfuscationMask[i - 1];
     }
-    console.log('data');
-    console.log(JSON.stringify(data, undefined, 4));
-    console.log('options');
-    console.log(config.options.map(opt => opt.name));
 
     const testResults = [];
     let i = 1;  // Skip the obfuscator seed
     while (i < data.length) {
         const test = Object.assign({}, config.tests[data[i]]);
-        console.log(`test: ${data[i]} @ ${i} = "${test.name}"`);
 
         if (test.testType.toLowerCase() === 'ab') {
             // Create AB stats objects with the count data
@@ -165,14 +156,12 @@ function decodeTestResults(dataStr, config) {
             let ix = i + 1;  // Running index, starts from first byte after test indicator byte
             for (let j = 0; j < test.options.length; ++j) {
                 // There's one row per option since data has been enriched
-                console.log(`correctOption: ${data[ix]} @ ${ix} = "${config.options[data[ix]].name}"`);
                 const row = {correctOption: config.options[data[ix]].name, counts: {}};
                 stats.optionNames.push(row.correctOption);
                 ++ix;  // Move on to the first count pair byte
                 for (let k = 0; k < test.options.length; ++k) {
                     // There's one byte pair per option since data has been enriched
                     // Read the selected option and it's count
-                    console.log(`selectedOption: ${data[ix]} @ ${ix} =`);
                     row.counts[config.options[data[ix]].name] = data[ix + 1];
                     ix += 2;
                 }
@@ -185,7 +174,6 @@ function decodeTestResults(dataStr, config) {
                 optionNames: stats.optionNames.slice(),
                 stats: enrichedStats,
             })
-            console.log(`Moving i: ${i} + ${ix} = ${i + ix}`);
             i = ix;  // Move i to the current running index
 
         } else {

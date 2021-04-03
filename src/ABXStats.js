@@ -8,7 +8,7 @@ import TableRow from "@material-ui/core/TableRow";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import {withStyles} from "@material-ui/core";
-import {abxStats} from "./stats";
+import {computeAbxStats} from "./stats";
 
 const StyledTableCell = withStyles((theme) => ({
     root: {
@@ -21,7 +21,7 @@ class ABXStats extends React.Component {
         let stats;
         if (this.props.userSelectionsAndCorrects && this.props.userSelectionsAndCorrects.length > 0) {
             // User selections are available, calculate stats from those
-            stats = abxStats(this.props.name, this.props.optionNames, this.props.userSelectionsAndCorrects);
+            stats = computeAbxStats(this.props.name, this.props.optionNames, this.props.userSelectionsAndCorrects);
         } else if (this.props.stats) {
             // User selections are not available in shared results, use the shared stats directly
             stats = Object.assign({}, this.props.stats);

@@ -28,7 +28,7 @@ class ABXTest extends ABTest {
             // Refusing to submit if nothing is selected or if X is selected
             return;
         }
-        this.stopAudio();
+        this.stopAllAudio();
         this.props.onSubmit(
             // Selected option
             Object.assign({}, this.state.options[this.state.selected]),

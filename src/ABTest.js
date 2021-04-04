@@ -13,48 +13,87 @@ class ABTest extends React.Component {
         super(props);
         const ixs = shuffle([...Array(this.props.options.length).keys()])  // Randomly shuffled indexes
         this.audio = [];
+        this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        this.audioStartTime = null;
         this.state = {
             options: ixs.map(ix => this.props.options[ix]),  // Shuffle options
             selected: null,
         };
-        this.stopAudio = this.stopAudio.bind(this);
+        this.createAudio = this.createAudio.bind(this);
+        this.initAudio = this.initAudio.bind(this);
+        this.stopAllAudio = this.stopAllAudio.bind(this);
         this.handleClick = this.handleClick.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
-    componentDidMount() {
+    createAudio(url) {
+        const audio = this.audioContext.createBufferSource();
+        audio.buffer = this.audio.find(a => a.url === url).buffer;
+        audio.connect(this.audioContext.destination);
+        audio.loop = true;
+        return audio;
+    }
+
+    async initAudio() {
         for (const option of this.state.options) {
-            const audio = new Audio(option.audioUrl);
-            //audio.muted = true;
-            audio.loop = true;
-            audio.volume = this.props.volume;
+            const audio = {
+                url: option.audioUrl,
+                buffer: await fetch(option.audioUrl)
+                    .then(r => r.arrayBuffer())
+                    .then(buf => this.audioContext.decodeAudioData(buf)),
+            };
             this.audio.push(audio);
+            audio.audio = this.createAudio(option.audioUrl);
         }
     }
 
-    stopAudio() {
-        for (let i = 0; i < this.audio.length; ++i) {
-            //this.audio[i].muted = true;
-            this.audio[i].pause();
-            this.audio[i].currentTime = 0;
+    componentDidMount() {
+        this.initAudio();
+    }
+
+    stopAudio(ix) {
+        try {
+            // Stop audio, this is in try block because the audio might not have been started and attempting to stop
+            // an audio which has not been started throws an InvalidStateError
+            this.audio[ix].audio.stop(0);
+            // Create new AudioBufferSourceNode instance since these can be played only once
+            this.audio[ix].audio = this.createAudio(this.audio[ix].url);
+        } catch {
+            // Nothing needs to be done if the audio stop fails, the audio object exists and can be played,
+            // there's no need to create a new one
         }
+    }
+
+    stopAllAudio() {
+        for (let i = 0; i < this.audio.length; ++i) {
+            this.stopAudio(i);
+        }
+        this.audioStartTime = null;
         this.setState({selected: null});
+    }
+
+    startAudio(ix) {
+        if (this.state.selected === null) {
+            // Nothing playing, start from the beginning
+            this.audio[ix].audio.start(0, 0);
+            this.audioStartTime = this.audioContext.currentTime;
+        } else {
+            const duration = this.audio[ix].buffer.length / this.audioContext.sampleRate;
+            const offset = (this.audioContext.currentTime - this.audioStartTime) % duration;
+            this.audio[ix].audio.start(0, offset);
+        }
     }
 
     handleClick(ix) {
         if (this.state.selected === ix) {
             // Clicked the currently playing button, stop all
-            this.stopAudio();
+            this.stopAllAudio();
 
         } else {
-            let currentTime = 0;
+            this.startAudio(ix);
             if (this.state.selected !== null) {
-                // Pause the currently playing one
-                this.audio[this.state.selected].pause();
-                currentTime = this.audio[this.state.selected].currentTime + 0.1;
+                this.stopAudio(this.state.selected);
             }
-            this.audio[ix].currentTime = currentTime;
-            this.audio[ix].play();
             this.setState({selected: ix});
         }
     }
@@ -63,7 +102,7 @@ class ABTest extends React.Component {
         if (this.state.selected === null) {
             return;
         }
-        this.stopAudio();
+        this.stopAllAudio();
         this.props.onSubmit(this.state.options[this.state.selected]);
     }
 

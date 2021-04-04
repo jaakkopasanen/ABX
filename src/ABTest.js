@@ -28,9 +28,9 @@ class ABTest extends React.Component {
     }
 
     createAudio(url) {
-        const audio = this.props.audiocontext.createBufferSource();
-        audio.buffer = this.props.audiobuffers[url];
-        audio.connect(this.props.audiocontext.destination);
+        const audio = this.props.audioContext.createBufferSource();
+        audio.buffer = this.props.audioBuffers[url];
+        audio.connect(this.props.audioDestination);
         audio.loop = true;
         return audio;
     }
@@ -39,7 +39,7 @@ class ABTest extends React.Component {
         for (const option of this.state.options) {
             const audio = {
                 url: option.audioUrl,
-                buffer: this.props.audiobuffers[option.audioUrl]
+                buffer: this.props.audioBuffers[option.audioUrl]
             };
             this.audio.push(audio);
             audio.audio = this.createAudio(audio.url);
@@ -75,10 +75,10 @@ class ABTest extends React.Component {
         if (this.state.selected === null) {
             // Nothing playing, start from the beginning
             this.audio[ix].audio.start(0, 0);
-            this.audioStartTime = this.props.audiocontext.currentTime;
+            this.audioStartTime = this.props.audioContext.currentTime;
         } else {
-            const duration = this.audio[ix].buffer.length / this.props.audiocontext.sampleRate;
-            const offset = (this.props.audiocontext.currentTime - this.audioStartTime) % duration;
+            const duration = this.audio[ix].buffer.length / this.props.audioContext.sampleRate;
+            const offset = (this.props.audioContext.currentTime - this.audioStartTime) % duration;
             this.audio[ix].audio.start(0, offset);
         }
     }

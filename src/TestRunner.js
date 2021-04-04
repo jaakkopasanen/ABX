@@ -16,8 +16,11 @@ class TestRunner extends React.Component {
         this.config = null;
         this.audioBuffers = {};
         this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        this.gainNode = this.audioContext.createGain();
+        this.gainNode.connect(this.audioContext.destination);
         let volume = localStorage.getItem('volume');
         volume = volume === null ? 0.5 : +volume;
+        this.gainNode.gain.value = volume;
         this.state = {
             form: {},
             volume:  volume,
@@ -164,6 +167,7 @@ class TestRunner extends React.Component {
 
     handleVolumeChange(event, newValue) {
         const timer = Date.now();
+        this.gainNode.gain.value = newValue;
         this.setState({
             volume: newValue,
             timer: timer
@@ -228,8 +232,9 @@ class TestRunner extends React.Component {
                     description={this.config.tests[this.state.testStep].description}
                     stepStr={`${this.state.repeatStep + 1}/${this.config.tests[this.state.testStep].repeat}`}
                     options={this.config.tests[this.state.testStep].options}
-                    audiobuffers={this.audioBuffers}
-                    audiocontext={this.audioContext}
+                    audioBuffers={this.audioBuffers}
+                    audioContext={this.audioContext}
+                    audioDestination={this.gainNode}
                     onSubmit={this.handleAbTestSubmit}
                     volume={this.state.volume}
                     onVolumeChange={this.handleVolumeChange}
@@ -242,8 +247,9 @@ class TestRunner extends React.Component {
                     description={this.config.tests[this.state.testStep].description}
                     stepStr={`${this.state.repeatStep + 1}/${this.config.tests[this.state.testStep].repeat}`}
                     options={this.config.tests[this.state.testStep].options}
-                    audiobuffers={this.audioBuffers}
-                    audiocontext={this.audioContext}
+                    audioBuffers={this.audioBuffers}
+                    audioContext={this.audioContext}
+                    audioDestination={this.gainNode}
                     onSubmit={this.handleAbxTestSubmit}
                     volume={this.state.volume}
                     onVolumeChange={this.handleVolumeChange}

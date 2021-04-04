@@ -1,6 +1,6 @@
 {
   "name": "abx",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "private": true,
   "dependencies": {
     "@material-ui/core": "^4.11.2",

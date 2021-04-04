@@ -13,7 +13,6 @@ class ABTest extends React.Component {
         super(props);
         const ixs = shuffle([...Array(this.props.options.length).keys()])  // Randomly shuffled indexes
         this.audio = [];
-        this.silence = 0;
         this.state = {
             options: ixs.map(ix => this.props.options[ix]),  // Shuffle options
             selected: null,
@@ -26,7 +25,7 @@ class ABTest extends React.Component {
     componentDidMount() {
         for (const option of this.state.options) {
             const audio = new Audio(option.audioUrl);
-            audio.muted = true;
+            //audio.muted = true;
             audio.loop = true;
             audio.volume = this.props.volume;
             this.audio.push(audio);
@@ -35,7 +34,7 @@ class ABTest extends React.Component {
 
     stopAudio() {
         for (let i = 0; i < this.audio.length; ++i) {
-            this.audio[i].muted = true;
+            //this.audio[i].muted = true;
             this.audio[i].pause();
             this.audio[i].currentTime = 0;
         }
@@ -48,18 +47,14 @@ class ABTest extends React.Component {
             this.stopAudio();
 
         } else {
-            // Play the selected one
-            for (let i = 0; i < this.audio.length; ++i) {
-                this.audio[i].muted = true;
-                this.audio[i].play();
+            let currentTime = 0;
+            if (this.state.selected !== null) {
+                // Pause the currently playing one
+                this.audio[this.state.selected].pause();
+                currentTime = this.audio[this.state.selected].currentTime + 0.1;
             }
-            if (this.silence) {
-                setTimeout(() => {
-                    this.audio[ix].muted = false;
-                }, this.silence);
-            } else {
-                this.audio[ix].muted = false;
-            }
+            this.audio[ix].currentTime = currentTime;
+            this.audio[ix].play();
             this.setState({selected: ix});
         }
     }

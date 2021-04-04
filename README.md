@@ -159,6 +159,18 @@ limited to avoid exhausting the participants. Each test has four different field
 `email` specifies the email address where the results should be sent to. This is optional and can be omitted if you
 don't wish to collect the results. The results will be provided as JSON documents.
 
+### Audio Samples
+ABX only plays the audio samples defined in the configuration file. There is no processing (apart from volume slider)
+so all the effects under test need to be applied to the audio samples themselves.
+
+All audio samples **MUST** be exactly the same length, down to a sample, because the samples are playing in loop and if
+the samples are of different lengths, they will get out of sync. Alll audio samples also **MUST** have the same sample
+rate. This is a limitation of the current technical implementation and *might* change in the future (or might not).
+
+The audio samples should be looping friendly, meaning that if the sample starts and end abruptly, the users will be
+greeted with a loud pop sound whenever the audio loops back to the beginning. Applying fade-in in the beginning of each
+sample and fade-out at the end is a good way to avoid this.
+
 ## Deployment
 Read on if you're interested in deploying and hosting ABX yourself.
 

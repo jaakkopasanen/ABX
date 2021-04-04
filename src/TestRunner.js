@@ -57,6 +57,7 @@ class TestRunner extends React.Component {
     start(form) {
         this.setState({
             testStep: 0,
+            repeatStep: 0,
             form: Object.assign({}, form)
         });
     }
@@ -166,80 +167,79 @@ class TestRunner extends React.Component {
         if (!this.config) {
             return "";
         }
-        const steps = [];
-
-        // Add welcome screen
-        steps.push(
-            <Box key={'welcome'} display={this.state.testStep === -1 ? 'flex' : 'none'}>
-                <Welcome
-                    description={this.config.welcome.description}
-                    form={this.config.welcome.form}
-                    onClick={this.start}
-                />
-            </Box>
-        )
 
         // Add tests
         for (let i = 0; i < this.config.tests.length; ++i) {
             for (let j = 0; j < this.config.tests[i].repeat; ++j) {
-                let component = null;
-                if (this.config.tests[i].testType.toLowerCase() === 'ab') {
-                    component = (<ABTest
-                        name={this.config.tests[i].name}
-                        description={this.config.tests[i].description}
-                        stepStr={`${j + 1}/${this.config.tests[i].repeat}`}
-                        options={this.config.tests[i].options}
-                        onSubmit={this.handleAbTestSubmit}
-                        volume={this.state.volume}
-                        onVolumeChange={this.handleVolumeChange}
-                        onClick={this.handleAudioButtonClick}
-                    />)
-                } else if (this.config.tests[i].testType.toLowerCase() === 'abx') {
-                    component = (<ABXTest
-                        name={this.config.tests[i].name}
-                        description={this.config.tests[i].description}
-                        stepStr={`${j + 1}/${this.config.tests[i].repeat}`}
-                        options={this.config.tests[i].options}
-                        onSubmit={this.handleAbxTestSubmit}
-                        volume={this.state.volume}
-                        onVolumeChange={this.handleVolumeChange}
-                        onClick={this.handleAudioButtonClick}
-                    />)
-                } else {
-                    throw new Error(`Usupported test type ${this.config.tests[i].testType}`)
-                }
-                steps.push(
-                    <Box
-                        key={`${i}.${j}`}
-                        display={this.state.testStep === i  && this.state.repeatStep === j ? 'flex' : 'none'}
-                    >
-                        {component}
-                    </Box>
-                )
+
             }
         }
 
         // Add results screen
-        steps.push(
-            <Box
-                key={steps.length}
-                display={this.state.testStep === this.config.tests.length ? 'flex' : 'none'}
-                className="greyBg"
-                pt={2} pb={2}
-            >
-                <Container maxWidth="sm">
-                    <Results
-                        description={this.config.results ? this.config.results.description : ''}
-                        results={this.state.results}
-                        config={this.config}
+        let screen = null;
+        if (this.state.testStep === -1) {
+            // Welcome screen
+            screen = (
+                <Box key={'welcome'}>
+                    <Welcome
+                        description={this.config.welcome.description}
+                        form={this.config.welcome.form}
+                        onClick={this.start}
                     />
-                </Container>
-            </Box>
-        )
+                </Box>
+            );
+
+        } else if (this.state.testStep === this.config.tests.length) {
+            // Results screen
+            screen = (
+                <Box className="greyBg" pt={2} pb={2}>
+                    <Container maxWidth="sm">
+                        <Results
+                            description={this.config.results ? this.config.results.description : ''}
+                            results={this.state.results}
+                            config={this.config}
+                        />
+                    </Container>
+                </Box>
+            );
+
+        } else {
+            // Tests
+            let component = null;
+            if (this.config.tests[this.state.testStep].testType.toLowerCase() === 'ab') {
+                // AB test
+                component = (<ABTest
+                    key={`${this.state.testStep}.${this.state.repeatStep}`}
+                    name={this.config.tests[this.state.testStep].name}
+                    description={this.config.tests[this.state.testStep].description}
+                    stepStr={`${this.state.repeatStep + 1}/${this.config.tests[this.state.testStep].repeat}`}
+                    options={this.config.tests[this.state.testStep].options}
+                    onSubmit={this.handleAbTestSubmit}
+                    volume={this.state.volume}
+                    onVolumeChange={this.handleVolumeChange}
+                />)
+            } else if (this.config.tests[this.state.testStep].testType.toLowerCase() === 'abx') {
+                // ABX test
+                component = (<ABXTest
+                    key={`${this.state.testStep}.${this.state.repeatStep}`}
+                    name={this.config.tests[this.state.testStep].name}
+                    description={this.config.tests[this.state.testStep].description}
+                    stepStr={`${this.state.repeatStep + 1}/${this.config.tests[this.state.testStep].repeat}`}
+                    options={this.config.tests[this.state.testStep].options}
+                    onSubmit={this.handleAbxTestSubmit}
+                    volume={this.state.volume}
+                    onVolumeChange={this.handleVolumeChange}
+                />)
+            } else {
+                throw new Error(`Usupported test type ${this.config.tests[this.state.testStep].testType}`)
+            }
+            screen = (
+                <Box>{component}</Box>
+            );
+        }
+
         return (
-            <Box>
-                {steps}
-            </Box>
+            <Box>{screen}</Box>
         )
     }
 }

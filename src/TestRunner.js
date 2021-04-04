@@ -14,6 +14,8 @@ class TestRunner extends React.Component {
         super(props);
 
         this.config = null;
+        this.audioBuffers = {};
+        this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
         let volume = localStorage.getItem('volume');
         volume = volume === null ? 0.5 : +volume;
         this.state = {
@@ -23,8 +25,10 @@ class TestRunner extends React.Component {
             testStep: -1,
             repeatStep: 0,
             results: [],
+            audioInitialized: false
         };
 
+        this.initAudio = this.initAudio.bind(this);
         this.start = this.start.bind(this);
         this.nextStep = this.nextStep.bind(this);
         this.handleAbTestSubmit = this.handleAbTestSubmit.bind(this);
@@ -32,9 +36,21 @@ class TestRunner extends React.Component {
         this.handleVolumeChange = this.handleVolumeChange.bind(this);
     }
 
+    async initAudio() {
+        // Find all audio URLs used in the tests
+        for (const option of this.config.options) {
+            // Fetch buffer for each URL
+            this.audioBuffers[option.audioUrl] = await fetch(option.audioUrl)
+                .then(r => r.arrayBuffer())
+                .then(buf => this.audioContext.decodeAudioData(buf));
+        }
+        this.setState({audioInitialized: true});
+    }
+
     componentDidMount() {
         parseConfig(this.props.config).then(config => {
             this.config = Object.assign({}, config);
+            this.initAudio();
             this.setState({
                 results: this.config.tests.map(test => {
                     const result = {
@@ -147,9 +163,6 @@ class TestRunner extends React.Component {
     }
 
     handleVolumeChange(event, newValue) {
-        for (const audio of Object.values(this.audio)) {
-            audio.volume = newValue;
-        }
         const timer = Date.now();
         this.setState({
             volume: newValue,
@@ -185,6 +198,7 @@ class TestRunner extends React.Component {
                         description={this.config.welcome.description}
                         form={this.config.welcome.form}
                         onClick={this.start}
+                        initialized={this.state.audioInitialized}
                     />
                 </Box>
             );
@@ -214,6 +228,8 @@ class TestRunner extends React.Component {
                     description={this.config.tests[this.state.testStep].description}
                     stepStr={`${this.state.repeatStep + 1}/${this.config.tests[this.state.testStep].repeat}`}
                     options={this.config.tests[this.state.testStep].options}
+                    audiobuffers={this.audioBuffers}
+                    audiocontext={this.audioContext}
                     onSubmit={this.handleAbTestSubmit}
                     volume={this.state.volume}
                     onVolumeChange={this.handleVolumeChange}
@@ -226,6 +242,8 @@ class TestRunner extends React.Component {
                     description={this.config.tests[this.state.testStep].description}
                     stepStr={`${this.state.repeatStep + 1}/${this.config.tests[this.state.testStep].repeat}`}
                     options={this.config.tests[this.state.testStep].options}
+                    audiobuffers={this.audioBuffers}
+                    audiocontext={this.audioContext}
                     onSubmit={this.handleAbxTestSubmit}
                     volume={this.state.volume}
                     onVolumeChange={this.handleVolumeChange}

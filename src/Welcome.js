@@ -1,6 +1,6 @@
 import React from "react";
 import ReactMarkdown from 'react-markdown';
-import {Box, Button, Paper, TextField, MenuItem, Container} from "@material-ui/core";
+import {Box, Button, Paper, TextField, MenuItem, Container, Typography} from "@material-ui/core";
 import reactMuiMarkdownRenderers from "./reactMuiMarkdownRenderers";
 
 class Welcome extends React.Component {
@@ -106,12 +106,17 @@ class Welcome extends React.Component {
                                 <Box key={1} display={this.props.form ? 'flex' : 'none'} flexDirection="column">
                                     {this.renderForm()}
                                 </Box>
+                                <Box display={this.props.initialized ? 'none' : 'inline'}>
+                                    <Typography color="primary">
+                                        Loading audio...
+                                    </Typography>
+                                </Box>
                                 <Box key={2} mt="32px" mb="16px" display="flex" justifyContent="center">
                                     <Button
                                         variant="outlined"
                                         color="primary"
                                         onClick={this.handleClick}
-                                        disabled={!this.validateForm()}
+                                        disabled={!this.validateForm() || !this.props.initialized}
                                     >
                                         Start!
                                     </Button>

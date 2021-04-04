@@ -78,8 +78,6 @@ class Results extends React.Component {
                 let stats;
                 if (this.props.results[i].stats) {
                     stats = this.props.results[i].stats;
-                    console.log('Using existing stats');
-                    console.log(stats);
                 } else {
                     stats = computeAbStats(
                         this.props.results[i].name,

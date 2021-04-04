@@ -9,11 +9,12 @@ import shuffle from "./random";
 import {Container, Divider, Paper} from "@material-ui/core";
 
 class ABTest extends React.Component {
+    // TODO: volume
     constructor(props) {
         super(props);
         const ixs = shuffle([...Array(this.props.options.length).keys()])  // Randomly shuffled indexes
         this.audio = [];
-        this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
         this.audioStartTime = null;
         this.state = {
             options: ixs.map(ix => this.props.options[ix]),  // Shuffle options
@@ -27,9 +28,9 @@ class ABTest extends React.Component {
     }
 
     createAudio(url) {
-        const audio = this.audioContext.createBufferSource();
-        audio.buffer = this.audio.find(a => a.url === url).buffer;
-        audio.connect(this.audioContext.destination);
+        const audio = this.props.audiocontext.createBufferSource();
+        audio.buffer = this.props.audiobuffers[url];
+        audio.connect(this.props.audiocontext.destination);
         audio.loop = true;
         return audio;
     }
@@ -38,12 +39,10 @@ class ABTest extends React.Component {
         for (const option of this.state.options) {
             const audio = {
                 url: option.audioUrl,
-                buffer: await fetch(option.audioUrl)
-                    .then(r => r.arrayBuffer())
-                    .then(buf => this.audioContext.decodeAudioData(buf)),
+                buffer: this.props.audiobuffers[option.audioUrl]
             };
             this.audio.push(audio);
-            audio.audio = this.createAudio(option.audioUrl);
+            audio.audio = this.createAudio(audio.url);
         }
     }
 
@@ -76,10 +75,10 @@ class ABTest extends React.Component {
         if (this.state.selected === null) {
             // Nothing playing, start from the beginning
             this.audio[ix].audio.start(0, 0);
-            this.audioStartTime = this.audioContext.currentTime;
+            this.audioStartTime = this.props.audiocontext.currentTime;
         } else {
-            const duration = this.audio[ix].buffer.length / this.audioContext.sampleRate;
-            const offset = (this.audioContext.currentTime - this.audioStartTime) % duration;
+            const duration = this.audio[ix].buffer.length / this.props.audiocontext.sampleRate;
+            const offset = (this.props.audiocontext.currentTime - this.audioStartTime) % duration;
             this.audio[ix].audio.start(0, offset);
         }
     }
@@ -134,9 +133,6 @@ class ABTest extends React.Component {
 
     render() {
         // Set volumes
-        for (const audio of Object.values(this.audio)) {
-            audio.volume = this.props.volume;
-        }
         const audioButtons = [];
         for (let i = 0; i < this.state.options.length; ++i) {
             const coordinates = this.circleCoordinates(i, this.state.options.length, 64, 24);

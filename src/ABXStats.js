@@ -88,7 +88,14 @@ class ABXStats extends React.Component {
                             <Table size="small">
                                 <TableHead>
                                     <TableRow>
-                                        <StyledTableCell>p-value</StyledTableCell>
+                                        <StyledTableCell>
+                                            <Box mr={1} display="inline">p-value</Box>
+                                            <Tooltip title="ABX test p-value tells how likely it is for an equally or more extreme pair of correct and incorrect choices to happen purely randomly. In other words low p-values (<0.05) tells that most likely you had some influence in these results.">
+                                                <Box display="inline">
+                                                    <Label color="primary">?</Label>
+                                                </Box>
+                                            </Tooltip>
+                                        </StyledTableCell>
                                         <StyledTableCell>Correct</StyledTableCell>
                                         <StyledTableCell>Incorrect</StyledTableCell>
                                     </TableRow>

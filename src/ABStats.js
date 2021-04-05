@@ -7,7 +7,8 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
-import {withStyles} from "@material-ui/core";
+import {Tooltip, withStyles} from "@material-ui/core";
+import Label from "./Label";
 
 const StyledTableCell = withStyles((theme) => ({
     root: {
@@ -33,8 +34,17 @@ class ABStats extends React.Component {
         // p-value row
         rows.push(
             <TableRow key={-2}>
-                <StyledTableCell>p-value</StyledTableCell>
-                <StyledTableCell>{stats.pValue.toPrecision(3)}</StyledTableCell>
+                <StyledTableCell>
+                    <Box mr={1} display="inline">p-value</Box>
+                    <Tooltip title="AB test p-value tells how likely it is for an equally or more extreme combination of choices to happen purely randomly. In other words low p-values (<0.05) tells that most likely you had some influence in these results.">
+                        <Box display="inline">
+                            <Label color="primary">?</Label>
+                        </Box>
+                    </Tooltip>
+                </StyledTableCell>
+                <StyledTableCell>
+                    {stats.pValue.toPrecision(3)}
+                </StyledTableCell>
             </TableRow>
         )
         return (

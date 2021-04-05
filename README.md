@@ -120,6 +120,26 @@ email: youremail@gmail.com
 ```
 You can start by copying this file, changing some fields, saving it to your Dropbox and getting the share link to test.
 
+If you're just looking for a super simple starting point, then maybe this one will serve you better. This is the minimal
+YAML file you can have. Only one test with two different audio samples.
+````yaml
+name: Minimal listening test
+welcome:
+  description: |-
+    ### Minimal listening test
+options:
+  - name: lossless
+    audioUrl: https://www.dropbox.com/s/9e92quf9tr7aj8s/Wintersun%20-%20Sons%20of%20Winter%20and%20Stars%20lossless.wav?dl=0
+  - name: 64 kbps
+    audioUrl: https://www.dropbox.com/s/epvit0keu9w7emp/Wintersun%20-%20Sons%20of%20Winter%20and%20Stars%2064%20kbps.mp3?dl=0
+tests:
+  - name: Lossless vs 64 kbps
+    testType: ABX
+    options:
+      - lossless
+      - 64 kbps
+````
+
 `name` specifies the name of the listening test. This is only to make it easier for you to tell which results come
 from which listening tests.
 
@@ -154,7 +174,7 @@ limited to avoid exhausting the participants. Each test has four different field
 - `name` is the title of the test and is displayed to the user at the top of each test screen and in the results page.
 - `description` of the test is a single piece of text shown to the user below the title. Markdown is not supported here.
 - `options` list the audio clip names. The clips will be randomly shuffled in each test iteration.
-- `repeat` tells how many iterations of the test should be done.
+- `repeat` tells how many iterations of the test should be done. Optional, defaults to 10 iterations.
 
 `email` specifies the email address where the results should be sent to. This is optional and can be omitted if you
 don't wish to collect the results. The results will be provided as JSON documents.
@@ -164,7 +184,7 @@ ABX only plays the audio samples defined in the configuration file. There is no 
 so all the effects under test need to be applied to the audio samples themselves.
 
 All audio samples **MUST** be exactly the same length, down to a sample, because the samples are playing in loop and if
-the samples are of different lengths, they will get out of sync. Alll audio samples also **MUST** have the same sample
+the samples are of different lengths, they will get out of sync. All audio samples also **MUST** have the same sample
 rate. This is a limitation of the current technical implementation and *might* change in the future (or might not).
 
 The audio samples should be looping friendly, meaning that if the sample starts and end abruptly, the users will be

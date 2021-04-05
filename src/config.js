@@ -9,7 +9,7 @@ const parseConfig = async function(inConfig) {
         for (let i = 0; i < config.tests.length; ++i) {
             // Repeat defaults to 1
             if (!config.tests[i].repeat) {
-                config.tests[i].repeat = 1;
+                config.tests[i].repeat = 10;
             }
             // Create option objects by querying the options with the given names
             config.tests[i].options = config.tests[i].options.map((name) => {

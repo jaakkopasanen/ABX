@@ -68,7 +68,7 @@ options:
 tests:
   - testType: ABX
     name: Jennifer Warnes - Bird on a Wire
-    description: Select the the option which the same as X
+    description: Select the the option which is the same as X
     options:
       - Bird on a Wire (lossless)
       - Bird on a Wire (64 kbps MP3)
@@ -76,7 +76,7 @@ tests:
     repeat: 10
   - testType: ABX
     name: Eagles - Hotel California
-    description: Select the the option which the same as X
+    description: Select the the option which is the same as X
     options:
       - Hotel California (lossless)
       - Hotel California (64 kbps MP3)

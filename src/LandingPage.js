@@ -4,6 +4,14 @@ import Box from "@material-ui/core/Box";
 import Typography from "@material-ui/core/Typography";
 import {Button, Link, makeStyles, Paper, SvgIcon} from "@material-ui/core";
 
+function GitHubIcon(props) {
+    return (
+        <SvgIcon {...props}>
+            <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
+        </SvgIcon>
+    )
+}
+
 const useStyles = makeStyles(theme => ({
     root: {
         backgroundImage: 'url("poly.png")',
@@ -16,43 +24,69 @@ const useStyles = makeStyles(theme => ({
     topBar: {
         height: 96,
     },
+    banner: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        marginBottom: -240,
+        [theme.breakpoints.up('sm')]: {
+            flexDirection: 'row',
+            marginBottom: 0,
+        }
+    },
     bannerTitle: {
-        minWidth: 200,
-        [theme.breakpoints.up('md')]: {
-            minWidth: 300,
+        minWidth: 300,
+        paddingTop: 48,
+        [theme.breakpoints.up('sm')]: {
             marginRight: 48
         },
     },
+    bannerImageStack: {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        marginTop: -240,
+        marginLeft: 0,
+        [theme.breakpoints.up('sm')]: {
+            marginTop: 0,
+            marginLeft: -140,
+        }
+    },
     bannerStackedImage: {
-        boxShadow: '-50px 25px 60px rgba(0, 0, 0, 0.2)',
-        transform: 'perspective(1000px) rotateY(6deg)',
+        boxShadow: '-50px 25px 30px rgba(0, 0, 0, 0.1)',
+        transform: 'perspective(1000px) rotateY(6deg) scale(0.35)',
         marginLeft: -500,
         [theme.breakpoints.up('sm')]: {
-            marginLeft: -450
+            transform: 'perspective(1000px) rotateY(6deg) scale(0.6667)',
         },
         [theme.breakpoints.up('md')]: {
             marginLeft: -400
         },
-        [theme.breakpoints.up('lg')]: {
-            marginLeft: -350
-        },
         '&:first-child': {
-            marginLeft: 0
+            marginLeft: 12
+        }
+    },
+    doubleContent: {
+        display: 'flex',
+        flexDirection: 'column',
+        marginTop: 48,
+        [theme.breakpoints.up('sm')]: {
+            flexDirection: 'row',
+        },
+    },
+    doubleContentLeft: {
+        minWidth: 288
+    },
+    doubleContentRight: {
+        [theme.breakpoints.up('sm')]: {
+            marginLeft: 24,
         }
     },
     contentImage: {
         borderRadius: 8
     }
 }));
-
-function GitHubIcon(props) {
-    return (
-        <SvgIcon {...props}>
-            <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
-        </SvgIcon>
-    )
-}
-
 
 export default function LandingPage() {
     const classes = useStyles();
@@ -71,7 +105,7 @@ export default function LandingPage() {
                         </Box>
                     </Box>
 
-                    <Box display="flex" alignItems="center" mb={16}>
+                    <Box className={classes.banner}>
                         <Box display="flex" flexDirection="column" className={classes.bannerTitle}>
                             <Box mt={-6} mb={3}>
                                 <Typography variant="h2">Listening Tests as a Service</Typography>
@@ -87,7 +121,7 @@ export default function LandingPage() {
                                 </Link>
                             </Box>
                         </Box>
-                        <Box display="flex" flexDirection="row" justifyContent="flex-start" alignItems="center">
+                        <Box className={classes.bannerImageStack}>
                             <Box className={classes.bannerStackedImage}>
                                 <Paper>
                                     <Box p={2}>
@@ -112,9 +146,9 @@ export default function LandingPage() {
                         </Box>
                     </Box>
 
-                    <Box display="flex" flexDirection="column" justifyContent="flex-start" alignItems="flex-start" spacing={10}>
-                        <Box display="flex" flexDirection="row">
-                            <Box>
+                    <Box pb={12} spacing={10}>
+                        <Box className={classes.doubleContent}>
+                            <Box className={classes.doubleContentLeft}>
                                 <Box mb={1.5}>
                                     <Typography variant="h3">Simplicity, flexibilty</Typography>
                                 </Box>
@@ -136,13 +170,13 @@ export default function LandingPage() {
                                     statistical significance.
                                 </Typography>
                             </Box>
-                            <Box ml={3} mt={2}>
+                            <Box mt={2} className={classes.doubleContentRight}>
                                 <img src="yaml-example.png" className={classes.contentImage} alt="Configuration file" />
                             </Box>
                         </Box>
 
-                        <Box display="flex" flexDirection="row" mt={6}>
-                            <Box flexGrow="1" flexBasis="0">
+                        <Box className={classes.doubleContent}>
+                            <Box className={classes.doubleContentLeft}>
                                 <Box mb={1.5}>
                                     <Typography variant="h3">Unbiased</Typography>
                                 </Box>
@@ -163,13 +197,16 @@ export default function LandingPage() {
                                     without having to start from the beginning.
                                 </Typography>
                             </Box>
-                            <Box flexGrow="1" flexBasis="0" ml={3} mt={2} display="flex" flexDirection="row" justifyContent="center" alignItems="center">
+                            <Box mt={2}
+                                 display="flex" flexDirection="row" justifyContent="center" alignItems="center"
+                                 className={classes.doubleContentRight}
+                            >
                                 <img src="button-group.png" height="203px" alt="Button group" />
                             </Box>
                         </Box>
 
-                        <Box display="flex" flexDirection="row" mt={6}>
-                            <Box flexGrow="1" flexBasis="0">
+                        <Box className={classes.doubleContent}>
+                            <Box className={classes.doubleContentLeft}>
                                 <Box mb={1.5}>
                                     <Typography variant="h3">Statistician at your service</Typography>
                                 </Box>
@@ -190,7 +227,7 @@ export default function LandingPage() {
                                     demographics.
                                 </Typography>
                             </Box>
-                            <Box flexGrow="1" flexBasis="0" ml={3} mt={2}>
+                            <Box mt={2} className={classes.doubleContentRight}>
                                 <Paper>
                                     <Box p={2}>
                                         <img src="result-table.png" alt="Result table" />
@@ -199,8 +236,8 @@ export default function LandingPage() {
                             </Box>
                         </Box>
 
-                        <Box display="flex" flexDirection="row" mt={6} mb={12}>
-                            <Box flexGrow="1" flexBasis="0">
+                        <Box className={classes.doubleContent}>
+                            <Box>
                                 <Box mb={1.5}>
                                     <Typography variant="h3">Get started</Typography>
                                 </Box>

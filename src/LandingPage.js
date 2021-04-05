@@ -3,6 +3,26 @@ import Container from "@material-ui/core/Container";
 import Box from "@material-ui/core/Box";
 import Typography from "@material-ui/core/Typography";
 import {Button, Link, makeStyles, Paper, SvgIcon} from "@material-ui/core";
+import ABStats from "./ABStats";
+import ABTagStats from "./ABTagStats";
+
+const abStats = {
+    pValue: 0.00610,
+    options: [
+        {name: 'Hotel California (Lossless)', count: 7, percentage: 70},
+        {name: 'Hotel California (256 kbps AAC)', count: 2, percentage: 20},
+        {name: 'Hotel California (320 kbps MP3)', count: 1, percentage: 10}
+    ]
+};
+const abTagStats = [{
+    name: 'Lossless vs 256 kbps AAC vs 320 kbps MP3',
+    pValue: 0.00000146,
+    options: [
+        {name: 'Lossless', count: 20, percentage: 66.666667},
+        {name: '256 kbps AAC', count: 9, percentage: 90},
+        {name: '320 kbps MP3', count: 1, percentage: 3.333333},
+    ]
+}];
 
 function GitHubIcon(props) {
     return (
@@ -61,7 +81,7 @@ const useStyles = makeStyles(theme => ({
             transform: 'perspective(1000px) rotateY(6deg) scale(0.6667)',
         },
         [theme.breakpoints.up('md')]: {
-            marginLeft: -400
+            marginLeft: -450
         },
         '&:first-child': {
             marginLeft: 12
@@ -85,6 +105,15 @@ const useStyles = makeStyles(theme => ({
     },
     contentImage: {
         borderRadius: 8
+    },
+    resultsTable: {
+        minWidth: 288,
+        '@media (min-width: 700px)': {
+            minWidth: 380
+        },
+        [theme.breakpoints.up('sm')]: {
+            marginLeft: 24,
+        }
     }
 }));
 
@@ -227,10 +256,20 @@ export default function LandingPage() {
                                     demographics.
                                 </Typography>
                             </Box>
-                            <Box mt={2} className={classes.doubleContentRight}>
+                            <Box mt={2} className={classes.doubleContentRight} className={classes.resultsTable}>
                                 <Paper>
                                     <Box p={2}>
-                                        <img src="result-table.png" alt="Result table" />
+                                        <ABStats
+                                            name="Eagles - Hotel California"
+                                            stats={abStats}
+                                        /><Box>
+                                        <Box mb="16px">
+                                            <Typography variant="h5">Aggregated AB test results</Typography>
+                                        </Box>
+                                        <Box>
+                                            <ABTagStats stats={abTagStats} />
+                                        </Box>
+                                    </Box>
                                     </Box>
                                 </Paper>
                             </Box>

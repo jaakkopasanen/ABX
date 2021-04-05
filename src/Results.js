@@ -90,7 +90,6 @@ class Results extends React.Component {
                     <ABStats
                         key={i}
                         name={this.props.results[i].name}
-                        optionNames={this.props.results[i].optionNames}
                         stats={stats}
                     />
                 )

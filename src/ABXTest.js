@@ -12,6 +12,7 @@ class ABXTest extends ABTest {
     constructor(props) {
         super(props);
         const options = this.state.options.slice();
+        // Add random choice as a new option X
         options.push({
             name: 'X',
             audioUrl: options[Math.floor(Math.random() * options.length)].audioUrl,
@@ -21,6 +22,10 @@ class ABXTest extends ABTest {
             options: options
         };
         this.silence = 20;
+    }
+
+    shuffleOptions(options) {
+        return options.slice();
     }
 
     handleSubmit() {

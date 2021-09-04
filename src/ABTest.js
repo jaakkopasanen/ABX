@@ -12,12 +12,10 @@ class ABTest extends React.Component {
     // TODO: volume
     constructor(props) {
         super(props);
-        const ixs = shuffle([...Array(this.props.options.length).keys()])  // Randomly shuffled indexes
         this.audio = [];
-
         this.audioStartTime = null;
         this.state = {
-            options: ixs.map(ix => this.props.options[ix]),  // Shuffle options
+            options: this.shuffleOptions(this.props.options),
             selected: null,
         };
         this.createAudio = this.createAudio.bind(this);
@@ -25,6 +23,11 @@ class ABTest extends React.Component {
         this.stopAllAudio = this.stopAllAudio.bind(this);
         this.handleClick = this.handleClick.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+    }
+
+    shuffleOptions(options) {
+        const ixs = shuffle([...Array(options.length).keys()])  // Randomly shuffled indexes
+        return ixs.map(ix => options[ix])  // Shuffle options
     }
 
     createAudio(url) {

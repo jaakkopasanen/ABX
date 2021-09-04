@@ -26,3 +26,4 @@ yarn-error.log*
 .env
 /public/dev.yml
 venv/
+.ipynb_checkpoints/

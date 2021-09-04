@@ -256,7 +256,7 @@ export default function LandingPage() {
                                     demographics.
                                 </Typography>
                             </Box>
-                            <Box mt={2} className={classes.doubleContentRight} className={classes.resultsTable}>
+                            <Box mt={2} className={`${classes.doubleContentRight} ${classes.resultsTable}`}>
                                 <Paper>
                                     <Box p={2}>
                                         <ABStats
@@ -278,12 +278,19 @@ export default function LandingPage() {
                         <Box className={classes.doubleContent}>
                             <Box>
                                 <Box mb={1.5}>
-                                    <Typography variant="h3">Get started</Typography>
+                                    <Typography variant="h3">Get Started</Typography>
                                 </Box>
                                 <Typography paragraph={true}>
-                                    Start creating your own listening tests now. Head to the project's GitHub page&nbsp;
+                                    Start creating your own listening tests now. Head to the project's&nbsp;
                                     <Link href="https://github.com/jaakkopasanen/ABX"  target="_blank" rel="noopener">
-                                        jaakkopasanen/ABX
+                                        <Button
+                                            variant="contained"
+                                            color="secondary"
+                                            size="medium"
+                                            startIcon={<GitHubIcon />}
+                                        >
+                                            GitHub page
+                                        </Button>
                                     </Link> for a guide on how to declare your own test.
                                 </Typography>
                                 <Typography paragraph={true}>

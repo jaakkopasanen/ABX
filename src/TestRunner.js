@@ -31,6 +31,7 @@ class TestRunner extends React.Component {
             results: [],
             audioInitialized: false
         };
+        this.durations = [];
 
         this.initAudio = this.initAudio.bind(this);
         this.start = this.start.bind(this);
@@ -41,6 +42,20 @@ class TestRunner extends React.Component {
         this.handleCursorChange = this.handleCursorChange.bind(this);
     }
 
+    initDurations() {
+        this.durations = this.config.tests.map(test => {
+            let duration = null;
+            for (const option of test.options) {
+                if (duration === null) {
+                    duration = this.audioBuffers[option.audioUrl].duration;
+                } else if (this.audioBuffers[option.audioUrl].duration !== duration) {
+                    throw Error(`Audio tracks for have different lengths for test ${test.name}`)
+                }
+            }
+            return duration;
+        });
+    }
+
     async initAudio() {
         // Find all audio URLs used in the tests
         for (const option of this.config.options) {
@@ -49,6 +64,7 @@ class TestRunner extends React.Component {
                 .then(r => r.arrayBuffer())
                 .then(buf => this.audioContext.decodeAudioData(buf));  // Resamples automatically if needed
         }
+        this.initDurations();
         this.setState({audioInitialized: true});
     }
 
@@ -79,7 +95,8 @@ class TestRunner extends React.Component {
         this.setState({
             testStep: 0,
             repeatStep: 0,
-            form: Object.assign({}, form)
+            form: Object.assign({}, form),
+            cursor: [0, this.durations[0]],
         });
     }
 
@@ -129,7 +146,7 @@ class TestRunner extends React.Component {
                 testStep: this.state.testStep + 1,
                 repeatStep: 0,
                 results: results,
-                cursor: null,
+                cursor: [0, this.durations[this.state.testStep + 1] / this.audioContext.sampleRate],
             })
 
         } else {
@@ -183,8 +200,8 @@ class TestRunner extends React.Component {
         }, 1000);
     }
 
-    handleCursorChange(event, newValue, callback) {
-        this.setState({ cursor: newValue }, callback);
+    handleCursorChange(event, newValue) {
+        this.setState({ cursor: newValue });
     }
 
     render() {
@@ -247,6 +264,7 @@ class TestRunner extends React.Component {
                     onVolumeChange={this.handleVolumeChange}
                     cursor={this.state.cursor}
                     onCursorChange={this.handleCursorChange}
+                    duration={this.durations[this.state.testStep]}
                 />)
             } else if (this.config.tests[this.state.testStep].testType.toLowerCase() === 'abx') {
                 // ABX test

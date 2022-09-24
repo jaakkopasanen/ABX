@@ -14,7 +14,7 @@ class ABTest extends React.Component {
         super(props);
         this.audio = [];
         this.audioStartTime = null;
-        this.nSamples = null;
+        this.cursor = [null, null];
         this.state = {
             options: this.shuffleOptions(this.props.options),
             selected: null,
@@ -22,10 +22,9 @@ class ABTest extends React.Component {
         this.initAudio = this.initAudio.bind(this);
         this.stopAllAudio = this.stopAllAudio.bind(this);
         this.handleCursorChange = this.handleCursorChange.bind(this);
+        this.handleCursorChangeCommit = this.handleCursorChangeCommit.bind(this);
         this.handleClick = this.handleClick.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
-        this.initAudio();
-        this.initCursor();
     }
 
     shuffleOptions(options) {
@@ -37,21 +36,14 @@ class ABTest extends React.Component {
         const node = new AudioBufferSourceNode(this.props.audioContext, {
             buffer: this.props.audioBuffers[url],
             loop: true,
-            //loopStart: this.props.cursor[0] / this.props.audioContext.sampleRate,
-            //loopEnd: this.props.cursor[1] / this.props.audioContext.sampleRate,
+            loopStart: this.props.cursor[0],
+            loopEnd: this.props.cursor[1],
         });
         node.connect(this.props.audioDestination);
         return node;
     }
 
     initAudio() {
-        for (const option of this.state.options) {
-            if (this.nSamples === null) {
-                this.nSamples = this.props.audioBuffers[option.audioUrl].length;
-            } else if (this.props.audioBuffers[option.audioUrl].length !== this.nSamples) {
-                throw Error('Audio tracks have different lengths')
-            }
-        }
         for (const option of this.state.options) {
             const audio = {
                 url: option.audioUrl,
@@ -61,12 +53,8 @@ class ABTest extends React.Component {
         }
     }
 
-    initCursor() {
-        if (this.props.cursor === null) {
-            // null gets passed from TestRunner to the first repeat of the test,
-            // subsequent repeats use whatever what set or initialized in the first one
-            this.props.onCursorChange(null, [0, this.nSamples]);
-        }
+    componentDidMount() {
+        this.initAudio();
     }
 
     stopAudio(ix) {
@@ -83,19 +71,26 @@ class ABTest extends React.Component {
         }
     }
 
-    stopAllAudio() {
+    stopAllAudio(callback) {
         for (let i = 0; i < this.audio.length; ++i) {
             this.stopAudio(i);
         }
         this.audioStartTime = null;
-        this.setState({ selected: null });
+        this.setState({ selected: null }, callback);
     }
 
     startAudio(ix) {
         if (this.state.selected === null) {
-            // Nothing playing, start from the beginning
-            this.audio[ix].node.start(0, this.props.cursor[0] / this.props.audioContext.sampleRate);
+            // Nothing playing, start from the beginning (of the loop)
+            this.audio[ix].node.start(0, this.props.cursor[0]);
             this.audioStartTime = this.props.audioContext.currentTime;
+        } else if (this.state.selected === ix) {
+            // Starting the currently playing track, restart the track
+            const selected = this.state.selected;
+            this.stopAllAudio(() => {
+                this.startAudio(ix);
+                this.setState({ selected });
+            });
         } else {
             // Start different audio track from the current position
             const offset = (this.props.audioContext.currentTime - this.audioStartTime) % this.audio[ix].node.buffer.duration;
@@ -118,12 +113,19 @@ class ABTest extends React.Component {
     }
 
     handleCursorChange(event, newValue) {
-        this.props.onCursorChange(event, newValue, () => {
-            if (this.state.selected !== null) {
-                this.stopAudio(this.state.selected);
-                this.startAudio(this.state.selected);
-            }
-        })
+        this.props.onCursorChange(event, newValue);
+    }
+
+    handleCursorChangeCommit(event, newValue) {
+        for (let i = 0; i < this.audio.length; ++i) {
+            this.audio[i].node.loopStart = newValue[0];
+            this.audio[i].node.loopEnd = newValue[1];
+        }
+        if (newValue[0] !== this.cursor[0] && this.state.selected !== null) {
+            // Start cursor changed, play from start cursor
+            this.startAudio(this.state.selected);
+        }
+        this.cursor = newValue;
     }
 
     handleSubmit() {
@@ -234,9 +236,10 @@ class ABTest extends React.Component {
                                         <Slider
                                             color="secondary"
                                             value={this.props.cursor}
-                                            min={0} max={this.nSamples}
-                                            step={Math.round(this.props.audioContext.sampleRate / 100)}
+                                            min={0.0} max={this.props.duration}
+                                            step={this.props.duration / 1000}
                                             onChange={this.handleCursorChange}
+                                            onChangeCommitted={this.handleCursorChangeCommit}
                                             className="volumeSlider"
                                         />
                                     </Box>

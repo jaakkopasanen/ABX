@@ -18,13 +18,14 @@ class ABTest extends React.Component {
         this.state = {
             options: this.shuffleOptions(this.props.options),
             selected: null,
-            cursor: [0, 0],
         };
         this.initAudio = this.initAudio.bind(this);
         this.stopAllAudio = this.stopAllAudio.bind(this);
-        this.onCursorChange = this.onCursorChange.bind(this);
+        this.handleCursorChange = this.handleCursorChange.bind(this);
         this.handleClick = this.handleClick.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.initAudio();
+        this.initCursor();
     }
 
     shuffleOptions(options) {
@@ -36,14 +37,14 @@ class ABTest extends React.Component {
         const node = new AudioBufferSourceNode(this.props.audioContext, {
             buffer: this.props.audioBuffers[url],
             loop: true,
-            //loopStart: this.state.cursor[0] / this.props.audioContext.sampleRate,
-            //loopEnd: this.state.cursor[1] / this.props.audioContext.sampleRate,
+            //loopStart: this.props.cursor[0] / this.props.audioContext.sampleRate,
+            //loopEnd: this.props.cursor[1] / this.props.audioContext.sampleRate,
         });
         node.connect(this.props.audioDestination);
         return node;
     }
 
-    async initAudio() {
+    initAudio() {
         for (const option of this.state.options) {
             if (this.nSamples === null) {
                 this.nSamples = this.props.audioBuffers[option.audioUrl].length;
@@ -51,19 +52,21 @@ class ABTest extends React.Component {
                 throw Error('Audio tracks have different lengths')
             }
         }
-        this.setState({ cursor: [0, this.nSamples] }, () => {
-            for (const option of this.state.options) {
-                const audio = {
-                    url: option.audioUrl,
-                    node: this.createNode(option.audioUrl),
-                };
-                this.audio.push(audio);
-            }
-        });
+        for (const option of this.state.options) {
+            const audio = {
+                url: option.audioUrl,
+                node: this.createNode(option.audioUrl),
+            };
+            this.audio.push(audio);
+        }
     }
 
-    componentDidMount() {
-        this.initAudio();
+    initCursor() {
+        if (this.props.cursor === null) {
+            // null gets passed from TestRunner to the first repeat of the test,
+            // subsequent repeats use whatever what set or initialized in the first one
+            this.props.onCursorChange(null, [0, this.nSamples]);
+        }
     }
 
     stopAudio(ix) {
@@ -91,12 +94,11 @@ class ABTest extends React.Component {
     startAudio(ix) {
         if (this.state.selected === null) {
             // Nothing playing, start from the beginning
-            this.audio[ix].node.start(0, this.state.cursor[0] / this.props.audioContext.sampleRate);
+            this.audio[ix].node.start(0, this.props.cursor[0] / this.props.audioContext.sampleRate);
             this.audioStartTime = this.props.audioContext.currentTime;
         } else {
             // Start different audio track from the current position
-            const duration = this.audio[ix].node.buffer.length / this.props.audioContext.sampleRate;
-            const offset = (this.props.audioContext.currentTime - this.audioStartTime) % duration;
+            const offset = (this.props.audioContext.currentTime - this.audioStartTime) % this.audio[ix].node.buffer.duration;
             this.audio[ix].node.start(0, offset);
         }
     }
@@ -115,13 +117,13 @@ class ABTest extends React.Component {
         }
     }
 
-    onCursorChange(event, newValue) {
-        this.setState({ cursor: newValue }, () => {
+    handleCursorChange(event, newValue) {
+        this.props.onCursorChange(event, newValue, () => {
             if (this.state.selected !== null) {
                 this.stopAudio(this.state.selected);
                 this.startAudio(this.state.selected);
             }
-        });
+        })
     }
 
     handleSubmit() {
@@ -231,10 +233,10 @@ class ABTest extends React.Component {
                                         <LoopIcon style={{fontSize: 32, padding: '5px 0'}} />
                                         <Slider
                                             color="secondary"
-                                            value={this.state.cursor}
+                                            value={this.props.cursor}
                                             min={0} max={this.nSamples}
                                             step={Math.round(this.props.audioContext.sampleRate / 100)}
-                                            onChange={this.onCursorChange}
+                                            onChange={this.handleCursorChange}
                                             className="volumeSlider"
                                         />
                                     </Box>

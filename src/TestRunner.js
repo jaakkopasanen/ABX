@@ -24,6 +24,7 @@ class TestRunner extends React.Component {
         this.state = {
             form: {},
             volume:  volume,
+            cursor: null,
             timer: null,
             testStep: -1,
             repeatStep: 0,
@@ -37,6 +38,7 @@ class TestRunner extends React.Component {
         this.handleAbTestSubmit = this.handleAbTestSubmit.bind(this);
         this.handleAbxTestSubmit = this.handleAbxTestSubmit.bind(this);
         this.handleVolumeChange = this.handleVolumeChange.bind(this);
+        this.handleCursorChange = this.handleCursorChange.bind(this);
     }
 
     async initAudio() {
@@ -127,6 +129,7 @@ class TestRunner extends React.Component {
                 testStep: this.state.testStep + 1,
                 repeatStep: 0,
                 results: results,
+                cursor: null,
             })
 
         } else {
@@ -178,6 +181,10 @@ class TestRunner extends React.Component {
                 localStorage.setItem('volume', this.state.volume);
             }
         }, 1000);
+    }
+
+    handleCursorChange(event, newValue, callback) {
+        this.setState({ cursor: newValue }, callback);
     }
 
     render() {
@@ -238,6 +245,8 @@ class TestRunner extends React.Component {
                     onSubmit={this.handleAbTestSubmit}
                     volume={this.state.volume}
                     onVolumeChange={this.handleVolumeChange}
+                    cursor={this.state.cursor}
+                    onCursorChange={this.handleCursorChange}
                 />)
             } else if (this.config.tests[this.state.testStep].testType.toLowerCase() === 'abx') {
                 // ABX test

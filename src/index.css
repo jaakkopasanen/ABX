@@ -18,7 +18,7 @@ html, body, #root {
     min-height: 300px;
 }
 .volumeSlider {
-    margin-right: 6px;
+    margin: 0 12px;
     padding: 20px 0 !important
 }
 .scrollableLink {

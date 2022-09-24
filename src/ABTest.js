@@ -3,24 +3,26 @@ import Box from "@material-ui/core/Box";
 import CircleButton from "./CircleButton";
 import Typography from "@material-ui/core/Typography";
 import VolumeUpIcon from "@material-ui/icons/VolumeUp";
+import LoopIcon from '@material-ui/icons/Loop';
 import Slider from "@material-ui/core/Slider";
 import Button from "@material-ui/core/Button";
 import shuffle from "./random";
 import {Container, Divider, Paper} from "@material-ui/core";
 
 class ABTest extends React.Component {
-    // TODO: volume
     constructor(props) {
         super(props);
         this.audio = [];
         this.audioStartTime = null;
+        this.nSamples = null;
         this.state = {
             options: this.shuffleOptions(this.props.options),
             selected: null,
+            cursor: [0, 0],
         };
-        this.createAudio = this.createAudio.bind(this);
         this.initAudio = this.initAudio.bind(this);
         this.stopAllAudio = this.stopAllAudio.bind(this);
+        this.onCursorChange = this.onCursorChange.bind(this);
         this.handleClick = this.handleClick.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
@@ -30,23 +32,34 @@ class ABTest extends React.Component {
         return ixs.map(ix => options[ix])  // Shuffle options
     }
 
-    createAudio(url) {
-        const audio = this.props.audioContext.createBufferSource();
-        audio.buffer = this.props.audioBuffers[url];
-        audio.connect(this.props.audioDestination);
-        audio.loop = true;
-        return audio;
+    createNode(url) {
+        const node = new AudioBufferSourceNode(this.props.audioContext, {
+            buffer: this.props.audioBuffers[url],
+            loop: true,
+            //loopStart: this.state.cursor[0] / this.props.audioContext.sampleRate,
+            //loopEnd: this.state.cursor[1] / this.props.audioContext.sampleRate,
+        });
+        node.connect(this.props.audioDestination);
+        return node;
     }
 
     async initAudio() {
         for (const option of this.state.options) {
-            const audio = {
-                url: option.audioUrl,
-                buffer: this.props.audioBuffers[option.audioUrl]
-            };
-            this.audio.push(audio);
-            audio.audio = this.createAudio(audio.url);
+            if (this.nSamples === null) {
+                this.nSamples = this.props.audioBuffers[option.audioUrl].length;
+            } else if (this.props.audioBuffers[option.audioUrl].length !== this.nSamples) {
+                throw Error('Audio tracks have different lengths')
+            }
         }
+        this.setState({ cursor: [0, this.nSamples] }, () => {
+            for (const option of this.state.options) {
+                const audio = {
+                    url: option.audioUrl,
+                    node: this.createNode(option.audioUrl),
+                };
+                this.audio.push(audio);
+            }
+        });
     }
 
     componentDidMount() {
@@ -57,12 +70,13 @@ class ABTest extends React.Component {
         try {
             // Stop audio, this is in try block because the audio might not have been started and attempting to stop
             // an audio which has not been started throws an InvalidStateError
-            this.audio[ix].audio.stop(0);
+            this.audio[ix].node.stop(0);
             // Create new AudioBufferSourceNode instance since these can be played only once
-            this.audio[ix].audio = this.createAudio(this.audio[ix].url);
-        } catch {
-            // Nothing needs to be done if the audio stop fails, the audio object exists and can be played,
-            // there's no need to create a new one
+            this.audio[ix].node = this.createNode(this.audio[ix].url);
+        } catch (error) {
+            if (error.message !== 'AudioScheduledSourceNode.stop: Start has not been called on this AudioBufferSourceNode.') {
+                throw error;
+            }
         }
     }
 
@@ -71,18 +85,19 @@ class ABTest extends React.Component {
             this.stopAudio(i);
         }
         this.audioStartTime = null;
-        this.setState({selected: null});
+        this.setState({ selected: null });
     }
 
     startAudio(ix) {
         if (this.state.selected === null) {
             // Nothing playing, start from the beginning
-            this.audio[ix].audio.start(0, 0);
+            this.audio[ix].node.start(0, this.state.cursor[0] / this.props.audioContext.sampleRate);
             this.audioStartTime = this.props.audioContext.currentTime;
         } else {
-            const duration = this.audio[ix].buffer.length / this.props.audioContext.sampleRate;
+            // Start different audio track from the current position
+            const duration = this.audio[ix].node.buffer.length / this.props.audioContext.sampleRate;
             const offset = (this.props.audioContext.currentTime - this.audioStartTime) % duration;
-            this.audio[ix].audio.start(0, offset);
+            this.audio[ix].node.start(0, offset);
         }
     }
 
@@ -96,8 +111,17 @@ class ABTest extends React.Component {
             if (this.state.selected !== null) {
                 this.stopAudio(this.state.selected);
             }
-            this.setState({selected: ix});
+            this.setState({ selected: ix });
         }
+    }
+
+    onCursorChange(event, newValue) {
+        this.setState({ cursor: newValue }, () => {
+            if (this.state.selected !== null) {
+                this.stopAudio(this.state.selected);
+                this.startAudio(this.state.selected);
+            }
+        });
     }
 
     handleSubmit() {
@@ -202,17 +226,31 @@ class ABTest extends React.Component {
                         </Box>
                         <Box mt="10px">
                             <Paper className="paperPadding">
-                                <Box display="flex" flexDirection="row" p="10px">
-                                    <VolumeUpIcon style={{fontSize: 32, padding: '5px 0'}} />
-                                    <Slider
-                                        color="secondary"
-                                        value={this.props.volume}
-                                        defaultValue={0.5}
-                                        min={0.0} max={1.0} step={0.01}
-                                        onChange={this.props.onVolumeChange}
-                                        className="volumeSlider"
-                                    />
+                                <Box>
+                                    <Box display="flex" flexDirection="row" p="10px">
+                                        <LoopIcon style={{fontSize: 32, padding: '5px 0'}} />
+                                        <Slider
+                                            color="secondary"
+                                            value={this.state.cursor}
+                                            min={0} max={this.nSamples}
+                                            step={Math.round(this.props.audioContext.sampleRate / 100)}
+                                            onChange={this.onCursorChange}
+                                            className="volumeSlider"
+                                        />
+                                    </Box>
+                                    <Box display="flex" flexDirection="row" p="10px">
+                                        <VolumeUpIcon style={{fontSize: 32, padding: '5px 0'}} />
+                                        <Slider
+                                          color="secondary"
+                                          value={this.props.volume}
+                                          defaultValue={0.5}
+                                          min={0.0} max={1.0} step={0.01}
+                                          onChange={this.props.onVolumeChange}
+                                          className="volumeSlider"
+                                        />
+                                    </Box>
                                 </Box>
+
                             </Paper>
                         </Box>
                     </Box>

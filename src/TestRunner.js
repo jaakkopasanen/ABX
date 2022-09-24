@@ -45,7 +45,7 @@ class TestRunner extends React.Component {
             // Fetch buffer for each URL
             this.audioBuffers[option.audioUrl] = await fetch(option.audioUrl)
                 .then(r => r.arrayBuffer())
-                .then(buf => this.audioContext.decodeAudioData(buf));
+                .then(buf => this.audioContext.decodeAudioData(buf));  // Resamples automatically if needed
         }
         this.setState({audioInitialized: true});
     }
@@ -145,7 +145,7 @@ class TestRunner extends React.Component {
         * */
         let results = JSON.parse(JSON.stringify(this.state.results));
         let option = Object.assign({}, selectedOption);
-        delete option.audio;
+        delete option.node;
         results[this.state.testStep].userSelections.push(option);
         this.nextStep(results);
     }
@@ -157,7 +157,7 @@ class TestRunner extends React.Component {
         * */
         let results = JSON.parse(JSON.stringify(this.state.results));
         let option = Object.assign({}, selectedOption);
-        delete option.audio;
+        delete option.node;
         results[this.state.testStep].userSelectionsAndCorrects.push({
             selectedOption: option,
             correctOption: correctOption
